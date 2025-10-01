@@ -1,4 +1,4 @@
-[![Code Quality](https://github.com/ChrisThompsonK/team3-job-app-frontend/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ChrisThompsonK/team3-job-app-frontend/actions/workflows/code-quality.yml)
+[![Code Quality](https://github.com/ChrisThompsonK/team3-job-app-backend/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ChrisThompsonK/team3-job-app-backend/actions/workflows/code-quality.yml)
 
 # Team 3 Job Application Frontend
 
