@@ -2,17 +2,10 @@
 
 import 'dotenv/config';
 
-import { createClient } from '@libsql/client';
-import { drizzle } from 'drizzle-orm/libsql';
 import express from 'express';
 
+import { db } from './db/database.js';
 import { appRoutes } from './routes/appRoutes.js';
-
-// Database setup
-const client = createClient({
-  url: process.env['DATABASE_URL'] || 'file:local.db',
-});
-const db = drizzle({ client });
 
 const app = express();
 const PORT = process.env['PORT'] || 3000;
