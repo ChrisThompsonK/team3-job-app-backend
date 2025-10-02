@@ -9,8 +9,8 @@ import express from 'express';
 import { appRoutes } from './routes/appRoutes.js';
 
 // Database setup
-const client = createClient({ 
-  url: process.env['DATABASE_URL'] || 'file:local.db' 
+const client = createClient({
+  url: process.env['DATABASE_URL'] || 'file:local.db',
 });
 const db = drizzle({ client });
 
