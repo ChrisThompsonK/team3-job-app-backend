@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import type { Request, Response } from 'express';
 import express from 'express';
+import { appRoutes } from './routes/appRoutes.js';
 
 const app = express();
 const PORT = process.env['PORT'] || 3000;
@@ -11,24 +11,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.get('/', (_req: Request, res: Response) => {
-  res.json({
-    message: 'Hello World! 🌍',
-    service: 'Team 3 Job Application Frontend',
-    timestamp: new Date().toISOString(),
-  });
-});
+app.use('/', appRoutes);
 
-app.get('/health', (_req: Request, res: Response) => {
-  res.json({
-    status: 'healthy',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  });
-});
-
+// Legacy greeting function (kept for backward compatibility)
 const greeting = (name: string): string => {
-  return `Hello, ${name}! Welcome to the Team 3 Job Application Frontend.`;
+  return `Hello, ${name}! Welcome to the Team 3 Job Application Backend.`;
 };
 
 const startServer = async (): Promise<void> => {
