@@ -4,7 +4,6 @@ import 'dotenv/config';
 
 import express from 'express';
 
-import { db } from './db/database.js';
 import { appRoutes } from './routes/appRoutes.js';
 
 const app = express();
@@ -42,4 +41,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   await startServer();
 }
 
-export { app, db, greeting, startServer };
+export { app, greeting, startServer };

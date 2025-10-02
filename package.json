@@ -17,11 +17,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/db/migrate.ts",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "typescript",
