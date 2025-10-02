@@ -1,7 +1,18 @@
 #!/usr/bin/env node
 
+import 'dotenv/config';
+
+import { createClient } from '@libsql/client';
+import { drizzle } from 'drizzle-orm/libsql';
 import express from 'express';
+
 import { appRoutes } from './routes/appRoutes.js';
+
+// Database setup
+const client = createClient({ 
+  url: process.env['DATABASE_URL'] || 'file:local.db' 
+});
+const db = drizzle({ client });
 
 const app = express();
 const PORT = process.env['PORT'] || 3000;
@@ -38,4 +49,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   await startServer();
 }
 
-export { app, greeting, startServer };
+export { app, db, greeting, startServer };
