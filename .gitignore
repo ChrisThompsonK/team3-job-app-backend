@@ -16,12 +16,27 @@ build/
 .env.test.local
 .env.production.local
 
+# Database files (excluding main dev database)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+local.db
+test.db
+*.sqlite3
+
 # IDE and editor files
-.vscode/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/.ropeproject
 .idea/
 *.swp
 *.swo
 *~
+
+# Allow shared VS Code configuration
+!.vscode/extensions.json
 
 # OS generated files
 .DS_Store
@@ -98,3 +113,25 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Drizzle specific
+.drizzle/
+
+# Testing
+*.lcov
+test-results/
+playwright-report/
+
+# Package manager lockfiles (if using different managers)
+# Uncomment the one you're NOT using
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Local development overrides
+.env.override

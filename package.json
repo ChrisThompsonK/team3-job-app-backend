@@ -17,7 +17,15 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "seed": "tsx src/seeds/index.ts",
+    "seed:capabilities": "tsx src/seeds/seedCapabilities.ts",
+    "seed:bands": "tsx src/seeds/seedBands.ts",
+    "seed:jobroles": "tsx src/seeds/seedJobRoles.ts"
   },
   "keywords": [
     "typescript",
