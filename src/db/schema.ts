@@ -12,7 +12,9 @@ export const users = sqliteTable('users', {
 // Session tokens table for JWT token management
 export const sessions = sqliteTable('sessions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   token: text('token').notNull().unique(),
   expiresAt: text('expires_at').notNull(),
 });

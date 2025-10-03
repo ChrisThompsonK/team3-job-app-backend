@@ -84,8 +84,6 @@ export class AuthMiddleware {
         return;
       }
 
-
-
       // Add user to request object
       req.user = this.authService.sanitizeUser(user);
       next();

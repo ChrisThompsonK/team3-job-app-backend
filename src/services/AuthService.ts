@@ -52,11 +52,9 @@ export class AuthService {
    * Generate JWT token
    */
   generateToken(userId: number, email: string): string {
-    return jwt.sign(
-      { userId, email },
-      this.JWT_SECRET,
-      { expiresIn: this.JWT_EXPIRES_IN } as jwt.SignOptions
-    );
+    return jwt.sign({ userId, email }, this.JWT_SECRET, {
+      expiresIn: this.JWT_EXPIRES_IN,
+    } as jwt.SignOptions);
   }
 
   /**

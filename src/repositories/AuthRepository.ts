@@ -32,8 +32,6 @@ export class AuthRepository {
     return result[0] || null;
   }
 
-
-
   /**
    * Create a new session
    */

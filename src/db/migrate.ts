@@ -4,7 +4,7 @@ import { db } from './database.js';
 
 async function runMigration() {
   console.log('🔄 Running database migrations...');
-  
+
   try {
     await migrate(db, { migrationsFolder: './drizzle' });
     console.log('✅ Migrations completed successfully');
