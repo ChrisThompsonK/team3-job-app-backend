@@ -5,6 +5,7 @@ import 'dotenv/config';
 import express from 'express';
 
 import { appRoutes } from './routes/appRoutes.js';
+import { authRoutes } from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env['PORT'] || 3000;
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/', appRoutes);
+app.use('/auth', authRoutes);
 
 // Legacy greeting function (kept for backward compatibility)
 const greeting = (name: string): string => {
