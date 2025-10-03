@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
+import 'dotenv/config';
+
 import express from 'express';
+
 import { appRoutes } from './routes/appRoutes.js';
 
 const app = express();
