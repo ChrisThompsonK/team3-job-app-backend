@@ -1,6 +1,33 @@
-// Your database schema will be defined here
-// Add tables as needed for your application
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-// Example imports (uncomment when you add tables):
-// import { sql } from 'drizzle-orm';
-// import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+// Capability table
+export const capabilities = sqliteTable('capabilities', {
+  capabilityId: integer('capabilityId').primaryKey({ autoIncrement: true }),
+  capabilityName: text('capabilityName').notNull(),
+});
+
+// Band table
+export const bands = sqliteTable('bands', {
+  bandId: integer('bandId').primaryKey({ autoIncrement: true }),
+  bandName: text('bandName').notNull(),
+});
+
+// Job roles table
+export const jobRoles = sqliteTable('job_roles', {
+  jobRoleId: integer('jobRoleId').primaryKey({ autoIncrement: true }),
+  roleName: text('roleName').notNull(),
+  location: text('location').notNull(),
+  capabilityId: integer('capabilityId').references(() => capabilities.capabilityId),
+  bandId: integer('bandId').references(() => bands.bandId),
+  closingDate: text('closingDate').notNull(), // Using text for date, you can also use integer for timestamp
+});
+
+// Export all tables for use in queries
+export type Capability = typeof capabilities.$inferSelect;
+export type NewCapability = typeof capabilities.$inferInsert;
+
+export type Band = typeof bands.$inferSelect;
+export type NewBand = typeof bands.$inferInsert;
+
+export type JobRole = typeof jobRoles.$inferSelect;
+export type NewJobRole = typeof jobRoles.$inferInsert;
