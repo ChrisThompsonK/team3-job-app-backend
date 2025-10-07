@@ -1,8 +1,6 @@
 import { Router } from 'express';
-import { AppController } from '../controllers/AppController.js';
-
+import { appController } from '../di/JobController.js';
 const router = Router();
-const appController = new AppController();
 
 // Root endpoint
 router.get('/', (req, res) => appController.getRoot(req, res));

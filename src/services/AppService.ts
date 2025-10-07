@@ -5,8 +5,8 @@ import { AppRepository } from '../repositories/AppRepository.js';
 export class AppService {
   private appRepository: AppRepository;
 
-  constructor() {
-    this.appRepository = new AppRepository();
+  constructor(appRepository: AppRepository) {
+    this.appRepository = appRepository;
   }
 
   async getApplicationInfo(): Promise<AppInfo> {
