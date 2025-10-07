@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { AppService } from '../services/AppService.js';
+import type { AppService } from '../services/AppService.js';
 
 export class AppController {
   private appService: AppService;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { appController } from '../di/JobController.js';
+
 const router = Router();
 
 // Root endpoint
