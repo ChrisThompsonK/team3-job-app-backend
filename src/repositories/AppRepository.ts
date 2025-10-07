@@ -1,5 +1,6 @@
+import { eq } from 'drizzle-orm';
 import { db } from '../db/database.js';
-import { type JobRole, jobRoles } from '../db/schema.js';
+import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 
@@ -41,9 +42,20 @@ export class AppRepository {
     });
   }
 
-  async getAllJobs(): Promise<JobRole[]> {
-    // Query all job roles from the database
-    const jobs = await db.select().from(jobRoles);
+  async getAllJobs(): Promise<any[]> {
+    // Query all job roles from the database with capability and band names
+    const jobs = await db
+      .select({
+        jobRoleId: jobRoles.jobRoleId,
+        roleName: jobRoles.roleName,
+        location: jobRoles.location,
+        closingDate: jobRoles.closingDate,
+        capabilityName: capabilities.capabilityName,
+        bandName: bands.bandName,
+      })
+      .from(jobRoles)
+      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId));
     return jobs;
   }
 }
