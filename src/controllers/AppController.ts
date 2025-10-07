@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
-import { AppService } from '../services/AppService.js';
+import type { AppService } from '../services/AppService.js';
 
 export class AppController {
   private appService: AppService;
 
-  constructor() {
-    this.appService = new AppService();
+  constructor(appService: AppService) {
+    this.appService = appService;
   }
 
   async getRoot(_req: Request, res: Response): Promise<void> {

@@ -1,12 +1,13 @@
+import type { JobRole } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import { AppRepository } from '../repositories/AppRepository.js';
+import type { AppRepository } from '../repositories/AppRepository.js';
 
 export class AppService {
   private appRepository: AppRepository;
 
-  constructor() {
-    this.appRepository = new AppRepository();
+  constructor(appRepository: AppRepository) {
+    this.appRepository = appRepository;
   }
 
   async getApplicationInfo(): Promise<AppInfo> {
@@ -37,7 +38,7 @@ export class AppService {
     return `Hello, ${cleanName}! Welcome to the ${serverName}.`;
   }
 
-  async fetchJobs(): Promise<any[]> {
+  async fetchJobs(): Promise<JobRole[]> {
     return await this.appRepository.getAllJobs();
   }
 }
