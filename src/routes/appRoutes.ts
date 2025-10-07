@@ -13,4 +13,6 @@ router.get('/health', (req, res) => appController.getHealth(req, res));
 // Greeting endpoint
 router.get('/greeting', (req, res) => appController.getGreeting(req, res));
 
+router.get('/jobs', async (req, res) => appController.getJobs(req, res));
+
 export { router as appRoutes };

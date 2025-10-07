@@ -1,5 +1,7 @@
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
+import { db } from '../db/database.js';
+import { jobRoles } from '../db/schema.js';
 
 export class AppRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
@@ -37,5 +39,11 @@ export class AppRepository {
         resolve(AppRepository.APP_NAME);
       }, 5);
     });
+  }
+
+  async getAllJobs(): Promise<any[]> {
+    // Query all job roles from the database
+    const jobs = await db.select().from(jobRoles);
+    return jobs;
   }
 }

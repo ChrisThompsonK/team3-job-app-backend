@@ -36,4 +36,8 @@ export class AppService {
     const cleanName = name.trim();
     return `Hello, ${cleanName}! Welcome to the ${serverName}.`;
   }
+
+  async fetchJobs(): Promise<any[]> {
+    return await this.appRepository.getAllJobs();
+  }
 }
