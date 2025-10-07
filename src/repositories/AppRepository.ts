@@ -1,5 +1,5 @@
 import { db } from '../db/database.js';
-import { jobRoles, type JobRole } from '../db/schema.js';
+import { type JobRole, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 
