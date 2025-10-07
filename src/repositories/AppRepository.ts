@@ -1,3 +1,5 @@
+import { db } from '../db/database.js';
+import { type JobRole, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 
@@ -37,5 +39,11 @@ export class AppRepository {
         resolve(AppRepository.APP_NAME);
       }, 5);
     });
+  }
+
+  async getAllJobs(): Promise<JobRole[]> {
+    // Query all job roles from the database
+    const jobs = await db.select().from(jobRoles);
+    return jobs;
   }
 }

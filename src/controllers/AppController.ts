@@ -51,4 +51,17 @@ export class AppController {
       });
     }
   }
+
+  async getJobs(_req: Request, res: Response): Promise<void> {
+    try {
+      const jobs = await this.appService.fetchJobs();
+      res.json(jobs);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch jobs',
+      });
+    }
+  }
 }
