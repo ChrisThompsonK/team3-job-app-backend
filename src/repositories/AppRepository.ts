@@ -4,6 +4,15 @@ import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 
+export type JobRoleWithDetails = {
+  jobRoleId: number;
+  roleName: string;
+  location: string;
+  closingDate: string;
+  capabilityName: string | null;
+  bandName: string | null;
+};
+
 export class AppRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
@@ -42,7 +51,7 @@ export class AppRepository {
     });
   }
 
-  async getAllJobs(): Promise<any[]> {
+  async getAllJobs(): Promise<JobRoleWithDetails[]> {
     // Query all job roles from the database with capability and band names
     const jobs = await db
       .select({
