@@ -103,24 +103,24 @@ export class JobController {
     }
   }
 
-  async addJobRole(_req: Request, _res: Response): Promise<void> {
+  async addJobRole(req: Request, res: Response): Promise<void> {
     try {
-      const jobData: JobRole = _req.body;
+      const jobData: JobRole = req.body;
       const response = await this.jobService.addJob(jobData);
       if (response) {
-        _res.status(201).json({
+        res.status(201).json({
           success: true,
           message: 'Job role added successfully',
         });
       } else {
-        _res.status(400).json({
+        res.status(400).json({
           success: false,
           message: 'Failed to add job role',
         });
       }
     } catch (error) {
       console.error('Error adding job role:', error);
-      _res.status(500).json({
+      res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to add job role',
       });
