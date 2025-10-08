@@ -1,4 +1,4 @@
-import { db } from '../db/database.js';
+import { client, db } from '../db/database.js';
 import { bands } from '../db/schema.js';
 
 export async function seedBands() {
@@ -27,6 +27,10 @@ export async function seedBands() {
 
 // Run this file directly to seed bands
 if (import.meta.url === `file://${process.argv[1]}`) {
-  await seedBands();
-  process.exit(0);
+  try {
+    await seedBands();
+  } finally {
+    // Close the database connection to ensure data is persisted
+    client.close();
+  }
 }

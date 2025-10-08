@@ -1,4 +1,4 @@
-import { db } from '../db/database.js';
+import { client, db } from '../db/database.js';
 import { capabilities } from '../db/schema.js';
 
 export async function seedCapabilities() {
@@ -33,6 +33,10 @@ export async function seedCapabilities() {
 
 // Run this file directly to seed capabilities
 if (import.meta.url === `file://${process.argv[1]}`) {
-  await seedCapabilities();
-  process.exit(0);
+  try {
+    await seedCapabilities();
+  } finally {
+    // Close the database connection to ensure data is persisted
+    client.close();
+  }
 }
