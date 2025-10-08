@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
@@ -97,7 +97,7 @@ export class JobRepository {
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .where(eq(jobRoles.jobRoleId, jobRoleID));
+      .where(and(eq(jobRoles.jobRoleId, jobRoleID), eq(jobRoles.deleted, 0)));
     return job;
   }
   async addJobRole(jobRole: JobRole): Promise<boolean> {

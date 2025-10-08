@@ -66,33 +66,83 @@ export class JobController {
     }
   }
 
-  async getJobByID(_req: Request<{ id: string }>, _res: Response): Promise<void> {
+  async getJobById(req: Request, res: Response): Promise<void> {
     try {
-      if (!_req.params.id) {
-        _res.status(400).json({
-          error: 'Bad Request',
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
           message: 'Job ID is required',
         });
         return;
       }
-      const jobID = parseInt(_req.params.id, 10);
-      if (Number.isNaN(jobID)) {
-        _res.status(400).json({
-          error: 'Bad Request',
-          message: 'Job ID must be a valid number',
+
+      const jobId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(jobId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid job ID',
         });
         return;
       }
-      const job = await this.jobService.getJobById(jobID);
-      _res.status(200).json({
-        job: job[0],
-        timestamp: new Date().toISOString(),
-      });
+
+      const job = await this.jobService.getJobById(jobId);
+
+      if (!job) {
+        res.status(404).json({
+          error: 'Not found',
+          message: `Job with ID ${jobId} not found`,
+        });
+        return;
+      }
+
+      res.json(job);
     } catch (error) {
       console.error('Error fetching job by ID:', error);
-      _res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to fetch job by ID',
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch job';
+      const statusCode = errorMessage.includes('Invalid') ? 400 : 500;
+
+      res.status(statusCode).json({
+        error: statusCode === 400 ? 'Bad request' : 'Internal server error',
+        message: errorMessage,
+      });
+    }
+  }
+
+  async updateJobRole(req: Request, res: Response): Promise<void> {
+    try {
+      const jobRoleId = Number.parseInt(req.params['id'] || '', 10);
+
+      if (Number.isNaN(jobRoleId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid job role ID',
+        });
+        return;
+      }
+
+      const updatedJob = await this.jobService.updateJobRole(jobRoleId, req.body);
+
+      if (!updatedJob) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Job role not found',
+        });
+        return;
+      }
+
+      res.json(updatedJob);
+    } catch (error) {
+      console.error('Error updating job role:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update job role';
+      const statusCode =
+        errorMessage.includes('Invalid') || errorMessage.includes('No updates') ? 400 : 500;
+
+      res.status(statusCode).json({
+        error: statusCode === 400 ? 'Bad request' : 'Internal server error',
+        message: errorMessage,
       });
     }
   }
