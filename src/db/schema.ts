@@ -25,6 +25,7 @@ export const jobRoles = sqliteTable('job_roles', {
   jobSpecUrl: text('jobSpecUrl'),
   status: text('status').notNull().default('Open'),
   openPositions: integer('openPositions').notNull().default(1),
+  deleted: integer('deleted').default(0).notNull(), // Soft delete flag
 });
 
 // Export all tables for use in queries

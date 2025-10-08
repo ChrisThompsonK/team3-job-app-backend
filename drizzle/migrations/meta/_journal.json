@@ -15,6 +15,13 @@
       "when": 1759917638020,
       "tag": "0001_light_nightmare",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1759920649431,
+      "tag": "0002_high_nicolaos",
+      "breakpoints": true
     }
   ]
 }

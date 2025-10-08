@@ -3,6 +3,7 @@ import { db } from '../db/database.js';
 import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
+import  type {JobRole}  from '../models/JobModel.js';
 
 export type JobRoleWithDetails = {
   jobRoleId: number;
@@ -27,7 +28,7 @@ export type JobRoleDetail = {
   openPositions: number;
 };
 
-export class AppRepository {
+export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
   async getAppInfo(): Promise<AppInfo> {
@@ -36,7 +37,7 @@ export class AppRepository {
       setTimeout(() => {
         resolve({
           message: 'Hello World! 🌍',
-          service: AppRepository.APP_NAME,
+          service: JobRepository.APP_NAME,
           timestamp: new Date().toISOString(),
         });
       }, 10);
@@ -60,7 +61,7 @@ export class AppRepository {
     // Simulate retrieving server/app name from data source
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(AppRepository.APP_NAME);
+        resolve(JobRepository.APP_NAME);
       }, 5);
     });
   }
@@ -78,11 +79,50 @@ export class AppRepository {
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
-      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId));
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .where(eq(jobRoles.deleted, 0));
     return jobs;
   }
 
-  async getJobById(id: number): Promise<JobRoleDetail | null> {
+  async getJobByID(jobRoleID: number): Promise<JobRoleWithDetails[]> {
+    const job = await db
+      .select({
+        jobRoleId: jobRoles.jobRoleId,
+        roleName: jobRoles.roleName,
+        location: jobRoles.location,
+        closingDate: jobRoles.closingDate,
+        capabilityName: capabilities.capabilityName,
+        bandName: bands.bandName,
+      })
+      .from(jobRoles)
+      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .where(eq(jobRoles.jobRoleId, jobRoleID));
+    return job;
+  }
+  async addJobRole(jobRole:JobRole):Promise<boolean>{
+    const result = await db.insert(jobRoles).values({
+      roleName:jobRole.roleName,
+      location:jobRole.location,
+      closingDate:jobRole.closingDate,
+      capabilityId:jobRole.capabilityId,
+      bandId:jobRole.bandId
+    }).returning();
+    if(result.length===0){
+      return false;
+    }
+    return true;
+  }
+
+  async deleteJob(jobRoleId:number):Promise<boolean>{
+    const result = await db.update(jobRoles).set({deleted:1}).where(eq(jobRoles.jobRoleId,jobRoleId)).returning();
+    if(result.length===0){
+      return false;
+    }
+    return true;
+  }
+
+ async getJobById(id: number): Promise<JobRoleDetail | null> {
     // Query a single job role with all details
     const result = await db
       .select({
