@@ -128,47 +128,50 @@
         },
         "openPositions": {
           "name": "openPositions",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 1
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "job_roles_capabilityId_capabilities_capabilityId_fk": {
-          "name": "job_roles_capabilityId_capabilities_capabilityId_fk",
-          "tableFrom": "job_roles",
-          "tableTo": "capabilities",
-          "columnsFrom": ["capabilityId"],
-          "columnsTo": ["capabilityId"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "deleted": {
+            "name": "deleted",
+            "type": "integer",
+            "primaryKey": false,
+            "notNull": true,
+            "autoincrement": false,
+            "default": 0
+          }
         },
-        "job_roles_bandId_bands_bandId_fk": {
-          "name": "job_roles_bandId_bands_bandId_fk",
-          "tableFrom": "job_roles",
-          "tableTo": "bands",
-          "columnsFrom": ["bandId"],
-          "columnsTo": ["bandId"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
+        "indexes": {},
+        "foreignKeys": {
+          "job_roles_capabilityId_capabilities_capabilityId_fk": {
+            "name": "job_roles_capabilityId_capabilities_capabilityId_fk",
+            "tableFrom": "job_roles",
+            "tableTo": "capabilities",
+            "columnsFrom": ["capabilityId"],
+            "columnsTo": ["capabilityId"],
+            "onDelete": "no action",
+            "onUpdate": "no action"
+          },
+          "job_roles_bandId_bands_bandId_fk": {
+            "name": "job_roles_bandId_bands_bandId_fk",
+            "tableFrom": "job_roles",
+            "tableTo": "bands",
+            "columnsFrom": ["bandId"],
+            "columnsTo": ["bandId"],
+            "onDelete": "no action",
+            "onUpdate": "no action"
+          }
+        },
+        "compositePrimaryKeys": {},
+        "uniqueConstraints": {},
+        "checkConstraints": {}
+      }
+    },
+    "views": {},
+    "enums": {},
+    "_meta": {
+      "schemas": {},
+      "tables": {},
+      "columns": {}
+    },
+    "internal": {
+      "indexes": {}
     }
-  },
-  "views": {},
-  "enums": {},
-  "_meta": {
-    "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
-    "indexes": {}
   }
 }
