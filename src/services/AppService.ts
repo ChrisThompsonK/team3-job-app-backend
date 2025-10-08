@@ -46,6 +46,42 @@ export class AppService {
   }
 
   async fetchJobById(id: number): Promise<JobRoleDetail | null> {
+    // Business logic: Validate the job role ID
+    if (!id || id <= 0) {
+      throw new Error('Invalid job role ID');
+    }
+
     return await this.appRepository.getJobById(id);
+  }
+
+  async updateJobRole(
+    jobRoleId: number,
+    updates: {
+      roleName?: string;
+      location?: string;
+      capabilityId?: number;
+      bandId?: number;
+      closingDate?: string;
+    }
+  ): Promise<JobRoleDetail | null> {
+    // Business logic: Validate the job role ID
+    if (!jobRoleId || jobRoleId <= 0) {
+      throw new Error('Invalid job role ID');
+    }
+
+    // Business logic: Ensure at least one field is being updated
+    if (Object.keys(updates).length === 0) {
+      throw new Error('No updates provided');
+    }
+
+    // Business logic: Validate closing date format if provided
+    if (updates.closingDate) {
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(updates.closingDate)) {
+        throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+      }
+    }
+
+    return await this.appRepository.updateJobRole(jobRoleId, updates);
   }
 }
