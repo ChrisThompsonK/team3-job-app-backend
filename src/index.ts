@@ -3,6 +3,7 @@
 import 'dotenv/config';
 
 import express from 'express';
+import cors from 'cors';
 
 import { appRoutes } from './routes/appRoutes.js';
 
@@ -10,6 +11,7 @@ const app = express();
 const PORT = process.env['PORT'] || 3001;
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -23,7 +25,7 @@ const greeting = (name: string): string => {
 
 const startServer = async (): Promise<void> => {
   try {
-    console.log('🚀 Team 3 Job App Frontend is starting...');
+    console.log('🚀 Team 3 Job App Backend is starting...');
 
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);
@@ -36,9 +38,7 @@ const startServer = async (): Promise<void> => {
   }
 };
 
-// Only run server if this file is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  await startServer();
-}
+// Start the server
+await startServer();
 
 export { app, greeting, startServer };
