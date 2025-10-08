@@ -14,4 +14,8 @@ router.get('/greeting', (req, res) => appController.getGreeting(req, res));
 
 router.get('/jobs', async (req, res) => appController.getJobs(req, res));
 
+router.get('/jobs/:id', async (req, res) => appController.getJobById(req, res));
+
+router.put('/jobs/:id', async (req, res) => appController.updateJobRole(req, res));
+
 export { router as appRoutes };

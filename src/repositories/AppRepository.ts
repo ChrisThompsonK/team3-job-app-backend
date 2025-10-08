@@ -67,4 +67,69 @@ export class AppRepository {
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId));
     return jobs;
   }
+
+  async getJobById(jobRoleId: number): Promise<JobRoleWithDetails | null> {
+    // Query a single job role by ID with capability and band names
+    const job = await db
+      .select({
+        jobRoleId: jobRoles.jobRoleId,
+        roleName: jobRoles.roleName,
+        location: jobRoles.location,
+        closingDate: jobRoles.closingDate,
+        capabilityName: capabilities.capabilityName,
+        bandName: bands.bandName,
+      })
+      .from(jobRoles)
+      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .limit(1);
+
+    return job[0] || null;
+  }
+
+  async updateJobRole(
+    jobRoleId: number,
+    updates: Partial<{
+      roleName: string;
+      location: string;
+      capabilityId: number;
+      bandId: number;
+      closingDate: string;
+    }>
+  ): Promise<JobRoleWithDetails | null> {
+    // First check if the job role exists
+    const existingJob = await db
+      .select({ jobRoleId: jobRoles.jobRoleId })
+      .from(jobRoles)
+      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .limit(1);
+
+    if (!existingJob[0]) {
+      return null;
+    }
+
+    // Update the job role in the database
+    await db.update(jobRoles).set(updates).where(eq(jobRoles.jobRoleId, jobRoleId));
+
+    console.log(`✅ Updated job role ${jobRoleId} in database:`, updates);
+
+    // Fetch and return the updated job role with details
+    const updatedJob = await db
+      .select({
+        jobRoleId: jobRoles.jobRoleId,
+        roleName: jobRoles.roleName,
+        location: jobRoles.location,
+        closingDate: jobRoles.closingDate,
+        capabilityName: capabilities.capabilityName,
+        bandName: bands.bandName,
+      })
+      .from(jobRoles)
+      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .limit(1);
+
+    return updatedJob[0] || null;
+  }
 }

@@ -32,6 +32,11 @@ This project now implements a proper 3-tier architecture, separating concerns in
 - `GET /health` - Health check endpoint
 - `GET /greeting?name=YourName` - Get personalized greeting
 
+### Job Role Endpoints
+- `GET /jobs` - Get all job roles with capability and band details
+- `GET /jobs/:id` - Get a single job role by ID
+- `PUT /jobs/:id` - Update a specific job role by ID
+
 ## Benefits of This Architecture
 
 1. **Separation of Concerns**: Each layer has a specific responsibility
@@ -72,3 +77,23 @@ curl http://localhost:3000/health
 ```bash
 curl http://localhost:3000/greeting?name=Developer
 ```
+
+### Getting All Jobs
+```bash
+curl http://localhost:3000/jobs
+```
+
+### Getting a Single Job by ID
+```bash
+curl http://localhost:3000/jobs/61
+```
+
+### Updating a Job Role
+```bash
+# Update specific fields (all fields are optional)
+curl -X PUT http://localhost:3000/jobs/1 \
+  -H "Content-Type: application/json" \
+  -d '{"roleName": "Senior Software Engineer", "location": "London", "closingDate": "2025-12-31"}'
+```
+
+**Updatable fields**: `roleName`, `location`, `capabilityId`, `bandId`, `closingDate` (YYYY-MM-DD format)
