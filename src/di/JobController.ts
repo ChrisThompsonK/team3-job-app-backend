@@ -1,6 +1,6 @@
-import { AppController } from '../controllers/AppController';
-import { AppRepository } from '../repositories/AppRepository';
-import { AppService } from '../services/AppService';
+import { AppController } from '../controllers/AppController.js';
+import { AppRepository } from '../repositories/AppRepository.js';
+import { AppService } from '../services/AppService.js';
 
 const appRepository: AppRepository = new AppRepository();
 const appService: AppService = new AppService(appRepository);
