@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
-import type { JobService } from '../services/JobService.js';
 import type { JobRole } from '../models/JobModel.js';
+import type { JobService } from '../services/JobService.js';
 
 export class JobController {
   private jobService: JobService;
@@ -97,22 +97,22 @@ export class JobController {
     }
   }
 
-  async addJobRole(_req:Request,_res:Response):Promise<void>{
-    try{
-      const jobData:JobRole=_req.body;
-      const response =await this.jobService.addJob(jobData);
-      if(response){
+  async addJobRole(_req: Request, _res: Response): Promise<void> {
+    try {
+      const jobData: JobRole = _req.body;
+      const response = await this.jobService.addJob(jobData);
+      if (response) {
         _res.status(201).json({
-          success:true,
-          message:'Job role added successfully'
+          success: true,
+          message: 'Job role added successfully',
         });
-      }else{
+      } else {
         _res.status(400).json({
-          success:false,
-          message:'Failed to add job role'
+          success: false,
+          message: 'Failed to add job role',
         });
       }
-    }catch(error){
+    } catch (error) {
       console.error('Error adding job role:', error);
       _res.status(500).json({
         error: 'Internal server error',
@@ -120,41 +120,41 @@ export class JobController {
       });
     }
   }
-  async deleteJobRole(_req:Request<{id:string}>,_res:Response):Promise<void>{
-    try{
-      if(!_req.params.id){
+  async deleteJobRole(_req: Request<{ id: string }>, _res: Response): Promise<void> {
+    try {
+      if (!_req.params.id) {
         _res.status(400).json({
-          error:'Bad Request',
-          message:'Job ID is required'
+          error: 'Bad Request',
+          message: 'Job ID is required',
         });
         return;
-      };
-      const jobRoleId=parseInt(_req.params.id,10);
-      if(Number.isNaN(jobRoleId)){
+      }
+      const jobRoleId = parseInt(_req.params.id, 10);
+      if (Number.isNaN(jobRoleId)) {
         _res.status(400).json({
-          error:'Bad Request',
-          message:'Job ID must be a valid number'
+          error: 'Bad Request',
+          message: 'Job ID must be a valid number',
         });
         return;
       }
       const response = await this.jobService.deleteJob(jobRoleId);
-      if(response){
+      if (response) {
         _res.status(200).json({
-          success:true,
-          message:'Job role deleted successfully'
-        })
-      }else{
+          success: true,
+          message: 'Job role deleted successfully',
+        });
+      } else {
         _res.status(400).json({
-          success:false,
-          message:'Failed to delete job role'
-        })
+          success: false,
+          message: 'Failed to delete job role',
+        });
       }
-  }catch(error){
+    } catch (error) {
       console.error('Error deleting job role:', error);
       _res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to delete job role',
       });
-  }
+    }
   }
 }

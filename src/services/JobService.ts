@@ -1,7 +1,7 @@
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import type { JobRepository, JobRoleWithDetails } from '../repositories/JobRepository.js';
 import type { JobRole } from '../models/JobModel.js';
+import type { JobRepository, JobRoleWithDetails } from '../repositories/JobRepository.js';
 export class JobService {
   private jobRepository: JobRepository;
 
@@ -47,18 +47,17 @@ export class JobService {
   }
 
   async addJob(jobData: JobRole): Promise<boolean> {
-    const response =await this.jobRepository.addJobRole(jobData);
-    if (response){
+    const response = await this.jobRepository.addJobRole(jobData);
+    if (response) {
       return true;
     }
     return false;
   }
-  async deleteJob(jobRoleId:number):Promise<boolean>{
+  async deleteJob(jobRoleId: number): Promise<boolean> {
     const response = await this.jobRepository.deleteJob(jobRoleId);
-    if (response){
+    if (response) {
       return true;
     }
     return false;
   }
-
 }
