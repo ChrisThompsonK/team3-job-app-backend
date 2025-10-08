@@ -6,14 +6,14 @@ export async function seedJobRoles() {
 
   const jobRolesData = [
     {
-      roleName: 'Software Engineer (Java)',
+      roleName: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1, // Engineering
       bandId: 2, // Associate
       closingDate: '2025-10-31',
     },
     {
-      roleName: 'Senior Software Engineer (.NET)',
+      roleName: 'Software Engineer',
       location: 'Birmingham',
       capabilityId: 1, // Engineering
       bandId: 4, // Senior Consultant
@@ -27,7 +27,7 @@ export async function seedJobRoles() {
       closingDate: '2025-10-25',
     },
     {
-      roleName: 'Principal Data Scientist',
+      roleName: 'Data Scientist',
       location: 'Manchester',
       capabilityId: 2, // Data & AI
       bandId: 5, // Principal Consultant
@@ -41,7 +41,7 @@ export async function seedJobRoles() {
       closingDate: '2025-10-20',
     },
     {
-      roleName: 'Senior Test Analyst',
+      roleName: 'Test Analyst',
       location: 'Glasgow',
       capabilityId: 5, // Testing
       bandId: 4, // Senior Consultant
@@ -62,7 +62,7 @@ export async function seedJobRoles() {
       closingDate: '2025-10-28',
     },
     {
-      roleName: 'Senior UX Designer',
+      roleName: 'UX Designer',
       location: 'Belfast',
       capabilityId: 11, // UX/UI Design
       bandId: 4, // Senior Consultant
@@ -83,14 +83,14 @@ export async function seedJobRoles() {
       closingDate: '2025-10-15',
     },
     {
-      roleName: 'Graduate Software Engineer',
+      roleName: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1, // Engineering
       bandId: 1, // Trainee
       closingDate: '2025-12-15',
     },
     {
-      roleName: 'Senior Project Manager',
+      roleName: 'Project Manager',
       location: 'Birmingham',
       capabilityId: 9, // Project Management
       bandId: 4, // Senior Consultant
