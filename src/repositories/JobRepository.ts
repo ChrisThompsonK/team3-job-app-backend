@@ -3,8 +3,7 @@ import { db } from '../db/database.js';
 import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import type { JobRole } from '../models/JobModel.js';
-import type { JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
+import type { JobRole, JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
 export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
