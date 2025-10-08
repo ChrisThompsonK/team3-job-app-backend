@@ -68,7 +68,7 @@ export class AppController {
   async getJobById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      
+
       if (!id) {
         res.status(400).json({
           error: 'Bad request',

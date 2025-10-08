@@ -1,6 +1,10 @@
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import type { AppRepository, JobRoleWithDetails, JobRoleDetail } from '../repositories/AppRepository.js';
+import type {
+  AppRepository,
+  JobRoleDetail,
+  JobRoleWithDetails,
+} from '../repositories/AppRepository.js';
 
 export class AppService {
   private appRepository: AppRepository;
