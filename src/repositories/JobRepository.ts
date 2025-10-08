@@ -129,7 +129,7 @@ export class JobRepository {
     return true;
   }
 
- async getJobById(id: number): Promise<JobRoleDetail | null> {
+  async getJobById(id: number): Promise<JobRoleDetail | null> {
     // Query a single job role with all details
     const result = await db
       .select({
