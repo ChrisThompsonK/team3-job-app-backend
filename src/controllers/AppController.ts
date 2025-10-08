@@ -112,23 +112,7 @@ export class AppController {
         return;
       }
 
-      const { roleName, location, capabilityId, bandId, closingDate } = req.body;
-
-      const updates: {
-        roleName?: string;
-        location?: string;
-        capabilityId?: number;
-        bandId?: number;
-        closingDate?: string;
-      } = {};
-
-      if (roleName !== undefined) updates.roleName = roleName;
-      if (location !== undefined) updates.location = location;
-      if (capabilityId !== undefined) updates.capabilityId = capabilityId;
-      if (bandId !== undefined) updates.bandId = bandId;
-      if (closingDate !== undefined) updates.closingDate = closingDate;
-
-      const updatedJob = await this.appService.updateJobRole(jobRoleId, updates);
+      const updatedJob = await this.appService.updateJobRole(jobRoleId, req.body);
 
       if (!updatedJob) {
         res.status(404).json({
