@@ -1,4 +1,4 @@
-import { db } from '../db/database.js';
+import { client, db } from '../db/database.js';
 import { jobRoles } from '../db/schema.js';
 
 export async function seedJobRoles() {
@@ -123,6 +123,10 @@ export async function seedJobRoles() {
 
 // Run this file directly to seed job roles
 if (import.meta.url === `file://${process.argv[1]}`) {
-  await seedJobRoles();
-  process.exit(0);
+  try {
+    await seedJobRoles();
+  } finally {
+    // Close the database connection to ensure data is persisted
+    client.close();
+  }
 }

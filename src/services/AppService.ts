@@ -56,18 +56,29 @@ export class AppService {
 
   async updateJobRole(
     jobRoleId: number,
-    updates: {
-      roleName?: string;
-      location?: string;
-      capabilityId?: number;
-      bandId?: number;
-      closingDate?: string;
-    }
+    requestBody: Record<string, unknown>
   ): Promise<JobRoleDetail | null> {
     // Business logic: Validate the job role ID
     if (!jobRoleId || jobRoleId <= 0) {
       throw new Error('Invalid job role ID');
     }
+
+    // Business logic: Extract and validate updates from request body
+    const updates: {
+      roleName?: string;
+      location?: string;
+      capabilityId?: number;
+      bandId?: number;
+      closingDate?: string;
+    } = {};
+
+    if (requestBody['roleName'] !== undefined) updates.roleName = String(requestBody['roleName']);
+    if (requestBody['location'] !== undefined) updates.location = String(requestBody['location']);
+    if (requestBody['capabilityId'] !== undefined)
+      updates.capabilityId = Number(requestBody['capabilityId']);
+    if (requestBody['bandId'] !== undefined) updates.bandId = Number(requestBody['bandId']);
+    if (requestBody['closingDate'] !== undefined)
+      updates.closingDate = String(requestBody['closingDate']);
 
     // Business logic: Ensure at least one field is being updated
     if (Object.keys(updates).length === 0) {
