@@ -142,7 +142,8 @@ export class AppController {
     } catch (error) {
       console.error('Error updating job role:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to update job role';
-      const statusCode = errorMessage.includes('Invalid') || errorMessage.includes('No updates') ? 400 : 500;
+      const statusCode =
+        errorMessage.includes('Invalid') || errorMessage.includes('No updates') ? 400 : 500;
 
       res.status(statusCode).json({
         error: statusCode === 400 ? 'Bad request' : 'Internal server error',

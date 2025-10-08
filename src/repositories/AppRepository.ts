@@ -110,10 +110,7 @@ export class AppRepository {
     }
 
     // Update the job role in the database
-    await db
-      .update(jobRoles)
-      .set(updates)
-      .where(eq(jobRoles.jobRoleId, jobRoleId));
+    await db.update(jobRoles).set(updates).where(eq(jobRoles.jobRoleId, jobRoleId));
 
     console.log(`✅ Updated job role ${jobRoleId} in database:`, updates);
 
