@@ -67,22 +67,32 @@ export class AppController {
 
   async getJobById(req: Request, res: Response): Promise<void> {
     try {
-      const jobRoleId = Number.parseInt(req.params['id'] || '', 10);
+      const { id } = req.params;
 
-      if (Number.isNaN(jobRoleId)) {
+      if (!id) {
         res.status(400).json({
           error: 'Bad request',
-          message: 'Invalid job role ID',
+          message: 'Job ID is required',
         });
         return;
       }
 
-      const job = await this.appService.fetchJobById(jobRoleId);
+      const jobId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(jobId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid job ID',
+        });
+        return;
+      }
+
+      const job = await this.appService.fetchJobById(jobId);
 
       if (!job) {
         res.status(404).json({
           error: 'Not found',
-          message: `Job role with ID ${jobRoleId} not found`,
+          message: `Job with ID ${jobId} not found`,
         });
         return;
       }

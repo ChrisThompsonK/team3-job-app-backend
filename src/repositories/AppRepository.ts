@@ -13,6 +13,20 @@ export type JobRoleWithDetails = {
   bandName: string | null;
 };
 
+export type JobRoleDetail = {
+  jobRoleId: number;
+  roleName: string;
+  location: string;
+  capabilityName: string | null;
+  bandName: string | null;
+  closingDate: string;
+  description: string | null;
+  responsibilities: string | null;
+  jobSpecUrl: string | null;
+  status: string;
+  openPositions: number;
+};
+
 export class AppRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
@@ -68,24 +82,29 @@ export class AppRepository {
     return jobs;
   }
 
-  async getJobById(jobRoleId: number): Promise<JobRoleWithDetails | null> {
-    // Query a single job role by ID with capability and band names
-    const job = await db
+  async getJobById(id: number): Promise<JobRoleDetail | null> {
+    // Query a single job role with all details
+    const result = await db
       .select({
         jobRoleId: jobRoles.jobRoleId,
         roleName: jobRoles.roleName,
         location: jobRoles.location,
-        closingDate: jobRoles.closingDate,
         capabilityName: capabilities.capabilityName,
         bandName: bands.bandName,
+        closingDate: jobRoles.closingDate,
+        description: jobRoles.description,
+        responsibilities: jobRoles.responsibilities,
+        jobSpecUrl: jobRoles.jobSpecUrl,
+        status: jobRoles.status,
+        openPositions: jobRoles.openPositions,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .where(eq(jobRoles.jobRoleId, id))
       .limit(1);
 
-    return job[0] || null;
+    return result[0] ?? null;
   }
 
   async updateJobRole(
@@ -97,7 +116,7 @@ export class AppRepository {
       bandId: number;
       closingDate: string;
     }>
-  ): Promise<JobRoleWithDetails | null> {
+  ): Promise<JobRoleDetail | null> {
     // First check if the job role exists
     const existingJob = await db
       .select({ jobRoleId: jobRoles.jobRoleId })
@@ -120,9 +139,14 @@ export class AppRepository {
         jobRoleId: jobRoles.jobRoleId,
         roleName: jobRoles.roleName,
         location: jobRoles.location,
-        closingDate: jobRoles.closingDate,
         capabilityName: capabilities.capabilityName,
         bandName: bands.bandName,
+        closingDate: jobRoles.closingDate,
+        description: jobRoles.description,
+        responsibilities: jobRoles.responsibilities,
+        jobSpecUrl: jobRoles.jobSpecUrl,
+        status: jobRoles.status,
+        openPositions: jobRoles.openPositions,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))

@@ -1,6 +1,10 @@
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import type { AppRepository, JobRoleWithDetails } from '../repositories/AppRepository.js';
+import type {
+  AppRepository,
+  JobRoleDetail,
+  JobRoleWithDetails,
+} from '../repositories/AppRepository.js';
 
 export class AppService {
   private appRepository: AppRepository;
@@ -41,19 +45,19 @@ export class AppService {
     return await this.appRepository.getAllJobs();
   }
 
-  async fetchJobById(jobRoleId: number): Promise<JobRoleWithDetails | null> {
+  async fetchJobById(id: number): Promise<JobRoleDetail | null> {
     // Business logic: Validate the job role ID
-    if (!jobRoleId || jobRoleId <= 0) {
+    if (!id || id <= 0) {
       throw new Error('Invalid job role ID');
     }
 
-    return await this.appRepository.getJobById(jobRoleId);
+    return await this.appRepository.getJobById(id);
   }
 
   async updateJobRole(
     jobRoleId: number,
     requestBody: Record<string, unknown>
-  ): Promise<JobRoleWithDetails | null> {
+  ): Promise<JobRoleDetail | null> {
     // Business logic: Validate the job role ID
     if (!jobRoleId || jobRoleId <= 0) {
       throw new Error('Invalid job role ID');
