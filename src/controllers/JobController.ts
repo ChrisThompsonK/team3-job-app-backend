@@ -9,50 +9,6 @@ export class JobController {
     this.jobService = jobService;
   }
 
-  async getRoot(_req: Request, res: Response): Promise<void> {
-    try {
-      const appInfo = await this.jobService.getApplicationInfo();
-      res.json(appInfo);
-    } catch (error) {
-      console.error('Error getting app info:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to get application information',
-      });
-    }
-  }
-
-  async getHealth(_req: Request, res: Response): Promise<void> {
-    try {
-      const healthInfo = await this.jobService.getHealthStatus();
-      res.json(healthInfo);
-    } catch (error) {
-      console.error('Error getting health status:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to get health status',
-      });
-    }
-  }
-
-  async getGreeting(req: Request, res: Response): Promise<void> {
-    try {
-      const { name } = req.query;
-      const greeting = await this.jobService.generateGreeting((name as string) || 'Developer');
-
-      res.json({
-        greeting,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error('Error generating greeting:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to generate greeting',
-      });
-    }
-  }
-
   async getJobs(_req: Request, res: Response): Promise<void> {
     try {
       const jobs = await this.jobService.fetchJobs();

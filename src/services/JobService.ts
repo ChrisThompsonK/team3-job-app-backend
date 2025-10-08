@@ -1,5 +1,3 @@
-import type { AppInfo } from '../models/AppInfo.js';
-import type { HealthInfo } from '../models/HealthInfo.js';
 import type { JobRole, JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 export class JobService {
@@ -9,21 +7,6 @@ export class JobService {
     this.jobRepository = jobRepository;
   }
 
-  async getApplicationInfo(): Promise<AppInfo> {
-    return await this.jobRepository.getAppInfo();
-  }
-
-  async getHealthStatus(): Promise<HealthInfo> {
-    const healthInfo = await this.jobRepository.getHealthInfo();
-
-    // Business logic: Add additional health checks here
-    if (healthInfo.uptime > 86400) {
-      // More than 24 hours
-      healthInfo.status = 'healthy - long running';
-    }
-
-    return healthInfo;
-  }
   async updateJobRole(
     jobRoleId: number,
     requestBody: Record<string, unknown>

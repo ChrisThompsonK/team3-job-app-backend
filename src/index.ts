@@ -9,7 +9,7 @@ setupApp(app);
 
 // Routes
 app.use('/', jobRoutes);
-app.get('/health', (_req, res) => {
+app.get('/', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 

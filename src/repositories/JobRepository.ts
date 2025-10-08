@@ -4,30 +4,7 @@ import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 import type { JobRole } from '../models/JobModel.js';
-
-export type JobRoleWithDetails = {
-  jobRoleId: number;
-  roleName: string;
-  location: string;
-  closingDate: string;
-  capabilityName: string | null;
-  bandName: string | null;
-};
-
-export type JobRoleDetail = {
-  jobRoleId: number;
-  roleName: string;
-  location: string;
-  capabilityName: string | null;
-  bandName: string | null;
-  closingDate: string;
-  description: string | null;
-  responsibilities: string | null;
-  jobSpecUrl: string | null;
-  status: string;
-  openPositions: number;
-};
-
+import type { JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
 export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
