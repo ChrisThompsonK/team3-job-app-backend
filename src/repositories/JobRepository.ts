@@ -124,7 +124,7 @@ export class JobRepository {
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .where(eq(jobRoles.jobRoleId, id))
+      .where(and(eq(jobRoles.jobRoleId, id), eq(jobRoles.deleted, 0)))
       .limit(1);
 
     return result[0] ?? null;
@@ -140,11 +140,11 @@ export class JobRepository {
       closingDate: string;
     }>
   ): Promise<JobRoleDetail | null> {
-    // First check if the job role exists
+    // First check if the job role exists and is not deleted
     const existingJob = await db
       .select({ jobRoleId: jobRoles.jobRoleId })
       .from(jobRoles)
-      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)))
       .limit(1);
 
     if (!existingJob[0]) {
@@ -152,7 +152,10 @@ export class JobRepository {
     }
 
     // Update the job role in the database
-    await db.update(jobRoles).set(updates).where(eq(jobRoles.jobRoleId, jobRoleId));
+    await db
+      .update(jobRoles)
+      .set(updates)
+      .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)));
 
     console.log(`✅ Updated job role ${jobRoleId} in database:`, updates);
 
@@ -174,7 +177,7 @@ export class JobRepository {
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)))
       .limit(1);
 
     return updatedJob[0] || null;

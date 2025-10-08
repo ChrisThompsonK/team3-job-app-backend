@@ -144,7 +144,7 @@ export class JobController {
         return;
       }
       const job = await this.jobService.getJobById(jobRoleId);
-      if (job.length === 0) {
+      if (!job) {
         _res.status(404).json({
           error: 'Not Found',
           message: `Job with ID ${jobRoleId} not found`,
