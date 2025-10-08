@@ -8,6 +8,13 @@
       "when": 1759493565322,
       "tag": "0000_perpetual_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1759920649431,
+      "tag": "0001_high_nicolaos",
+      "breakpoints": true
     }
   ]
 }

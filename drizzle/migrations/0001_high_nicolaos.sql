@@ -1,0 +1,1 @@
+ALTER TABLE `job_roles` ADD `deleted` integer DEFAULT 0 NOT NULL;

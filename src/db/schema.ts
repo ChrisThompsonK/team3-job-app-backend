@@ -20,6 +20,7 @@ export const jobRoles = sqliteTable('job_roles', {
   capabilityId: integer('capabilityId').references(() => capabilities.capabilityId),
   bandId: integer('bandId').references(() => bands.bandId),
   closingDate: text('closingDate').notNull(), // Using text for date, you can also use integer for timestamp
+  deleted: integer('deleted').default(0).notNull(), // Soft delete flag
 });
 
 // Export all tables for use in queries
