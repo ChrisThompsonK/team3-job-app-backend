@@ -16,6 +16,6 @@ router.get('/jobs', async (req, res) => jobController.getJobs(req, res));
 
 router.get('/jobs/:id', async (req, res) => jobController.getJobByID(req, res));
 
-router.post('/job', async(req ,res)=> jobController.addJobRole(req,res));
-router.delete('/job/:id', async(req ,res)=> jobController.deleteJobRole(req,res));
+router.post('/job', async (req, res) => jobController.addJobRole(req, res));
+router.delete('/job/:id', async (req, res) => jobController.deleteJobRole(req, res));
 export { router as jobRoutes };

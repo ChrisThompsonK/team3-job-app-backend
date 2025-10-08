@@ -3,7 +3,7 @@ import { db } from '../db/database.js';
 import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import  type {JobRole}  from '../models/JobModel.js';
+import type { JobRole } from '../models/JobModel.js';
 
 export type JobRoleWithDetails = {
   jobRoleId: number;
@@ -100,23 +100,30 @@ export class JobRepository {
       .where(eq(jobRoles.jobRoleId, jobRoleID));
     return job;
   }
-  async addJobRole(jobRole:JobRole):Promise<boolean>{
-    const result = await db.insert(jobRoles).values({
-      roleName:jobRole.roleName,
-      location:jobRole.location,
-      closingDate:jobRole.closingDate,
-      capabilityId:jobRole.capabilityId,
-      bandId:jobRole.bandId
-    }).returning();
-    if(result.length===0){
+  async addJobRole(jobRole: JobRole): Promise<boolean> {
+    const result = await db
+      .insert(jobRoles)
+      .values({
+        roleName: jobRole.roleName,
+        location: jobRole.location,
+        closingDate: jobRole.closingDate,
+        capabilityId: jobRole.capabilityId,
+        bandId: jobRole.bandId,
+      })
+      .returning();
+    if (result.length === 0) {
       return false;
     }
     return true;
   }
 
-  async deleteJob(jobRoleId:number):Promise<boolean>{
-    const result = await db.update(jobRoles).set({deleted:1}).where(eq(jobRoles.jobRoleId,jobRoleId)).returning();
-    if(result.length===0){
+  async deleteJob(jobRoleId: number): Promise<boolean> {
+    const result = await db
+      .update(jobRoles)
+      .set({ deleted: 1 })
+      .where(eq(jobRoles.jobRoleId, jobRoleId))
+      .returning();
+    if (result.length === 0) {
       return false;
     }
     return true;

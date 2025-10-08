@@ -143,12 +143,8 @@
           "name": "job_roles_capabilityId_capabilities_capabilityId_fk",
           "tableFrom": "job_roles",
           "tableTo": "capabilities",
-          "columnsFrom": [
-            "capabilityId"
-          ],
-          "columnsTo": [
-            "capabilityId"
-          ],
+          "columnsFrom": ["capabilityId"],
+          "columnsTo": ["capabilityId"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -156,12 +152,8 @@
           "name": "job_roles_bandId_bands_bandId_fk",
           "tableFrom": "job_roles",
           "tableTo": "bands",
-          "columnsFrom": [
-            "bandId"
-          ],
-          "columnsTo": [
-            "bandId"
-          ],
+          "columnsFrom": ["bandId"],
+          "columnsTo": ["bandId"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
