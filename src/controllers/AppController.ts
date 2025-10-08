@@ -64,4 +64,46 @@ export class AppController {
       });
     }
   }
+
+  async getJobById(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Job ID is required',
+        });
+        return;
+      }
+
+      const jobId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(jobId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid job ID',
+        });
+        return;
+      }
+
+      const job = await this.appService.fetchJobById(jobId);
+
+      if (!job) {
+        res.status(404).json({
+          error: 'Not found',
+          message: `Job with ID ${jobId} not found`,
+        });
+        return;
+      }
+
+      res.json(job);
+    } catch (error) {
+      console.error('Error fetching job by ID:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch job',
+      });
+    }
+  }
 }

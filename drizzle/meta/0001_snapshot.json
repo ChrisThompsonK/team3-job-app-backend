@@ -1,0 +1,182 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "dd2c1d02-a0dd-40ac-9c9f-fae7e156aa11",
+  "prevId": "08fa0b3b-a854-4827-b636-2f0fd4f7fcc8",
+  "tables": {
+    "bands": {
+      "name": "bands",
+      "columns": {
+        "bandId": {
+          "name": "bandId",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "bandName": {
+          "name": "bandName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "capabilities": {
+      "name": "capabilities",
+      "columns": {
+        "capabilityId": {
+          "name": "capabilityId",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "capabilityName": {
+          "name": "capabilityName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "job_roles": {
+      "name": "job_roles",
+      "columns": {
+        "jobRoleId": {
+          "name": "jobRoleId",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "roleName": {
+          "name": "roleName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "capabilityId": {
+          "name": "capabilityId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "bandId": {
+          "name": "bandId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "closingDate": {
+          "name": "closingDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "responsibilities": {
+          "name": "responsibilities",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "jobSpecUrl": {
+          "name": "jobSpecUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Open'"
+        },
+        "openPositions": {
+          "name": "openPositions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "job_roles_capabilityId_capabilities_capabilityId_fk": {
+          "name": "job_roles_capabilityId_capabilities_capabilityId_fk",
+          "tableFrom": "job_roles",
+          "tableTo": "capabilities",
+          "columnsFrom": [
+            "capabilityId"
+          ],
+          "columnsTo": [
+            "capabilityId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "job_roles_bandId_bands_bandId_fk": {
+          "name": "job_roles_bandId_bands_bandId_fk",
+          "tableFrom": "job_roles",
+          "tableTo": "bands",
+          "columnsFrom": [
+            "bandId"
+          ],
+          "columnsTo": [
+            "bandId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

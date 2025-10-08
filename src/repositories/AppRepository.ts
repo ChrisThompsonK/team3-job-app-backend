@@ -13,6 +13,20 @@ export type JobRoleWithDetails = {
   bandName: string | null;
 };
 
+export type JobRoleDetail = {
+  jobRoleId: number;
+  roleName: string;
+  location: string;
+  capabilityName: string | null;
+  bandName: string | null;
+  closingDate: string;
+  description: string | null;
+  responsibilities: string | null;
+  jobSpecUrl: string | null;
+  status: string;
+  openPositions: number;
+};
+
 export class AppRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
@@ -66,5 +80,30 @@ export class AppRepository {
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId));
     return jobs;
+  }
+
+  async getJobById(id: number): Promise<JobRoleDetail | null> {
+    // Query a single job role with all details
+    const result = await db
+      .select({
+        jobRoleId: jobRoles.jobRoleId,
+        roleName: jobRoles.roleName,
+        location: jobRoles.location,
+        capabilityName: capabilities.capabilityName,
+        bandName: bands.bandName,
+        closingDate: jobRoles.closingDate,
+        description: jobRoles.description,
+        responsibilities: jobRoles.responsibilities,
+        jobSpecUrl: jobRoles.jobSpecUrl,
+        status: jobRoles.status,
+        openPositions: jobRoles.openPositions,
+      })
+      .from(jobRoles)
+      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .where(eq(jobRoles.jobRoleId, id))
+      .limit(1);
+
+    return result[0] ?? null;
   }
 }
