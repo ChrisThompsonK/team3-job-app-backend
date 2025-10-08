@@ -1,3 +1,4 @@
+import { client } from '../db/database.js';
 import { seedBands } from './seedBands.js';
 import { seedCapabilities } from './seedCapabilities.js';
 import { seedJobRoles } from './seedJobRoles.js';
@@ -14,12 +15,14 @@ export async function runAllSeeds() {
     console.log('\n🎉 All seeds completed successfully!');
   } catch (error) {
     console.error('\n❌ Seeding failed:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
 // Run this file directly to seed all tables
-if (import.meta.url === `file://${process.argv[1]}`) {
+try {
   await runAllSeeds();
-  process.exit(0);
+} finally {
+  // Close the database connection to ensure data is persisted
+  client.close();
 }
