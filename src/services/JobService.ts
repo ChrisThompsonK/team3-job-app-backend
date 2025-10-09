@@ -70,9 +70,9 @@ export class JobService {
     return await this.jobRepository.getAllJobs();
   }
 
-  async getJobById(jobID: number): Promise<JobRoleWithDetails[]> {
-    const jobs = await this.jobRepository.getJobByID(jobID);
-    return jobs;
+  async getJobById(jobID: number): Promise<JobRoleDetail | null> {
+    const job = await this.jobRepository.getJobById(jobID);
+    return job;
   }
 
   async addJob(jobData: JobRole): Promise<JobRoleDetail | null> {
