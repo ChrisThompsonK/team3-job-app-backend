@@ -46,7 +46,7 @@ export class JobController {
 
       const job = await this.jobService.getJobById(jobId);
 
-      if (!job ) {
+      if (!job) {
         res.status(404).json({
           error: 'Not found',
           message: `Job with ID ${jobId} not found`,
