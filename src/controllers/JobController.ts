@@ -46,7 +46,7 @@ export class JobController {
 
       const job = await this.jobService.getJobById(jobId);
 
-      if (!job || job.length === 0) {
+      if (!job ) {
         res.status(404).json({
           error: 'Not found',
           message: `Job with ID ${jobId} not found`,
@@ -55,7 +55,7 @@ export class JobController {
       }
 
       // Return the first (and only) job object, not an array
-      res.json(job[0]);
+      res.json(job);
     } catch (error) {
       console.error('Error fetching job by ID:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch job';
