@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { JobRole, JobRoleCreated } from '../models/JobModel.js';
+import type { JobRole, JobRoleDetail } from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 import { JobService } from './JobService.js';
 
@@ -23,15 +23,18 @@ describe('JobService.addJob', () => {
       closingDate: '2025-12-31',
     };
 
-    const mockCreatedJob: JobRoleCreated = {
+    const mockCreatedJob: JobRoleDetail = {
       jobRoleId: 1,
       roleName: 'Software Engineer',
       location: 'Belfast',
-      capabilityId: 1,
-      bandId: 2,
       capabilityName: 'Engineering',
       bandName: 'Associate',
       closingDate: '2025-12-31',
+      description: null,
+      responsibilities: null,
+      jobSpecUrl: null,
+      status: 'Open',
+      openPositions: 1,
     };
 
     vi.mocked(mockRepository.addJobRole!).mockResolvedValue(mockCreatedJob);
@@ -56,15 +59,18 @@ describe('JobService.addJob', () => {
       openPositions: 3,
     };
 
-    const mockCreatedJob: JobRoleCreated = {
+    const mockCreatedJob: JobRoleDetail = {
       jobRoleId: 2,
       roleName: 'Senior Software Engineer',
       location: 'London',
-      capabilityId: 1,
-      bandId: 3,
       capabilityName: 'Engineering',
       bandName: 'Senior Associate',
       closingDate: '2025-12-31',
+      description: 'A senior role requiring extensive experience',
+      responsibilities: 'Lead development projects',
+      jobSpecUrl: 'https://example.com/job-spec.pdf',
+      status: 'Open',
+      openPositions: 3,
     };
 
     vi.mocked(mockRepository.addJobRole!).mockResolvedValue(mockCreatedJob);
@@ -235,15 +241,18 @@ describe('JobService.addJob', () => {
       closingDate: todayString,
     };
 
-    const mockCreatedJob: JobRoleCreated = {
+    const mockCreatedJob: JobRoleDetail = {
       jobRoleId: 3,
       roleName: 'Software Engineer',
       location: 'Belfast',
-      capabilityId: 1,
-      bandId: 2,
       capabilityName: 'Engineering',
       bandName: 'Associate',
       closingDate: todayString,
+      description: null,
+      responsibilities: null,
+      jobSpecUrl: null,
+      status: 'Open',
+      openPositions: 1,
     };
 
     vi.mocked(mockRepository.addJobRole!).mockResolvedValue(mockCreatedJob);
