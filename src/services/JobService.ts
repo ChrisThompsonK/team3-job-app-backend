@@ -1,4 +1,10 @@
-import type { JobRole, JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
+import type {
+  Band,
+  Capability,
+  JobRole,
+  JobRoleDetail,
+  JobRoleWithDetails,
+} from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 export class JobService {
   private jobRepository: JobRepository;
@@ -69,18 +75,65 @@ export class JobService {
     return jobs;
   }
 
-  async addJob(jobData: JobRole): Promise<boolean> {
-    const response = await this.jobRepository.addJobRole(jobData);
-    if (response) {
-      return true;
+  async addJob(jobData: JobRole): Promise<JobRoleDetail | null> {
+    // Business logic: Validate required fields
+    if (!jobData.roleName || jobData.roleName.trim() === '') {
+      throw new Error('Role name is required');
     }
-    return false;
+
+    if (!jobData.location || jobData.location.trim() === '') {
+      throw new Error('Location is required');
+    }
+
+    if (!jobData.capabilityId || jobData.capabilityId <= 0) {
+      throw new Error('Valid capability ID is required');
+    }
+
+    if (!jobData.bandId || jobData.bandId <= 0) {
+      throw new Error('Valid band ID is required');
+    }
+
+    if (!jobData.closingDate) {
+      throw new Error('Closing date is required');
+    }
+
+    // Business logic: Validate closing date format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(jobData.closingDate)) {
+      throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+    }
+
+    // Business logic: Validate closing date is in the future
+    const closingDate = new Date(jobData.closingDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (closingDate < today) {
+      throw new Error('Closing date must be in the future');
+    }
+
+    // Business logic: Validate openPositions if provided
+    if (jobData.openPositions !== undefined && jobData.openPositions <= 0) {
+      throw new Error('Open positions must be greater than 0');
+    }
+
+    const createdJob = await this.jobRepository.addJobRole(jobData);
+    return createdJob;
   }
+
   async deleteJob(jobRoleId: number): Promise<boolean> {
     const response = await this.jobRepository.deleteJob(jobRoleId);
     if (response) {
       return true;
     }
     return false;
+  }
+
+  async getCapabilities(): Promise<Capability[]> {
+    return await this.jobRepository.getAllCapabilities();
+  }
+
+  async getBands(): Promise<Band[]> {
+    return await this.jobRepository.getAllBands();
   }
 }

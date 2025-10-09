@@ -5,6 +5,11 @@ export interface JobRole {
   closingDate: string;
   capabilityId: number;
   bandId: number;
+  description?: string;
+  responsibilities?: string;
+  jobSpecUrl?: string;
+  status?: string;
+  openPositions?: number;
 }
 export type JobRoleWithDetails = {
   jobRoleId: number;
@@ -13,6 +18,17 @@ export type JobRoleWithDetails = {
   closingDate: string;
   capabilityName: string | null;
   bandName: string | null;
+};
+
+export type JobRoleCreated = {
+  jobRoleId: number;
+  roleName: string;
+  location: string;
+  capabilityId: number | null;
+  bandId: number | null;
+  capabilityName: string | null;
+  bandName: string | null;
+  closingDate: string;
 };
 
 export type JobRoleDetail = {
@@ -28,3 +44,13 @@ export type JobRoleDetail = {
   status: string;
   openPositions: number;
 };
+
+export interface Capability {
+  capabilityId: number;
+  capabilityName: string;
+}
+
+export interface Band {
+  bandId: number;
+  bandName: string;
+}

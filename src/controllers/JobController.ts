@@ -46,7 +46,7 @@ export class JobController {
 
       const job = await this.jobService.getJobById(jobId);
 
-      if (!job) {
+      if (!job || job.length === 0) {
         res.status(404).json({
           error: 'Not found',
           message: `Job with ID ${jobId} not found`,
@@ -54,7 +54,8 @@ export class JobController {
         return;
       }
 
-      res.json(job);
+      // Return the first (and only) job object, not an array
+      res.json(job[0]);
     } catch (error) {
       console.error('Error fetching job by ID:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch job';
@@ -106,23 +107,24 @@ export class JobController {
   async addJobRole(req: Request, res: Response): Promise<void> {
     try {
       const jobData: JobRole = req.body;
-      const response = await this.jobService.addJob(jobData);
-      if (response) {
-        res.status(201).json({
-          success: true,
-          message: 'Job role added successfully',
-        });
-      } else {
-        res.status(400).json({
+
+      const createdJob = await this.jobService.addJob(jobData);
+
+      if (!createdJob) {
+        res.status(500).json({
           success: false,
-          message: 'Failed to add job role',
+          message: 'Failed to create job role',
         });
+        return;
       }
+
+      // Return the created job data instead of just success message
+      res.status(201).json(createdJob);
     } catch (error) {
-      console.error('Error adding job role:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to add job role',
+      console.error('Error in addJob controller:', error);
+      res.status(400).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Error creating job role',
       });
     }
   }
@@ -168,6 +170,32 @@ export class JobController {
       _res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to delete job role',
+      });
+    }
+  }
+
+  async getCapabilities(_req: Request, res: Response): Promise<void> {
+    try {
+      const capabilities = await this.jobService.getCapabilities();
+      res.status(200).json(capabilities);
+    } catch (error) {
+      console.error('Error fetching capabilities:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Failed to fetch capabilities',
+      });
+    }
+  }
+
+  async getBands(_req: Request, res: Response): Promise<void> {
+    try {
+      const bands = await this.jobService.getBands();
+      res.status(200).json(bands);
+    } catch (error) {
+      console.error('Error fetching bands:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Failed to fetch bands',
       });
     }
   }

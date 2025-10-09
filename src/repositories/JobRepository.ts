@@ -3,7 +3,13 @@ import { db } from '../db/database.js';
 import { bands, capabilities, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
-import type { JobRole, JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
+import type {
+  Band,
+  Capability,
+  JobRole,
+  JobRoleDetail,
+  JobRoleWithDetails,
+} from '../models/JobModel.js';
 export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
@@ -76,21 +82,55 @@ export class JobRepository {
       .where(and(eq(jobRoles.jobRoleId, jobRoleID), eq(jobRoles.deleted, 0)));
     return job;
   }
-  async addJobRole(jobRole: JobRole): Promise<boolean> {
-    const result = await db
-      .insert(jobRoles)
-      .values({
-        roleName: jobRole.roleName,
-        location: jobRole.location,
-        closingDate: jobRole.closingDate,
-        capabilityId: jobRole.capabilityId,
-        bandId: jobRole.bandId,
-      })
-      .returning();
-    if (result.length === 0) {
-      return false;
+  async addJobRole(jobRole: JobRole): Promise<JobRoleDetail | null> {
+    try {
+      const [result] = await db
+        .insert(jobRoles)
+        .values({
+          roleName: jobRole.roleName,
+          location: jobRole.location,
+          closingDate: jobRole.closingDate,
+          capabilityId: jobRole.capabilityId,
+          bandId: jobRole.bandId,
+          description: jobRole.description || null,
+          responsibilities: jobRole.responsibilities || null,
+          jobSpecUrl: jobRole.jobSpecUrl || null,
+          status: jobRole.status || 'Open',
+          openPositions: jobRole.openPositions || 1,
+          deleted: 0,
+        })
+        .returning();
+
+      if (!result) {
+        return null;
+      }
+
+      // Fetch the complete job with all details including joined capability and band names
+      const [completeJob] = await db
+        .select({
+          jobRoleId: jobRoles.jobRoleId,
+          roleName: jobRoles.roleName,
+          location: jobRoles.location,
+          capabilityName: capabilities.capabilityName,
+          bandName: bands.bandName,
+          closingDate: jobRoles.closingDate,
+          description: jobRoles.description,
+          responsibilities: jobRoles.responsibilities,
+          jobSpecUrl: jobRoles.jobSpecUrl,
+          status: jobRoles.status,
+          openPositions: jobRoles.openPositions,
+        })
+        .from(jobRoles)
+        .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+        .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+        .where(eq(jobRoles.jobRoleId, result.jobRoleId))
+        .limit(1);
+
+      return completeJob || null;
+    } catch (error) {
+      console.error('Error adding job role:', error);
+      return null;
     }
-    return true;
   }
 
   async deleteJob(jobRoleId: number): Promise<boolean> {
@@ -178,5 +218,29 @@ export class JobRepository {
       .limit(1);
 
     return updatedJob[0] || null;
+  }
+
+  async getAllCapabilities(): Promise<Capability[]> {
+    const result = await db
+      .select({
+        capabilityId: capabilities.capabilityId,
+        capabilityName: capabilities.capabilityName,
+      })
+      .from(capabilities)
+      .orderBy(capabilities.capabilityName);
+
+    return result;
+  }
+
+  async getAllBands(): Promise<Band[]> {
+    const result = await db
+      .select({
+        bandId: bands.bandId,
+        bandName: bands.bandName,
+      })
+      .from(bands)
+      .orderBy(bands.bandName);
+
+    return result;
   }
 }
