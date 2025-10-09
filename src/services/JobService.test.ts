@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { JobRole, JobRoleDetail } from '../models/JobModel.js';
+import type { JobRoleCreate, JobRoleDetails } from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 import { JobService } from './JobService.js';
 
@@ -15,19 +15,21 @@ describe('JobService.addJob', () => {
   });
 
   it('should add a valid job successfully', async () => {
-    const validJob: JobRole = {
-      roleName: 'Software Engineer',
+    const validJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
       closingDate: '2025-12-31',
     };
 
-    const mockCreatedJob: JobRoleDetail = {
-      jobRoleId: 1,
-      roleName: 'Software Engineer',
+    const mockCreatedJob: JobRoleDetails = {
+      id: 1,
+      name: 'Software Engineer',
       location: 'Belfast',
+      capabilityId: 1,
       capabilityName: 'Engineering',
+      bandId: 2,
       bandName: 'Associate',
       closingDate: '2025-12-31',
       description: null,
@@ -46,8 +48,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should add a job with optional fields', async () => {
-    const jobWithOptionals: JobRole = {
-      roleName: 'Senior Software Engineer',
+    const jobWithOptionals: JobRoleCreate = {
+      name: 'Senior Software Engineer',
       location: 'London',
       capabilityId: 1,
       bandId: 3,
@@ -59,11 +61,13 @@ describe('JobService.addJob', () => {
       openPositions: 3,
     };
 
-    const mockCreatedJob: JobRoleDetail = {
-      jobRoleId: 2,
-      roleName: 'Senior Software Engineer',
+    const mockCreatedJob: JobRoleDetails = {
+      id: 2,
+      name: 'Senior Software Engineer',
       location: 'London',
+      capabilityId: 1,
       capabilityName: 'Engineering',
+      bandId: 3,
       bandName: 'Senior Associate',
       closingDate: '2025-12-31',
       description: 'A senior role requiring extensive experience',
@@ -82,8 +86,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for empty role name', async () => {
-    const invalidJob: JobRole = {
-      roleName: '',
+    const invalidJob: JobRoleCreate = {
+      name: '',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -94,8 +98,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for whitespace-only role name', async () => {
-    const invalidJob: JobRole = {
-      roleName: '   ',
+    const invalidJob: JobRoleCreate = {
+      name: '   ',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -106,8 +110,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for empty location', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: '',
       capabilityId: 1,
       bandId: 2,
@@ -118,8 +122,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for invalid capability ID', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 0,
       bandId: 2,
@@ -130,8 +134,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for invalid band ID', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: -1,
@@ -142,8 +146,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for past closing date', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -156,8 +160,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for invalid date format (DD/MM/YYYY)', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -170,8 +174,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for invalid date format (MM-DD-YYYY)', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -184,8 +188,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for invalid openPositions (zero)', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -199,8 +203,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should throw error for invalid openPositions (negative)', async () => {
-    const invalidJob: JobRole = {
-      roleName: 'Software Engineer',
+    const invalidJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -214,8 +218,8 @@ describe('JobService.addJob', () => {
   });
 
   it('should return null when repository fails to add job', async () => {
-    const validJob: JobRole = {
-      roleName: 'Software Engineer',
+    const validJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
@@ -233,19 +237,21 @@ describe('JobService.addJob', () => {
     const today = new Date();
     const todayString = today.toISOString().split('T')[0];
 
-    const validJob: JobRole = {
-      roleName: 'Software Engineer',
+    const validJob: JobRoleCreate = {
+      name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
       closingDate: todayString,
     };
 
-    const mockCreatedJob: JobRoleDetail = {
-      jobRoleId: 3,
-      roleName: 'Software Engineer',
+    const mockCreatedJob: JobRoleDetails = {
+      id: 3,
+      name: 'Software Engineer',
       location: 'Belfast',
+      capabilityId: 1,
       capabilityName: 'Engineering',
+      bandId: 2,
       bandName: 'Associate',
       closingDate: todayString,
       description: null,
@@ -276,9 +282,9 @@ describe('JobService.getCapabilities', () => {
 
   it('should return all capabilities', async () => {
     const mockCapabilities = [
-      { capabilityId: 1, capabilityName: 'Engineering' },
-      { capabilityId: 2, capabilityName: 'Data' },
-      { capabilityId: 3, capabilityName: 'Cyber Security' },
+      { id: 1, name: 'Engineering' },
+      { id: 2, name: 'Data' },
+      { id: 3, name: 'Cyber Security' },
     ];
 
     vi.mocked(mockRepository.getAllCapabilities!).mockResolvedValue(mockCapabilities);
@@ -312,9 +318,9 @@ describe('JobService.getBands', () => {
 
   it('should return all bands', async () => {
     const mockBands = [
-      { bandId: 1, bandName: 'Trainee' },
-      { bandId: 2, bandName: 'Associate' },
-      { bandId: 3, bandName: 'Senior Associate' },
+      { id: 1, name: 'Trainee' },
+      { id: 2, name: 'Associate' },
+      { id: 3, name: 'Senior Associate' },
     ];
 
     vi.mocked(mockRepository.getAllBands!).mockResolvedValue(mockBands);

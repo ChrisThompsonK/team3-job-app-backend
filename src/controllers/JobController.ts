@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { JobRole } from '../models/JobModel.js';
+import type { JobRoleCreate } from '../models/JobModel.js';
 import type { JobService } from '../services/JobService.js';
 
 export class JobController {
@@ -106,7 +106,7 @@ export class JobController {
 
   async addJobRole(req: Request, res: Response): Promise<void> {
     try {
-      const jobData: JobRole = req.body;
+      const jobData: JobRoleCreate = req.body;
 
       const createdJob = await this.jobService.addJob(jobData);
 

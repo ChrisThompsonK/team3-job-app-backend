@@ -1,56 +1,64 @@
+// Base interface with all fields - standardized property names
 export interface JobRole {
-  id?: number;
-  roleName: string;
+  id: number;
+  name: string;
   location: string;
   closingDate: string;
-  capabilityId: number;
-  bandId: number;
-  description?: string;
-  responsibilities?: string;
-  jobSpecUrl?: string;
+  capabilityId: number | null;
+  capabilityName: string | null;
+  bandId: number | null;
+  bandName: string | null;
+  description?: string | null;
+  responsibilities?: string | null;
+  jobSpecUrl?: string | null;
   status?: string;
   openPositions?: number;
 }
-export type JobRoleWithDetails = {
-  jobRoleId: number;
-  roleName: string;
-  location: string;
-  closingDate: string;
-  capabilityName: string | null;
-  bandName: string | null;
-};
 
-export type JobRoleCreated = {
-  jobRoleId: number;
-  roleName: string;
-  location: string;
-  capabilityId: number | null;
-  bandId: number | null;
-  capabilityName: string | null;
-  bandName: string | null;
-  closingDate: string;
-};
-
-export type JobRoleDetail = {
-  jobRoleId: number;
-  roleName: string;
-  location: string;
-  capabilityName: string | null;
-  bandName: string | null;
-  closingDate: string;
+// Full details (extends JobRole)
+export interface JobRoleDetails extends JobRole {
   description: string | null;
   responsibilities: string | null;
   jobSpecUrl: string | null;
   status: string;
   openPositions: number;
-};
+}
 
-export interface Capability {
+// For creating (no id, IDs are required)
+export interface JobRoleCreate {
+  name: string;
+  location: string;
+  closingDate: string;
   capabilityId: number;
-  capabilityName: string;
+  bandId: number;
+  description?: string | null;
+  responsibilities?: string | null;
+  jobSpecUrl?: string | null;
+  status?: string;
+  openPositions?: number;
+}
+
+// For updating (all optional except ID)
+export interface JobRoleUpdate {
+  name?: string;
+  location?: string;
+  closingDate?: string;
+  capabilityId?: number;
+  bandId?: number;
+  description?: string | null;
+  responsibilities?: string | null;
+  jobSpecUrl?: string | null;
+  status?: string;
+  openPositions?: number;
+}
+
+// Capability and Band with standardized names
+export interface Capability {
+  id: number;
+  name: string;
 }
 
 export interface Band {
-  bandId: number;
-  bandName: string;
+  id: number;
+  name: string;
 }

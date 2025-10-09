@@ -2,8 +2,9 @@ import type {
   Band,
   Capability,
   JobRole,
-  JobRoleDetail,
-  JobRoleWithDetails,
+  JobRoleCreate,
+  JobRoleDetails,
+  JobRoleUpdate,
 } from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 export class JobService {
@@ -16,28 +17,31 @@ export class JobService {
   async updateJobRole(
     jobRoleId: number,
     requestBody: Record<string, unknown>
-  ): Promise<JobRoleDetail | null> {
+  ): Promise<JobRoleDetails | null> {
     // Business logic: Validate the job role ID
     if (!jobRoleId || jobRoleId <= 0) {
       throw new Error('Invalid job role ID');
     }
 
-    // Business logic: Extract and validate updates from request body
-    const updates: {
-      roleName?: string;
-      location?: string;
-      capabilityId?: number;
-      bandId?: number;
-      closingDate?: string;
-    } = {};
+    // Business logic: Extract and validate updates from request body - standardized names
+    const updates: JobRoleUpdate = {};
 
-    if (requestBody['roleName'] !== undefined) updates.roleName = String(requestBody['roleName']);
+    if (requestBody['name'] !== undefined) updates.name = String(requestBody['name']);
     if (requestBody['location'] !== undefined) updates.location = String(requestBody['location']);
     if (requestBody['capabilityId'] !== undefined)
       updates.capabilityId = Number(requestBody['capabilityId']);
     if (requestBody['bandId'] !== undefined) updates.bandId = Number(requestBody['bandId']);
     if (requestBody['closingDate'] !== undefined)
       updates.closingDate = String(requestBody['closingDate']);
+    if (requestBody['description'] !== undefined)
+      updates.description = requestBody['description'] ? String(requestBody['description']) : null;
+    if (requestBody['responsibilities'] !== undefined)
+      updates.responsibilities = requestBody['responsibilities'] ? String(requestBody['responsibilities']) : null;
+    if (requestBody['jobSpecUrl'] !== undefined)
+      updates.jobSpecUrl = requestBody['jobSpecUrl'] ? String(requestBody['jobSpecUrl']) : null;
+    if (requestBody['status'] !== undefined) updates.status = String(requestBody['status']);
+    if (requestBody['openPositions'] !== undefined)
+      updates.openPositions = Number(requestBody['openPositions']);
 
     // Business logic: Ensure at least one field is being updated
     if (Object.keys(updates).length === 0) {
@@ -66,18 +70,18 @@ export class JobService {
     return `Hello, ${cleanName}! Welcome to the ${serverName}.`;
   }
 
-  async fetchJobs(): Promise<JobRoleWithDetails[]> {
+  async fetchJobs(): Promise<JobRole[]> {
     return await this.jobRepository.getAllJobs();
   }
 
-  async getJobById(jobID: number): Promise<JobRoleDetail | null> {
+  async getJobById(jobID: number): Promise<JobRoleDetails | null> {
     const job = await this.jobRepository.getJobById(jobID);
     return job;
   }
 
-  async addJob(jobData: JobRole): Promise<JobRoleDetail | null> {
-    // Business logic: Validate required fields
-    if (!jobData.roleName || jobData.roleName.trim() === '') {
+  async addJob(jobData: JobRoleCreate): Promise<JobRoleDetails | null> {
+    // Business logic: Validate required fields - standardized names
+    if (!jobData.name || jobData.name.trim() === '') {
       throw new Error('Role name is required');
     }
 
