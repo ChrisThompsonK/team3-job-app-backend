@@ -179,10 +179,7 @@ export class JobRepository {
     return result[0] ?? null;
   }
 
-  async updateJobRole(
-    jobRoleId: number,
-    updates: JobRoleUpdate
-  ): Promise<JobRoleDetails | null> {
+  async updateJobRole(jobRoleId: number, updates: JobRoleUpdate): Promise<JobRoleDetails | null> {
     // First check if the job role exists and is not deleted
     const existingJob = await db
       .select({ jobRoleId: jobRoles.jobRoleId })
@@ -214,7 +211,8 @@ export class JobRepository {
     if (updates.bandId !== undefined) dbUpdates.bandId = updates.bandId;
     if (updates.closingDate !== undefined) dbUpdates.closingDate = updates.closingDate;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
-    if (updates.responsibilities !== undefined) dbUpdates.responsibilities = updates.responsibilities;
+    if (updates.responsibilities !== undefined)
+      dbUpdates.responsibilities = updates.responsibilities;
     if (updates.jobSpecUrl !== undefined) dbUpdates.jobSpecUrl = updates.jobSpecUrl;
     if (updates.status !== undefined) dbUpdates.status = updates.status;
     if (updates.openPositions !== undefined) dbUpdates.openPositions = updates.openPositions;

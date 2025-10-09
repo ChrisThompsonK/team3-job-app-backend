@@ -36,7 +36,9 @@ export class JobService {
     if (requestBody['description'] !== undefined)
       updates.description = requestBody['description'] ? String(requestBody['description']) : null;
     if (requestBody['responsibilities'] !== undefined)
-      updates.responsibilities = requestBody['responsibilities'] ? String(requestBody['responsibilities']) : null;
+      updates.responsibilities = requestBody['responsibilities']
+        ? String(requestBody['responsibilities'])
+        : null;
     if (requestBody['jobSpecUrl'] !== undefined)
       updates.jobSpecUrl = requestBody['jobSpecUrl'] ? String(requestBody['jobSpecUrl']) : null;
     if (requestBody['status'] !== undefined) updates.status = String(requestBody['status']);
