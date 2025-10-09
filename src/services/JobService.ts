@@ -1,4 +1,11 @@
-import type { JobRole, JobRoleDetail, JobRoleWithDetails } from '../models/JobModel.js';
+import type {
+  Band,
+  Capability,
+  JobRole,
+  JobRoleCreate,
+  JobRoleDetails,
+  JobRoleUpdate,
+} from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 export class JobService {
   private jobRepository: JobRepository;
@@ -10,28 +17,33 @@ export class JobService {
   async updateJobRole(
     jobRoleId: number,
     requestBody: Record<string, unknown>
-  ): Promise<JobRoleDetail | null> {
+  ): Promise<JobRoleDetails | null> {
     // Business logic: Validate the job role ID
     if (!jobRoleId || jobRoleId <= 0) {
       throw new Error('Invalid job role ID');
     }
 
-    // Business logic: Extract and validate updates from request body
-    const updates: {
-      roleName?: string;
-      location?: string;
-      capabilityId?: number;
-      bandId?: number;
-      closingDate?: string;
-    } = {};
+    // Business logic: Extract and validate updates from request body - standardized names
+    const updates: JobRoleUpdate = {};
 
-    if (requestBody['roleName'] !== undefined) updates.roleName = String(requestBody['roleName']);
+    if (requestBody['name'] !== undefined) updates.name = String(requestBody['name']);
     if (requestBody['location'] !== undefined) updates.location = String(requestBody['location']);
     if (requestBody['capabilityId'] !== undefined)
       updates.capabilityId = Number(requestBody['capabilityId']);
     if (requestBody['bandId'] !== undefined) updates.bandId = Number(requestBody['bandId']);
     if (requestBody['closingDate'] !== undefined)
       updates.closingDate = String(requestBody['closingDate']);
+    if (requestBody['description'] !== undefined)
+      updates.description = requestBody['description'] ? String(requestBody['description']) : null;
+    if (requestBody['responsibilities'] !== undefined)
+      updates.responsibilities = requestBody['responsibilities']
+        ? String(requestBody['responsibilities'])
+        : null;
+    if (requestBody['jobSpecUrl'] !== undefined)
+      updates.jobSpecUrl = requestBody['jobSpecUrl'] ? String(requestBody['jobSpecUrl']) : null;
+    if (requestBody['status'] !== undefined) updates.status = String(requestBody['status']);
+    if (requestBody['openPositions'] !== undefined)
+      updates.openPositions = Number(requestBody['openPositions']);
 
     // Business logic: Ensure at least one field is being updated
     if (Object.keys(updates).length === 0) {
@@ -60,27 +72,74 @@ export class JobService {
     return `Hello, ${cleanName}! Welcome to the ${serverName}.`;
   }
 
-  async fetchJobs(): Promise<JobRoleWithDetails[]> {
+  async fetchJobs(): Promise<JobRole[]> {
     return await this.jobRepository.getAllJobs();
   }
 
-  async getJobById(jobID: number): Promise<JobRoleDetail | null> {
+  async getJobById(jobID: number): Promise<JobRoleDetails | null> {
     const job = await this.jobRepository.getJobById(jobID);
     return job;
   }
 
-  async addJob(jobData: JobRole): Promise<boolean> {
-    const response = await this.jobRepository.addJobRole(jobData);
-    if (response) {
-      return true;
+  async addJob(jobData: JobRoleCreate): Promise<JobRoleDetails | null> {
+    // Business logic: Validate required fields - standardized names
+    if (!jobData.name || jobData.name.trim() === '') {
+      throw new Error('Role name is required');
     }
-    return false;
+
+    if (!jobData.location || jobData.location.trim() === '') {
+      throw new Error('Location is required');
+    }
+
+    if (!jobData.capabilityId || jobData.capabilityId <= 0) {
+      throw new Error('Valid capability ID is required');
+    }
+
+    if (!jobData.bandId || jobData.bandId <= 0) {
+      throw new Error('Valid band ID is required');
+    }
+
+    if (!jobData.closingDate) {
+      throw new Error('Closing date is required');
+    }
+
+    // Business logic: Validate closing date format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(jobData.closingDate)) {
+      throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+    }
+
+    // Business logic: Validate closing date is in the future
+    const closingDate = new Date(jobData.closingDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (closingDate < today) {
+      throw new Error('Closing date must be in the future');
+    }
+
+    // Business logic: Validate openPositions if provided
+    if (jobData.openPositions !== undefined && jobData.openPositions <= 0) {
+      throw new Error('Open positions must be greater than 0');
+    }
+
+    const createdJob = await this.jobRepository.addJobRole(jobData);
+    return createdJob;
   }
+
   async deleteJob(jobRoleId: number): Promise<boolean> {
     const response = await this.jobRepository.deleteJob(jobRoleId);
     if (response) {
       return true;
     }
     return false;
+  }
+
+  async getCapabilities(): Promise<Capability[]> {
+    return await this.jobRepository.getAllCapabilities();
+  }
+
+  async getBands(): Promise<Band[]> {
+    return await this.jobRepository.getAllBands();
   }
 }
