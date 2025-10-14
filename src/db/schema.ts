@@ -28,6 +28,32 @@ export const jobRoles = sqliteTable('job_roles', {
   deleted: integer('deleted').default(0).notNull(), // Soft delete flag
 });
 
+// Applicants table
+export const applicants = sqliteTable('Applicants', {
+  applicantID: integer('applicantID').primaryKey({ autoIncrement: true }),
+  username: text('username').notNull(),
+  password: text('password').notNull(),
+  firstName: text('firstName').notNull(),
+  surname: text('surname').notNull(),
+  phoneNumber: integer('phoneNumber').notNull(),
+  emailAddress: text('emailAddress').notNull(),
+  homeAddress: text('homeAddress').notNull(),
+});
+
+// Applications table
+export const applications = sqliteTable('Applications', {
+  applicationID: integer('applicationID').primaryKey({ autoIncrement: true }),
+  applicantID: integer('applicantID').notNull().references(() => applicants.applicantID),
+  jobRoleId: integer('jobRoleId').notNull().references(() => jobRoles.jobRoleId),
+  dateApplied: text('dateApplied').notNull(),
+  status: text('status').notNull().default('Pending'),
+  coverLetter: text('coverLetter'),
+  resumeUrl: text('resumeUrl'),
+  notes: text('notes'),
+  createdAt: text('createdAt').notNull(),
+  updatedAt: text('updatedAt').notNull(),
+});
+
 // Export all tables for use in queries
 export type Capability = typeof capabilities.$inferSelect;
 export type NewCapability = typeof capabilities.$inferInsert;
@@ -37,3 +63,9 @@ export type NewBand = typeof bands.$inferInsert;
 
 export type JobRole = typeof jobRoles.$inferSelect;
 export type NewJobRole = typeof jobRoles.$inferInsert;
+
+export type Applicant = typeof applicants.$inferSelect;
+export type NewApplicant = typeof applicants.$inferInsert;
+
+export type Application = typeof applications.$inferSelect;
+export type NewApplication = typeof applications.$inferInsert;
