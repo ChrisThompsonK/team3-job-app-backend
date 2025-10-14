@@ -43,8 +43,12 @@ export const applicants = sqliteTable('Applicants', {
 // Applications table
 export const applications = sqliteTable('Applications', {
   applicationID: integer('applicationID').primaryKey({ autoIncrement: true }),
-  applicantID: integer('applicantID').notNull().references(() => applicants.applicantID),
-  jobRoleId: integer('jobRoleId').notNull().references(() => jobRoles.jobRoleId),
+  applicantID: integer('applicantID')
+    .notNull()
+    .references(() => applicants.applicantID),
+  jobRoleId: integer('jobRoleId')
+    .notNull()
+    .references(() => jobRoles.jobRoleId),
   dateApplied: text('dateApplied').notNull(),
   status: text('status').notNull().default('Pending'),
   coverLetter: text('coverLetter'),
