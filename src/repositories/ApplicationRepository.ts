@@ -17,6 +17,7 @@ export class ApplicationRepository {
         ...applicationData,
         status: 'Pending', // Default status
         createdAt: now,
+        updatedAt: now,
       })
       .returning();
 
@@ -67,9 +68,11 @@ export class ApplicationRepository {
     applicationID: number,
     status: string
   ): Promise<Application | null> {
+    const now = new Date().toISOString();
+
     const result = await db
       .update(applications)
-      .set({ status })
+      .set({ status, updatedAt: now })
       .where(eq(applications.applicationID, applicationID))
       .returning();
 

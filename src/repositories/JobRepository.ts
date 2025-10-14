@@ -69,7 +69,9 @@ export class JobRepository {
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
       .where(eq(jobRoles.deleted, 0));
     const endTime = Date.now();
-    console.log(`JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`);
+    console.log(
+      `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
+    );
     return jobs;
   }
 

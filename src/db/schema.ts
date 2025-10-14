@@ -40,6 +40,7 @@ export const applications = sqliteTable('Applications', {
   coverLetter: text('coverLetter'),
   notes: text('notes'),
   createdAt: text('createdAt').notNull(),
+  updatedAt: text('updatedAt').notNull(),
 });
 
 // Export all tables for use in queries

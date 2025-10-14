@@ -8,6 +8,7 @@ export interface Application {
   coverLetter?: string | null;
   notes?: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 // For creating a new application (no ID, no timestamp)
