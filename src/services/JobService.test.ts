@@ -5,13 +5,23 @@ import { JobService } from './JobService.js';
 
 describe('JobService.addJob', () => {
   let jobService: JobService;
-  let mockRepository: Partial<JobRepository>;
+  let mockRepository: JobRepository;
 
   beforeEach(() => {
     mockRepository = {
       addJobRole: vi.fn(),
-    };
-    jobService = new JobService(mockRepository as JobRepository);
+      updateJobRole: vi.fn(),
+      getAllJobs: vi.fn(),
+      getJobById: vi.fn(),
+      getJobByID: vi.fn(),
+      deleteJob: vi.fn(),
+      getAllCapabilities: vi.fn(),
+      getAllBands: vi.fn(),
+      getServerName: vi.fn(),
+      getAppInfo: vi.fn(),
+      getHealthInfo: vi.fn(),
+    } as JobRepository;
+    jobService = new JobService(mockRepository);
   });
 
   it('should add a valid job successfully', async () => {
@@ -39,7 +49,7 @@ describe('JobService.addJob', () => {
       openPositions: 1,
     };
 
-    vi.mocked(mockRepository.addJobRole!).mockResolvedValue(mockCreatedJob);
+    vi.mocked(mockRepository.addJobRole).mockResolvedValue(mockCreatedJob);
 
     const result = await jobService.addJob(validJob);
 
@@ -77,7 +87,7 @@ describe('JobService.addJob', () => {
       openPositions: 3,
     };
 
-    vi.mocked(mockRepository.addJobRole!).mockResolvedValue(mockCreatedJob);
+    vi.mocked(mockRepository.addJobRole).mockResolvedValue(mockCreatedJob);
 
     const result = await jobService.addJob(jobWithOptionals);
 
@@ -226,7 +236,7 @@ describe('JobService.addJob', () => {
       closingDate: '2025-12-31',
     };
 
-    vi.mocked(mockRepository.addJobRole!).mockResolvedValue(null);
+    vi.mocked(mockRepository.addJobRole).mockResolvedValue(null);
 
     const result = await jobService.addJob(validJob);
 
@@ -261,7 +271,7 @@ describe('JobService.addJob', () => {
       openPositions: 1,
     };
 
-    vi.mocked(mockRepository.addJobRole!).mockResolvedValue(mockCreatedJob);
+    vi.mocked(mockRepository.addJobRole).mockResolvedValue(mockCreatedJob);
 
     const result = await jobService.addJob(validJob);
 
@@ -271,13 +281,23 @@ describe('JobService.addJob', () => {
 
 describe('JobService.getCapabilities', () => {
   let jobService: JobService;
-  let mockRepository: Partial<JobRepository>;
+  let mockRepository: JobRepository;
 
   beforeEach(() => {
     mockRepository = {
+      addJobRole: vi.fn(),
+      updateJobRole: vi.fn(),
+      getAllJobs: vi.fn(),
+      getJobById: vi.fn(),
+      getJobByID: vi.fn(),
+      deleteJob: vi.fn(),
       getAllCapabilities: vi.fn(),
-    };
-    jobService = new JobService(mockRepository as JobRepository);
+      getAllBands: vi.fn(),
+      getServerName: vi.fn(),
+      getAppInfo: vi.fn(),
+      getHealthInfo: vi.fn(),
+    } as JobRepository;
+    jobService = new JobService(mockRepository);
   });
 
   it('should return all capabilities', async () => {
@@ -287,7 +307,7 @@ describe('JobService.getCapabilities', () => {
       { id: 3, name: 'Cyber Security' },
     ];
 
-    vi.mocked(mockRepository.getAllCapabilities!).mockResolvedValue(mockCapabilities);
+    vi.mocked(mockRepository.getAllCapabilities).mockResolvedValue(mockCapabilities);
 
     const result = await jobService.getCapabilities();
 
@@ -296,7 +316,7 @@ describe('JobService.getCapabilities', () => {
   });
 
   it('should return empty array when no capabilities exist', async () => {
-    vi.mocked(mockRepository.getAllCapabilities!).mockResolvedValue([]);
+    vi.mocked(mockRepository.getAllCapabilities).mockResolvedValue([]);
 
     const result = await jobService.getCapabilities();
 
@@ -307,13 +327,23 @@ describe('JobService.getCapabilities', () => {
 
 describe('JobService.getBands', () => {
   let jobService: JobService;
-  let mockRepository: Partial<JobRepository>;
+  let mockRepository: JobRepository;
 
   beforeEach(() => {
     mockRepository = {
+      addJobRole: vi.fn(),
+      updateJobRole: vi.fn(),
+      getAllJobs: vi.fn(),
+      getJobById: vi.fn(),
+      getJobByID: vi.fn(),
+      deleteJob: vi.fn(),
+      getAllCapabilities: vi.fn(),
       getAllBands: vi.fn(),
-    };
-    jobService = new JobService(mockRepository as JobRepository);
+      getServerName: vi.fn(),
+      getAppInfo: vi.fn(),
+      getHealthInfo: vi.fn(),
+    } as JobRepository;
+    jobService = new JobService(mockRepository);
   });
 
   it('should return all bands', async () => {
@@ -323,7 +353,7 @@ describe('JobService.getBands', () => {
       { id: 3, name: 'Senior Associate' },
     ];
 
-    vi.mocked(mockRepository.getAllBands!).mockResolvedValue(mockBands);
+    vi.mocked(mockRepository.getAllBands).mockResolvedValue(mockBands);
 
     const result = await jobService.getBands();
 
@@ -332,7 +362,7 @@ describe('JobService.getBands', () => {
   });
 
   it('should return empty array when no bands exist', async () => {
-    vi.mocked(mockRepository.getAllBands!).mockResolvedValue([]);
+    vi.mocked(mockRepository.getAllBands).mockResolvedValue([]);
 
     const result = await jobService.getBands();
 
