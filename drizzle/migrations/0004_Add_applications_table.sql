@@ -5,7 +5,6 @@ CREATE TABLE 'Applications'(
       'emailAddress' text NOT NULL,
       'status' text DEFAULT 'Pending' NOT NULL,
       'coverLetter' text,
-      'resumeUrl' text,
       'notes' text,
       'createdAt' text NOT NULL,
       FOREIGN KEY ('jobRoleId') REFERENCES 'job_roles'('jobRoleId')
