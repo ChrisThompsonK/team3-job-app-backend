@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, lte, or } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { bands, capabilities, jobAvailabilityStatus, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
@@ -315,42 +315,33 @@ export class JobRepository {
   async autoCloseExpiredJobRoles(): Promise<number> {
     const today = new Date().toISOString().split('T')[0] || ''; // Get today's date in YYYY-MM-DD format
 
-    // Find all job roles that should be closed but aren't (statusId !== 2)
-    const jobsToClose = await db
-      .select({
+    // Update all jobs that meet closing criteria directly in the database
+    const result = await db
+      .update(jobRoles)
+      .set({ statusId: 2 })
+      .where(
+        and(
+          eq(jobRoles.deleted, 0),
+          eq(jobRoles.statusId, 1), // Only update jobs that are currently open
+          // Close if closing date has passed OR no open positions
+          or(lte(jobRoles.closingDate, today), lte(jobRoles.openPositions, 0))
+        )
+      )
+      .returning({
         id: jobRoles.jobRoleId,
         name: jobRoles.roleName,
         closingDate: jobRoles.closingDate,
         openPositions: jobRoles.openPositions,
-        statusId: jobRoles.statusId,
-      })
-      .from(jobRoles)
-      .where(eq(jobRoles.deleted, 0));
+      });
 
-    // Filter jobs that need to be closed
-    const expiredJobs = jobsToClose.filter((job) => {
-      const isPastClosingDate = job.closingDate < today;
-      const hasNoPositions = job.openPositions <= 0;
-      const isNotClosed = job.statusId !== 2;
-
-      return (isPastClosingDate || hasNoPositions) && isNotClosed;
-    });
-
-    // Update all expired jobs to closed status (statusId = 2)
-    if (expiredJobs.length > 0) {
-      const updatePromises = expiredJobs.map((job) =>
-        db.update(jobRoles).set({ statusId: 2 }).where(eq(jobRoles.jobRoleId, job.id))
-      );
-
-      await Promise.all(updatePromises);
-
-      console.log(`✅ Auto-closed ${expiredJobs.length} job role(s)`);
-      expiredJobs.forEach((job) => {
+    if (result.length > 0) {
+      console.log(`✅ Auto-closed ${result.length} job role(s)`);
+      result.forEach((job) => {
         const reason = job.closingDate < today ? 'past closing date' : 'no open positions';
         console.log(`   - Job ID ${job.id}: "${job.name}" (${reason})`);
       });
     }
 
-    return expiredJobs.length;
+    return result.length;
   }
 }

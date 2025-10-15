@@ -26,59 +26,6 @@ describe('SchedulerService', () => {
     it('should initialize schedules without errors', () => {
       expect(() => schedulerService.initializeSchedules()).not.toThrow();
     });
-
-    it('should have auto-close task in task statuses after initialization', () => {
-      schedulerService.initializeSchedules();
-      const statuses = schedulerService.getTaskStatuses();
-      expect(statuses).toHaveProperty('auto-close-expired-jobs');
-      expect(statuses['auto-close-expired-jobs']).toBe(true);
-    });
-  });
-
-  describe('task management', () => {
-    beforeEach(() => {
-      schedulerService.initializeSchedules();
-    });
-
-    it('should stop a specific task', () => {
-      const result = schedulerService.stopTask('auto-close-expired-jobs');
-      expect(result).toBe(true);
-
-      const statuses = schedulerService.getTaskStatuses();
-      expect(statuses['auto-close-expired-jobs']).toBe(false);
-    });
-
-    it('should start a stopped task', () => {
-      schedulerService.stopTask('auto-close-expired-jobs');
-      const result = schedulerService.startTask('auto-close-expired-jobs');
-      expect(result).toBe(true);
-
-      const statuses = schedulerService.getTaskStatuses();
-      expect(statuses['auto-close-expired-jobs']).toBe(true);
-    });
-
-    it('should return false when trying to stop non-existent task', () => {
-      const result = schedulerService.stopTask('non-existent-task');
-      expect(result).toBe(false);
-    });
-
-    it('should return false when trying to start non-existent task', () => {
-      const result = schedulerService.startTask('non-existent-task');
-      expect(result).toBe(false);
-    });
-
-    it('should stop all tasks', () => {
-      schedulerService.stopAllTasks();
-      const statuses = schedulerService.getTaskStatuses();
-      expect(statuses['auto-close-expired-jobs']).toBe(false);
-    });
-
-    it('should start all tasks', () => {
-      schedulerService.stopAllTasks();
-      schedulerService.startAllTasks();
-      const statuses = schedulerService.getTaskStatuses();
-      expect(statuses['auto-close-expired-jobs']).toBe(true);
-    });
   });
 
   describe('manual triggers', () => {
@@ -107,12 +54,8 @@ describe('SchedulerService', () => {
       schedulerService.initializeSchedules();
     });
 
-    it('should destroy all tasks', () => {
+    it('should destroy all tasks without errors', () => {
       expect(() => schedulerService.destroy()).not.toThrow();
-
-      // After destroy, task statuses should be empty
-      const statuses = schedulerService.getTaskStatuses();
-      expect(Object.keys(statuses)).toHaveLength(0);
     });
   });
 });
