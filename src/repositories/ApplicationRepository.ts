@@ -39,7 +39,7 @@ export class ApplicationRepository {
 
   async getAllApplications(sortBy = 'createdAt', sortOrder = 'desc'): Promise<Application[]> {
     // Map sort field to actual database column
-    const sortFieldMap: Record<string, any> = {
+    const sortFieldMap = {
       applicationID: applications.applicationID,
       jobRoleId: applications.jobRoleId,
       emailAddress: applications.emailAddress,
@@ -48,20 +48,21 @@ export class ApplicationRepository {
       createdAt: applications.createdAt,
       updatedAt: applications.updatedAt,
     };
-    
-    const sortColumn = sortFieldMap[sortBy] || applications.createdAt;
+
+    type SortField = keyof typeof sortFieldMap;
+    const sortColumn = sortFieldMap[sortBy as SortField] || applications.createdAt;
     const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
-    
-    const result = await db
-      .select()
-      .from(applications)
-      .orderBy(orderFn(sortColumn));
+
+    const result = await db.select().from(applications).orderBy(orderFn(sortColumn));
     return result;
   }
 
-  async getApplicationsWithJobRoles(sortBy = 'createdAt', sortOrder = 'desc'): Promise<ApplicationWithJobRole[]> {
+  async getApplicationsWithJobRoles(
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  ): Promise<ApplicationWithJobRole[]> {
     // Map sort field to actual database column
-    const sortFieldMap: Record<string, any> = {
+    const sortFieldMap = {
       applicationID: applications.applicationID,
       jobRoleId: applications.jobRoleId,
       emailAddress: applications.emailAddress,
@@ -72,10 +73,11 @@ export class ApplicationRepository {
       jobRoleName: jobRoles.roleName,
       jobRoleLocation: jobRoles.location,
     };
-    
-    const sortColumn = sortFieldMap[sortBy] || applications.createdAt;
+
+    type SortField = keyof typeof sortFieldMap;
+    const sortColumn = sortFieldMap[sortBy as SortField] || applications.createdAt;
     const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
-    
+
     const result = await db
       .select({
         applicationID: applications.applicationID,

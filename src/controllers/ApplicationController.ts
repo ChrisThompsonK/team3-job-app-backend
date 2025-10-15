@@ -96,7 +96,7 @@ export class ApplicationController {
       // Extract sort parameters from query string
       const sortBy = (req.query['sortBy'] as string) || 'createdAt';
       const sortOrder = (req.query['sortOrder'] as string) || 'desc';
-      
+
       const applications = await this.applicationService.getAllApplications(sortBy, sortOrder);
       res.json(applications);
     } catch (error) {
@@ -113,8 +113,11 @@ export class ApplicationController {
       // Extract sort parameters from query string
       const sortBy = (req.query['sortBy'] as string) || 'createdAt';
       const sortOrder = (req.query['sortOrder'] as string) || 'desc';
-      
-      const applications = await this.applicationService.getApplicationsWithJobRoles(sortBy, sortOrder);
+
+      const applications = await this.applicationService.getApplicationsWithJobRoles(
+        sortBy,
+        sortOrder
+      );
       res.json(applications);
     } catch (error) {
       console.error('Error fetching applications with job roles:', error);

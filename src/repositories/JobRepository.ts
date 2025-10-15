@@ -54,9 +54,9 @@ export class JobRepository {
     // Query all job roles from the database with capability and band names - standardized property names
     console.log('JobRepository.getAllJobs: Executing Drizzle query...');
     const startTime = Date.now();
-    
+
     // Map sort field to actual database column
-    const sortFieldMap: Record<string, any> = {
+    const sortFieldMap = {
       name: jobRoles.roleName,
       location: jobRoles.location,
       closingDate: jobRoles.closingDate,
@@ -65,10 +65,11 @@ export class JobRepository {
       statusName: jobAvailabilityStatus.statusName,
       openPositions: jobRoles.openPositions,
     };
-    
-    const sortColumn = sortFieldMap[sortBy] || jobRoles.roleName;
+
+    type SortField = keyof typeof sortFieldMap;
+    const sortColumn = sortFieldMap[sortBy as SortField] || jobRoles.roleName;
     const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
-    
+
     const jobs = await db
       .select({
         id: jobRoles.jobRoleId,

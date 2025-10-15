@@ -82,7 +82,10 @@ export class ApplicationService {
     return await this.applicationRepository.getAllApplications(sortBy, sortOrder);
   }
 
-  async getApplicationsWithJobRoles(sortBy = 'createdAt', sortOrder = 'desc'): Promise<ApplicationWithJobRole[]> {
+  async getApplicationsWithJobRoles(
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  ): Promise<ApplicationWithJobRole[]> {
     return await this.applicationRepository.getApplicationsWithJobRoles(sortBy, sortOrder);
   }
 
