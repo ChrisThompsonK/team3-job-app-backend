@@ -17,6 +17,4 @@ ALTER TABLE `job_roles` ADD COLUMN `statusId` integer REFERENCES `job_availabili
 UPDATE `job_roles` SET `statusId` = 1 WHERE `status` = 'Open' OR `status` = 'Closing Soon' OR `status` IS NULL;
 UPDATE `job_roles` SET `statusId` = 2 WHERE `status` = 'Closed';
 
--- Note: We're keeping the old status column for now to avoid data loss
--- In a production environment, you might want to drop it after confirming the migration works
--- ALTER TABLE `job_roles` DROP COLUMN `status`; -- Not supported in SQLite directly
+ALTER TABLE `job_roles` DROP COLUMN `status`; 
