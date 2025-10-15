@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/database.js';
-import { bands, capabilities, jobRoles, jobAvailabilityStatus } from '../db/schema.js';
+import { bands, capabilities, jobAvailabilityStatus, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 import type {
