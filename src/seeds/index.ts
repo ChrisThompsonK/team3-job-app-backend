@@ -2,6 +2,7 @@ import { client } from '../db/database.js';
 import { seedBands } from './seedBands.js';
 import { seedCapabilities } from './seedCapabilities.js';
 import { seedJobRoles } from './seedJobRoles.js';
+import { seedStatuses } from './seedStatuses.js';
 
 export async function runAllSeeds() {
   console.log('🌱 Starting database seeding...\n');
@@ -10,6 +11,7 @@ export async function runAllSeeds() {
     // Seed in order of dependencies
     await seedCapabilities();
     await seedBands();
+    await seedStatuses(); // Add this BEFORE seedJobRoles
     await seedJobRoles();
 
     console.log('\n🎉 All seeds completed successfully!');

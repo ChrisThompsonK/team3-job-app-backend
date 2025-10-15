@@ -8,11 +8,8 @@ export interface JobRole {
   capabilityName: string | null;
   bandId: number | null;
   bandName: string | null;
-  description?: string | null;
-  responsibilities?: string | null;
-  jobSpecUrl?: string | null;
-  status?: string;
-  openPositions?: number;
+  statusId: number | null;
+  statusName: string | null;
 }
 
 // Full details (extends JobRole)
@@ -20,7 +17,6 @@ export interface JobRoleDetails extends JobRole {
   description: string | null;
   responsibilities: string | null;
   jobSpecUrl: string | null;
-  status: string;
   openPositions: number;
 }
 
@@ -31,10 +27,10 @@ export interface JobRoleCreate {
   closingDate: string;
   capabilityId: number;
   bandId: number;
+  statusId?: number;
   description?: string | null;
   responsibilities?: string | null;
   jobSpecUrl?: string | null;
-  status?: string;
   openPositions?: number;
 }
 
@@ -45,10 +41,10 @@ export interface JobRoleUpdate {
   closingDate?: string;
   capabilityId?: number;
   bandId?: number;
+  statusId?: number;
   description?: string | null;
   responsibilities?: string | null;
   jobSpecUrl?: string | null;
-  status?: string;
   openPositions?: number;
 }
 
@@ -59,6 +55,12 @@ export interface Capability {
 }
 
 export interface Band {
+  id: number;
+  name: string;
+}
+
+// Status interface
+export interface Status {
   id: number;
   name: string;
 }

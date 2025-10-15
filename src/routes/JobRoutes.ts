@@ -17,4 +17,6 @@ router.get('/capabilities', async (req, res) => jobController.getCapabilities(re
 
 router.get('/bands', async (req, res) => jobController.getBands(req, res));
 
+router.get('/statuses', async (req, res) => jobController.getStatuses(req, res));
+
 export { router as jobRoutes };
