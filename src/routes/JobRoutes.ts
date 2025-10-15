@@ -19,4 +19,9 @@ router.get('/bands', async (req, res) => jobController.getBands(req, res));
 
 router.get('/statuses', async (req, res) => jobController.getStatuses(req, res));
 
+// Auto-close expired job roles (for scheduled tasks)
+router.post('/jobs/auto-close', async (req, res) =>
+  jobController.autoCloseExpiredJobRoles(req, res)
+);
+
 export { router as jobRoutes };

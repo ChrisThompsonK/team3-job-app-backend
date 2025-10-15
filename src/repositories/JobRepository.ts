@@ -305,4 +305,52 @@ export class JobRepository {
 
     return result;
   }
+
+  /**
+   * Auto-close job roles that meet closing criteria:
+   * - Closing date has passed
+   * - No open positions available (openPositions = 0)
+   * @returns Number of job roles that were closed
+   */
+  async autoCloseExpiredJobRoles(): Promise<number> {
+    const today = new Date().toISOString().split('T')[0] || ''; // Get today's date in YYYY-MM-DD format
+
+    // Find all job roles that should be closed but aren't (statusId !== 2)
+    const jobsToClose = await db
+      .select({
+        id: jobRoles.jobRoleId,
+        name: jobRoles.roleName,
+        closingDate: jobRoles.closingDate,
+        openPositions: jobRoles.openPositions,
+        statusId: jobRoles.statusId,
+      })
+      .from(jobRoles)
+      .where(eq(jobRoles.deleted, 0));
+
+    // Filter jobs that need to be closed
+    const expiredJobs = jobsToClose.filter((job) => {
+      const isPastClosingDate = job.closingDate < today;
+      const hasNoPositions = job.openPositions <= 0;
+      const isNotClosed = job.statusId !== 2;
+
+      return (isPastClosingDate || hasNoPositions) && isNotClosed;
+    });
+
+    // Update all expired jobs to closed status (statusId = 2)
+    if (expiredJobs.length > 0) {
+      const updatePromises = expiredJobs.map((job) =>
+        db.update(jobRoles).set({ statusId: 2 }).where(eq(jobRoles.jobRoleId, job.id))
+      );
+
+      await Promise.all(updatePromises);
+
+      console.log(`✅ Auto-closed ${expiredJobs.length} job role(s)`);
+      expiredJobs.forEach((job) => {
+        const reason = job.closingDate < today ? 'past closing date' : 'no open positions';
+        console.log(`   - Job ID ${job.id}: "${job.name}" (${reason})`);
+      });
+    }
+
+    return expiredJobs.length;
+  }
 }
