@@ -2,7 +2,7 @@
 export interface Application {
   applicationID: number;
   jobRoleId: number;
-  phoneNumber: number;
+  phoneNumber: string;
   emailAddress: string;
   status: string;
   coverLetter?: string | null;
@@ -14,7 +14,7 @@ export interface Application {
 // For creating a new application (no ID, no timestamp)
 export interface ApplicationCreate {
   jobRoleId: number;
-  phoneNumber: number;
+  phoneNumber: string;
   emailAddress: string;
   coverLetter?: string;
   notes?: string;

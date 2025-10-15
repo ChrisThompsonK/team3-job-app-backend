@@ -5,12 +5,15 @@ import type {
   ApplicationWithJobRole,
 } from '../models/ApplicationModel.js';
 import type { ApplicationRepository } from '../repositories/ApplicationRepository.js';
+import type { JobRepository } from '../repositories/JobRepository.js';
 
 export class ApplicationService {
   private applicationRepository: ApplicationRepository;
+  private jobRepository: JobRepository;
 
-  constructor(applicationRepository: ApplicationRepository) {
+  constructor(applicationRepository: ApplicationRepository, jobRepository: JobRepository) {
     this.applicationRepository = applicationRepository;
+    this.jobRepository = jobRepository;
   }
 
   async submitApplication(applicationData: ApplicationCreate): Promise<ApplicationResponse> {
@@ -18,11 +21,36 @@ export class ApplicationService {
       // Validate required fields
       this.validateApplicationData(applicationData);
 
-      // Check if job role exists (we can add this validation later with JobRepository)
+      // Check if job role exists and has open positions
       if (!applicationData.jobRoleId || applicationData.jobRoleId <= 0) {
         return {
           success: false,
           message: 'Invalid job role ID',
+        };
+      }
+
+      const jobRole = await this.jobRepository.getJobById(applicationData.jobRoleId);
+
+      if (!jobRole) {
+        return {
+          success: false,
+          message: 'Job role not found',
+        };
+      }
+
+      // Check if job role is open for applications
+      if (jobRole.status !== 'Open') {
+        return {
+          success: false,
+          message: 'This job role is no longer accepting applications',
+        };
+      }
+
+      // Check if there are open positions available
+      if (!jobRole.openPositions || jobRole.openPositions <= 0) {
+        return {
+          success: false,
+          message: 'No open positions available for this job role',
         };
       }
 
@@ -73,6 +101,14 @@ export class ApplicationService {
     return await this.applicationRepository.updateApplicationStatus(applicationID, status);
   }
 
+  async getApplicationsByEmail(emailAddress: string): Promise<ApplicationWithJobRole[]> {
+    if (!emailAddress || !this.isValidEmail(emailAddress)) {
+      throw new Error('Valid email address is required');
+    }
+
+    return await this.applicationRepository.getApplicationsByEmail(emailAddress);
+  }
+
   private validateApplicationData(data: ApplicationCreate): void {
     // Validate email format
     if (!data.emailAddress || !this.isValidEmail(data.emailAddress)) {
@@ -100,10 +136,12 @@ export class ApplicationService {
     return emailRegex.test(email);
   }
 
-  private isValidPhoneNumber(phone: number): boolean {
-    // Check if it's a positive number and has reasonable length (6-15 digits)
-    const phoneStr = phone.toString();
-    return phoneStr.length >= 6 && phoneStr.length <= 15 && /^\d+$/.test(phoneStr);
+  private isValidPhoneNumber(phone: string): boolean {
+    // Check if it's a valid phone number format
+    // Allow digits, spaces, hyphens, parentheses, and + sign
+    // Must have at least 6 digits total (international numbers can be longer)
+    const digitsOnly = phone.replace(/\D/g, '');
+    return digitsOnly.length >= 6 && digitsOnly.length <= 15 && /^[\d\s\-+()]+$/.test(phone);
   }
 
   private isValidStatus(status: string): boolean {

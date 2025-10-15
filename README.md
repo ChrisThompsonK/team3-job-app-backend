@@ -90,8 +90,28 @@ For the best development experience, install the Biome extension for your editor
 
 ## 📡 API Endpoints
 
+### General
 - `GET /` - Welcome message with service information
 - `GET /health` - Health check endpoint
+
+### Job Roles
+- `GET /jobs` - Get all job roles
+- `GET /jobs/:id` - Get job role by ID
+- `POST /jobs` - Create a new job role
+- `PUT /jobs/:id` - Update a job role
+- `DELETE /jobs/:id` - Soft delete a job role
+
+### Applications
+- `POST /applications` - Submit a new application
+- `GET /applications/my-applications?email={email}` - Get applications for a specific user by email
+- `GET /applications/:id` - Get a specific application by ID
+- `GET /applications` - Get all applications (admin)
+- `GET /applications-with-roles` - Get all applications with job role details (admin)
+- `PUT /applications/:id/status` - Update application status (admin)
+
+### Documentation
+For detailed API documentation, see:
+- [My Applications API](docs/MY_APPLICATIONS_API.md) - User-facing endpoint for viewing job applications
 
 ## 🗄️ Database
 
