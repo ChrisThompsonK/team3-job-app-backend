@@ -5,12 +5,15 @@ import type {
   ApplicationWithJobRole,
 } from '../models/ApplicationModel.js';
 import type { ApplicationRepository } from '../repositories/ApplicationRepository.js';
+import type { JobRepository } from '../repositories/JobRepository.js';
 
 export class ApplicationService {
   private applicationRepository: ApplicationRepository;
+  private jobRepository: JobRepository;
 
-  constructor(applicationRepository: ApplicationRepository) {
+  constructor(applicationRepository: ApplicationRepository, jobRepository: JobRepository) {
     this.applicationRepository = applicationRepository;
+    this.jobRepository = jobRepository;
   }
 
   async submitApplication(applicationData: ApplicationCreate): Promise<ApplicationResponse> {
@@ -18,11 +21,36 @@ export class ApplicationService {
       // Validate required fields
       this.validateApplicationData(applicationData);
 
-      // Check if job role exists (we can add this validation later with JobRepository)
+      // Check if job role exists and has open positions
       if (!applicationData.jobRoleId || applicationData.jobRoleId <= 0) {
         return {
           success: false,
           message: 'Invalid job role ID',
+        };
+      }
+
+      const jobRole = await this.jobRepository.getJobById(applicationData.jobRoleId);
+
+      if (!jobRole) {
+        return {
+          success: false,
+          message: 'Job role not found',
+        };
+      }
+
+      // Check if job role is open for applications
+      if (jobRole.status !== 'Open') {
+        return {
+          success: false,
+          message: 'This job role is no longer accepting applications',
+        };
+      }
+
+      // Check if there are open positions available
+      if (!jobRole.openPositions || jobRole.openPositions <= 0) {
+        return {
+          success: false,
+          message: 'No open positions available for this job role',
         };
       }
 
