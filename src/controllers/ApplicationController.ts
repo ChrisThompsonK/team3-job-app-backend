@@ -9,16 +9,26 @@ export class ApplicationController {
     this.applicationService = applicationService;
   }
 
+  // Helper method to parse and validate ID
+  private parseId(id: string): number | null {
+    const parsed = Number.parseInt(id, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+
+  // Helper method for error responses
+  private handleError(res: Response, error: unknown, message: string): void {
+    console.error(message, error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message,
+    });
+  }
+
   async submitApplication(req: Request, res: Response): Promise<void> {
     try {
       const applicationData: ApplicationCreate = req.body;
 
-      // Basic validation that required fields are present
-      if (
-        !applicationData.jobRoleId ||
-        !applicationData.emailAddress ||
-        !applicationData.phoneNumber
-      ) {
+      if (!applicationData.jobRoleId || !applicationData.emailAddress || !applicationData.phoneNumber) {
         res.status(400).json({
           error: 'Bad request',
           message: 'Missing required fields: jobRoleId, emailAddress, and phoneNumber are required',
@@ -41,29 +51,16 @@ export class ApplicationController {
         });
       }
     } catch (error) {
-      console.error('Error submitting application:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to submit application',
-      });
+      this.handleError(res, error, 'Failed to submit application');
     }
   }
 
   async getApplicationById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+      const applicationId = id ? this.parseId(id) : null;
 
-      if (!id) {
-        res.status(400).json({
-          error: 'Bad request',
-          message: 'Application ID is required',
-        });
-        return;
-      }
-
-      const applicationId = Number.parseInt(id, 10);
-
-      if (Number.isNaN(applicationId)) {
+      if (!applicationId) {
         res.status(400).json({
           error: 'Bad request',
           message: 'Invalid application ID',
@@ -83,11 +80,7 @@ export class ApplicationController {
 
       res.json(application);
     } catch (error) {
-      console.error('Error fetching application:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to fetch application',
-      });
+      this.handleError(res, error, 'Failed to fetch application');
     }
   }
 
@@ -96,11 +89,7 @@ export class ApplicationController {
       const applications = await this.applicationService.getAllApplications();
       res.json(applications);
     } catch (error) {
-      console.error('Error fetching applications:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to fetch applications',
-      });
+      this.handleError(res, error, 'Failed to fetch applications');
     }
   }
 
@@ -109,11 +98,7 @@ export class ApplicationController {
       const applications = await this.applicationService.getApplicationsWithJobRoles();
       res.json(applications);
     } catch (error) {
-      console.error('Error fetching applications with job roles:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to fetch applications',
-      });
+      this.handleError(res, error, 'Failed to fetch applications');
     }
   }
 
@@ -122,29 +107,12 @@ export class ApplicationController {
     try {
       const { id } = req.params;
       const { status } = req.body;
+      const applicationId = id ? this.parseId(id) : null;
 
-      if (!id) {
+      if (!applicationId || !status) {
         res.status(400).json({
           error: 'Bad request',
-          message: 'Application ID is required',
-        });
-        return;
-      }
-
-      if (!status) {
-        res.status(400).json({
-          error: 'Bad request',
-          message: 'Status is required',
-        });
-        return;
-      }
-
-      const applicationId = Number.parseInt(id, 10);
-
-      if (Number.isNaN(applicationId)) {
-        res.status(400).json({
-          error: 'Bad request',
-          message: 'Invalid application ID',
+          message: 'Application ID and status are required',
         });
         return;
       }
@@ -168,11 +136,7 @@ export class ApplicationController {
         application: updatedApplication,
       });
     } catch (error) {
-      console.error('Error updating application status:', error);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: 'Failed to update application status',
-      });
+      this.handleError(res, error, 'Failed to update application status');
     }
   }
 }
