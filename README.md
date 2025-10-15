@@ -37,6 +37,17 @@ The server will start on `http://localhost:3000` (or the port specified in the `
 - `npm run clean` - Remove build artifacts
 - `npm run type-check` - Run TypeScript type checking
 
+### Database Scripts
+
+- `npm run db:generate` - Generate new migration from schema changes
+- `npm run db:migrate` - Apply pending migrations to the database
+- `npm run db:push` - Push schema changes directly to database (dev only)
+- `npm run db:studio` - Open Drizzle Studio GUI for database inspection
+- `npm run seed` - Seed the database with initial data
+- `npm run seed:capabilities` - Seed capabilities table
+- `npm run seed:bands` - Seed bands table
+- `npm run seed:jobroles` - Seed job roles table
+
 ## 🔧 Code Quality & Formatting
 
 This project uses [Biome](https://biomejs.dev/) for code formatting, linting, and import organization.
@@ -82,15 +93,40 @@ For the best development experience, install the Biome extension for your editor
 - `GET /` - Welcome message with service information
 - `GET /health` - Health check endpoint
 
+## 🗄️ Database
+
+This project uses SQLite with Drizzle ORM for database management.
+
+### Initial Setup
+
+After cloning the repository, run migrations to set up your database:
+
+```bash
+npm run db:migrate
+```
+
+### Making Schema Changes
+
+1. Update the schema in `src/db/schema.ts`
+2. Generate a migration: `npm run db:generate`
+3. Apply the migration: `npm run db:migrate`
+4. Commit both the schema changes and the generated migration files
+
 ## 🏗️ Project Structure
 
 ```
 .
 ├── src/
-│   └── index.ts          # Main application entry point
+│   ├── index.ts          # Main application entry point
+│   ├── db/
+│   │   ├── database.ts   # Database connection
+│   │   └── schema.ts     # Database schema definitions
+│   └── seeds/            # Database seed scripts
+├── drizzle/
+│   └── migrations/       # Database migration files
 ├── dist/                 # Build output (auto-generated)
 ├── biome.json           # Biome configuration
-├── .biomeignore         # Files ignored by Biome
+├── drizzle.config.ts    # Drizzle ORM configuration
 ├── tsconfig.json        # TypeScript configuration
 └── package.json         # Project dependencies and scripts
 ```
