@@ -7,5 +7,6 @@ CREATE TABLE 'Applications'(
       'coverLetter' text,
       'notes' text,
       'createdAt' text NOT NULL,
+      'updatedAt' text NOT NULL,
       FOREIGN KEY ('jobRoleId') REFERENCES 'job_roles'('jobRoleId')
 );
