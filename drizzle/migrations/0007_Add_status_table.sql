@@ -14,7 +14,7 @@ ALTER TABLE `job_roles` ADD COLUMN `statusId` integer REFERENCES `job_availabili
 -- Update existing records to use statusId
 -- Convert 'Open' and 'Closing Soon' to 'Open' (statusId = 1)
 -- Convert 'Closed' to 'Closed' (statusId = 2)
-UPDATE `job_roles` SET `statusId` = 1 WHERE `status` = 'Open' OR `status` = 'Closing Soon' OR `status` IS NULL;
+UPDATE `job_roles` SET `statusId` = 1 WHERE `status` IN ('Open', 'Closing Soon') OR `status` IS NULL;
 UPDATE `job_roles` SET `statusId` = 2 WHERE `status` = 'Closed';
 
 ALTER TABLE `job_roles` DROP COLUMN `status`; 
