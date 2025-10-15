@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { applications, jobRoles } from '../db/schema.js';
 import type {
@@ -37,12 +37,45 @@ export class ApplicationRepository {
     return result.length > 0 ? (result[0] as Application) : null;
   }
 
-  async getAllApplications(): Promise<Application[]> {
-    const result = await db.select().from(applications);
+  async getAllApplications(sortBy = 'createdAt', sortOrder = 'desc'): Promise<Application[]> {
+    // Map sort field to actual database column
+    const sortFieldMap: Record<string, any> = {
+      applicationID: applications.applicationID,
+      jobRoleId: applications.jobRoleId,
+      emailAddress: applications.emailAddress,
+      phoneNumber: applications.phoneNumber,
+      status: applications.status,
+      createdAt: applications.createdAt,
+      updatedAt: applications.updatedAt,
+    };
+    
+    const sortColumn = sortFieldMap[sortBy] || applications.createdAt;
+    const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
+    
+    const result = await db
+      .select()
+      .from(applications)
+      .orderBy(orderFn(sortColumn));
     return result;
   }
 
-  async getApplicationsWithJobRoles(): Promise<ApplicationWithJobRole[]> {
+  async getApplicationsWithJobRoles(sortBy = 'createdAt', sortOrder = 'desc'): Promise<ApplicationWithJobRole[]> {
+    // Map sort field to actual database column
+    const sortFieldMap: Record<string, any> = {
+      applicationID: applications.applicationID,
+      jobRoleId: applications.jobRoleId,
+      emailAddress: applications.emailAddress,
+      phoneNumber: applications.phoneNumber,
+      status: applications.status,
+      createdAt: applications.createdAt,
+      updatedAt: applications.updatedAt,
+      jobRoleName: jobRoles.roleName,
+      jobRoleLocation: jobRoles.location,
+    };
+    
+    const sortColumn = sortFieldMap[sortBy] || applications.createdAt;
+    const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
+    
     const result = await db
       .select({
         applicationID: applications.applicationID,
@@ -57,7 +90,8 @@ export class ApplicationRepository {
         jobRoleLocation: jobRoles.location,
       })
       .from(applications)
-      .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId));
+      .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
+      .orderBy(orderFn(sortColumn));
 
     return result as ApplicationWithJobRole[];
   }

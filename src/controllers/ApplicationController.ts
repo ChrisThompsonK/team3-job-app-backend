@@ -91,9 +91,13 @@ export class ApplicationController {
     }
   }
 
-  async getAllApplications(_req: Request, res: Response): Promise<void> {
+  async getAllApplications(req: Request, res: Response): Promise<void> {
     try {
-      const applications = await this.applicationService.getAllApplications();
+      // Extract sort parameters from query string
+      const sortBy = (req.query['sortBy'] as string) || 'createdAt';
+      const sortOrder = (req.query['sortOrder'] as string) || 'desc';
+      
+      const applications = await this.applicationService.getAllApplications(sortBy, sortOrder);
       res.json(applications);
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -104,9 +108,13 @@ export class ApplicationController {
     }
   }
 
-  async getApplicationsWithJobRoles(_req: Request, res: Response): Promise<void> {
+  async getApplicationsWithJobRoles(req: Request, res: Response): Promise<void> {
     try {
-      const applications = await this.applicationService.getApplicationsWithJobRoles();
+      // Extract sort parameters from query string
+      const sortBy = (req.query['sortBy'] as string) || 'createdAt';
+      const sortOrder = (req.query['sortOrder'] as string) || 'desc';
+      
+      const applications = await this.applicationService.getApplicationsWithJobRoles(sortBy, sortOrder);
       res.json(applications);
     } catch (error) {
       console.error('Error fetching applications with job roles:', error);
