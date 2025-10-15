@@ -5,4 +5,5 @@ import { JobService } from '../services/JobService.js';
 const jobRepository: JobRepository = new JobRepository();
 const jobService: JobService = new JobService(jobRepository);
 const jobController: JobController = new JobController(jobService);
-export { jobController };
+
+export { jobController, jobService };

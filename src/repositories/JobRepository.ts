@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, lte, or } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { bands, capabilities, jobAvailabilityStatus, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
@@ -304,5 +304,44 @@ export class JobRepository {
       .orderBy(jobAvailabilityStatus.statusName);
 
     return result;
+  }
+
+  /**
+   * Auto-close job roles that meet closing criteria:
+   * - Closing date has passed
+   * - No open positions available (openPositions = 0)
+   * @returns Number of job roles that were closed
+   */
+  async autoCloseExpiredJobRoles(): Promise<number> {
+    const today = new Date().toISOString().split('T')[0] || ''; // Get today's date in YYYY-MM-DD format
+
+    // Update all jobs that meet closing criteria directly in the database
+    const result = await db
+      .update(jobRoles)
+      .set({ statusId: 2 })
+      .where(
+        and(
+          eq(jobRoles.deleted, 0),
+          eq(jobRoles.statusId, 1), // Only update jobs that are currently open
+          // Close if closing date has passed OR no open positions
+          or(lte(jobRoles.closingDate, today), lte(jobRoles.openPositions, 0))
+        )
+      )
+      .returning({
+        id: jobRoles.jobRoleId,
+        name: jobRoles.roleName,
+        closingDate: jobRoles.closingDate,
+        openPositions: jobRoles.openPositions,
+      });
+
+    if (result.length > 0) {
+      console.log(`✅ Auto-closed ${result.length} job role(s)`);
+      result.forEach((job) => {
+        const reason = job.closingDate < today ? 'past closing date' : 'no open positions';
+        console.log(`   - Job ID ${job.id}: "${job.name}" (${reason})`);
+      });
+    }
+
+    return result.length;
   }
 }
