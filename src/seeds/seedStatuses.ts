@@ -4,10 +4,7 @@ import { status } from '../db/schema.js';
 export async function seedStatuses() {
   console.log('🌱 Seeding statuses...');
 
-  const statusData = [
-    { statusName: 'Open' },
-    { statusName: 'Closed' },
-  ];
+  const statusData = [{ statusName: 'Open' }, { statusName: 'Closed' }];
 
   try {
     await db.insert(status).values(statusData);
