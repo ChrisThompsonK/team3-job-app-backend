@@ -5,6 +5,7 @@ import type {
   JobRoleCreate,
   JobRoleDetails,
   JobRoleUpdate,
+  Status,
 } from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
 export class JobService {
@@ -41,7 +42,7 @@ export class JobService {
         : null;
     if (requestBody['jobSpecUrl'] !== undefined)
       updates.jobSpecUrl = requestBody['jobSpecUrl'] ? String(requestBody['jobSpecUrl']) : null;
-    if (requestBody['status'] !== undefined) updates.status = String(requestBody['status']);
+    if (requestBody['statusId'] !== undefined) updates.statusId = Number(requestBody['statusId']);
     if (requestBody['openPositions'] !== undefined)
       updates.openPositions = Number(requestBody['openPositions']);
 
@@ -146,5 +147,9 @@ export class JobService {
 
   async getBands(): Promise<Band[]> {
     return await this.jobRepository.getAllBands();
+  }
+
+  async getStatuses(): Promise<Status[]> {
+    return await this.jobRepository.getAllStatuses();
   }
 }

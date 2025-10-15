@@ -12,6 +12,12 @@ export const bands = sqliteTable('bands', {
   bandName: text('bandName').notNull(),
 });
 
+// Status table
+export const status = sqliteTable('status', {
+  statusId: integer('statusId').primaryKey({ autoIncrement: true }),
+  statusName: text('statusName').notNull(),
+});
+
 // Job roles table
 export const jobRoles = sqliteTable('job_roles', {
   jobRoleId: integer('jobRoleId').primaryKey({ autoIncrement: true }),
@@ -19,11 +25,11 @@ export const jobRoles = sqliteTable('job_roles', {
   location: text('location').notNull(),
   capabilityId: integer('capabilityId').references(() => capabilities.capabilityId),
   bandId: integer('bandId').references(() => bands.bandId),
+  statusId: integer('statusId').references(() => status.statusId),
   closingDate: text('closingDate').notNull(), // Using text for date, you can also use integer for timestamp
   description: text('description'),
   responsibilities: text('responsibilities'),
   jobSpecUrl: text('jobSpecUrl'),
-  status: text('status').notNull().default('Open'),
   openPositions: integer('openPositions').notNull().default(1),
   deleted: integer('deleted').default(0).notNull(), // Soft delete flag
 });
@@ -49,6 +55,9 @@ export type NewCapability = typeof capabilities.$inferInsert;
 
 export type Band = typeof bands.$inferSelect;
 export type NewBand = typeof bands.$inferInsert;
+
+export type Status = typeof status.$inferSelect;
+export type NewStatus = typeof status.$inferInsert;
 
 export type JobRole = typeof jobRoles.$inferSelect;
 export type NewJobRole = typeof jobRoles.$inferInsert;

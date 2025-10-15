@@ -203,4 +203,17 @@ export class JobController {
       });
     }
   }
+
+  async getStatuses(_req: Request, res: Response): Promise<void> {
+    try {
+      const statuses = await this.jobService.getStatuses();
+      res.status(200).json(statuses);
+    } catch (error) {
+      console.error('Error fetching statuses:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Failed to fetch statuses',
+      });
+    }
+  }
 }

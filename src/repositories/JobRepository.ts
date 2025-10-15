@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/database.js';
-import { bands, capabilities, jobRoles } from '../db/schema.js';
+import { bands, capabilities, jobRoles, status } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 import type {
@@ -10,6 +10,7 @@ import type {
   JobRoleCreate,
   JobRoleDetails,
   JobRoleUpdate,
+  Status,
 } from '../models/JobModel.js';
 export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
@@ -63,10 +64,13 @@ export class JobRepository {
         capabilityName: capabilities.capabilityName,
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
+        statusId: jobRoles.statusId,
+        statusName: status.statusName,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
       .where(eq(jobRoles.deleted, 0));
     const endTime = Date.now();
     console.log(
@@ -86,10 +90,13 @@ export class JobRepository {
         capabilityName: capabilities.capabilityName,
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
+        statusId: jobRoles.statusId,
+        statusName: status.statusName,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
       .where(and(eq(jobRoles.jobRoleId, jobRoleID), eq(jobRoles.deleted, 0)));
     return job;
   }
@@ -103,10 +110,10 @@ export class JobRepository {
           closingDate: jobRole.closingDate,
           capabilityId: jobRole.capabilityId,
           bandId: jobRole.bandId,
+          statusId: jobRole.statusId || 1, // Default to 'Open' (ID 1)
           description: jobRole.description || null,
           responsibilities: jobRole.responsibilities || null,
           jobSpecUrl: jobRole.jobSpecUrl || null,
-          status: jobRole.status || 'Open',
           openPositions: jobRole.openPositions || 1,
           deleted: 0,
         })
@@ -126,16 +133,18 @@ export class JobRepository {
           capabilityName: capabilities.capabilityName,
           bandId: jobRoles.bandId,
           bandName: bands.bandName,
+          statusId: jobRoles.statusId,
+          statusName: status.statusName,
           closingDate: jobRoles.closingDate,
           description: jobRoles.description,
           responsibilities: jobRoles.responsibilities,
           jobSpecUrl: jobRoles.jobSpecUrl,
-          status: jobRoles.status,
           openPositions: jobRoles.openPositions,
         })
         .from(jobRoles)
         .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
         .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+        .leftJoin(status, eq(jobRoles.statusId, status.statusId))
         .where(eq(jobRoles.jobRoleId, result.jobRoleId))
         .limit(1);
 
@@ -169,16 +178,18 @@ export class JobRepository {
         capabilityName: capabilities.capabilityName,
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
+        statusId: jobRoles.statusId,
+        statusName: status.statusName,
         closingDate: jobRoles.closingDate,
         description: jobRoles.description,
         responsibilities: jobRoles.responsibilities,
         jobSpecUrl: jobRoles.jobSpecUrl,
-        status: jobRoles.status,
         openPositions: jobRoles.openPositions,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
       .where(and(eq(jobRoles.jobRoleId, id), eq(jobRoles.deleted, 0)))
       .limit(1);
 
@@ -207,7 +218,7 @@ export class JobRepository {
       description: string | null;
       responsibilities: string | null;
       jobSpecUrl: string | null;
-      status: string;
+      statusId: number;
       openPositions: number;
     }> = {};
 
@@ -220,7 +231,7 @@ export class JobRepository {
     if (updates.responsibilities !== undefined)
       dbUpdates.responsibilities = updates.responsibilities;
     if (updates.jobSpecUrl !== undefined) dbUpdates.jobSpecUrl = updates.jobSpecUrl;
-    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.statusId !== undefined) dbUpdates.statusId = updates.statusId;
     if (updates.openPositions !== undefined) dbUpdates.openPositions = updates.openPositions;
 
     // Update the job role in the database
@@ -241,16 +252,18 @@ export class JobRepository {
         capabilityName: capabilities.capabilityName,
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
+        statusId: jobRoles.statusId,
+        statusName: status.statusName,
         closingDate: jobRoles.closingDate,
         description: jobRoles.description,
         responsibilities: jobRoles.responsibilities,
         jobSpecUrl: jobRoles.jobSpecUrl,
-        status: jobRoles.status,
         openPositions: jobRoles.openPositions,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
       .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)))
       .limit(1);
 
@@ -277,6 +290,18 @@ export class JobRepository {
       })
       .from(bands)
       .orderBy(bands.bandName);
+
+    return result;
+  }
+
+  async getAllStatuses(): Promise<Status[]> {
+    const result = await db
+      .select({
+        id: status.statusId,
+        name: status.statusName,
+      })
+      .from(status)
+      .orderBy(status.statusName);
 
     return result;
   }
