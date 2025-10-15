@@ -152,4 +152,21 @@ export class JobService {
   async getStatuses(): Promise<Status[]> {
     return await this.jobRepository.getAllStatuses();
   }
+
+  /**
+   * Auto-close job roles that have expired (past closing date or no positions)
+   * @returns Object with count of closed jobs and details
+   */
+  async autoCloseExpiredJobRoles(): Promise<{ closedCount: number; message: string }> {
+    console.log('JobService.autoCloseExpiredJobRoles: Starting auto-close process...');
+    const closedCount = await this.jobRepository.autoCloseExpiredJobRoles();
+
+    const message =
+      closedCount > 0
+        ? `Successfully auto-closed ${closedCount} job role(s)`
+        : 'No job roles needed to be closed';
+
+    console.log(`JobService.autoCloseExpiredJobRoles: ${message}`);
+    return { closedCount, message };
+  }
 }

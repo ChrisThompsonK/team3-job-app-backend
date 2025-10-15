@@ -221,4 +221,22 @@ export class JobController {
       });
     }
   }
+
+  /**
+   * Auto-close expired job roles
+   * POST /jobs/auto-close
+   */
+  async autoCloseExpiredJobRoles(_req: Request, res: Response): Promise<void> {
+    try {
+      console.log('JobController.autoCloseExpiredJobRoles: Starting auto-close process...');
+      const result = await this.jobService.autoCloseExpiredJobRoles();
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error auto-closing job roles:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Failed to auto-close job roles',
+      });
+    }
+  }
 }
