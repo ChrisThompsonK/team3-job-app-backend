@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/database.js';
-import { bands, capabilities, jobRoles, status } from '../db/schema.js';
+import { bands, capabilities, jobRoles, jobAvailabilityStatus } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
 import type { HealthInfo } from '../models/HealthInfo.js';
 import type {
@@ -65,12 +65,12 @@ export class JobRepository {
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
         statusId: jobRoles.statusId,
-        statusName: status.statusName,
+        statusName: jobAvailabilityStatus.statusName,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
+      .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(eq(jobRoles.deleted, 0));
     const endTime = Date.now();
     console.log(
@@ -91,12 +91,12 @@ export class JobRepository {
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
         statusId: jobRoles.statusId,
-        statusName: status.statusName,
+        statusName: jobAvailabilityStatus.statusName,
       })
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
+      .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(and(eq(jobRoles.jobRoleId, jobRoleID), eq(jobRoles.deleted, 0)));
     return job;
   }
@@ -134,7 +134,7 @@ export class JobRepository {
           bandId: jobRoles.bandId,
           bandName: bands.bandName,
           statusId: jobRoles.statusId,
-          statusName: status.statusName,
+          statusName: jobAvailabilityStatus.statusName,
           closingDate: jobRoles.closingDate,
           description: jobRoles.description,
           responsibilities: jobRoles.responsibilities,
@@ -144,7 +144,7 @@ export class JobRepository {
         .from(jobRoles)
         .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
         .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-        .leftJoin(status, eq(jobRoles.statusId, status.statusId))
+        .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
         .where(eq(jobRoles.jobRoleId, result.jobRoleId))
         .limit(1);
 
@@ -179,7 +179,7 @@ export class JobRepository {
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
         statusId: jobRoles.statusId,
-        statusName: status.statusName,
+        statusName: jobAvailabilityStatus.statusName,
         closingDate: jobRoles.closingDate,
         description: jobRoles.description,
         responsibilities: jobRoles.responsibilities,
@@ -189,7 +189,7 @@ export class JobRepository {
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
+      .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(and(eq(jobRoles.jobRoleId, id), eq(jobRoles.deleted, 0)))
       .limit(1);
 
@@ -253,7 +253,7 @@ export class JobRepository {
         bandId: jobRoles.bandId,
         bandName: bands.bandName,
         statusId: jobRoles.statusId,
-        statusName: status.statusName,
+        statusName: jobAvailabilityStatus.statusName,
         closingDate: jobRoles.closingDate,
         description: jobRoles.description,
         responsibilities: jobRoles.responsibilities,
@@ -263,7 +263,7 @@ export class JobRepository {
       .from(jobRoles)
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .leftJoin(status, eq(jobRoles.statusId, status.statusId))
+      .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)))
       .limit(1);
 
@@ -297,11 +297,11 @@ export class JobRepository {
   async getAllStatuses(): Promise<Status[]> {
     const result = await db
       .select({
-        id: status.statusId,
-        name: status.statusName,
+        id: jobAvailabilityStatus.statusId,
+        name: jobAvailabilityStatus.statusName,
       })
-      .from(status)
-      .orderBy(status.statusName);
+      .from(jobAvailabilityStatus)
+      .orderBy(jobAvailabilityStatus.statusName);
 
     return result;
   }

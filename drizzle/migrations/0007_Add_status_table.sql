@@ -1,15 +1,15 @@
--- Create status table
-CREATE TABLE `status`(
+-- Create job availability status table
+CREATE TABLE `job_availability_status`(
   `statusId` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   `statusName` text NOT NULL
 );
 
 -- Insert default statuses (Open=1, Closed=2)
-INSERT INTO `status` (`statusName`) VALUES ('Open');
-INSERT INTO `status` (`statusName`) VALUES ('Closed');
+INSERT INTO `job_availability_status` (`statusName`) VALUES ('Open');
+INSERT INTO `job_availability_status` (`statusName`) VALUES ('Closed');
 
 -- Add statusId column to job_roles table
-ALTER TABLE `job_roles` ADD COLUMN `statusId` integer REFERENCES `status`(`statusId`);
+ALTER TABLE `job_roles` ADD COLUMN `statusId` integer REFERENCES `job_availability_status`(`statusId`);
 
 -- Update existing records to use statusId
 -- Convert 'Open' and 'Closing Soon' to 'Open' (statusId = 1)

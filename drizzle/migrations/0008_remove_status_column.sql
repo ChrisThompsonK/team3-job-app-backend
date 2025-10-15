@@ -14,7 +14,7 @@ CREATE TABLE `job_roles_new`(
   `jobSpecUrl` text,
   `openPositions` integer DEFAULT 1 NOT NULL,
   `deleted` integer DEFAULT 0 NOT NULL,
-  `statusId` integer REFERENCES `status`(`statusId`),
+  `statusId` integer REFERENCES `job_availability_status`(`statusId`),
   FOREIGN KEY (`capabilityId`) REFERENCES `capabilities`(`capabilityId`) ON UPDATE no action ON DELETE no action,
   FOREIGN KEY (`bandId`) REFERENCES `bands`(`bandId`) ON UPDATE no action ON DELETE no action
 );
