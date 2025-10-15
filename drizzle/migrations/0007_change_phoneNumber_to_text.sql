@@ -16,27 +16,17 @@ CREATE TABLE 'Applications_new' (
 );
 
 -- Step 2: Copy data from old table to new table (converting phoneNumber to text)
-INSERT INTO 'Applications_new' (
-    'applicationID',
-    'jobRoleId',
-    'phoneNumber',
-    'emailAddress',
-    'status',
-    'coverLetter',
-    'notes',
-    'createdAt',
-    'updatedAt'
-)
+INSERT INTO 'Applications_new' 
 SELECT 
-    'applicationID',
-    'jobRoleId',
-    CAST('phoneNumber' AS TEXT),
-    'emailAddress',
-    'status',
-    'coverLetter',
-    'notes',
-    'createdAt',
-    'updatedAt'
+    applicationID,
+    jobRoleId,
+    CAST(phoneNumber AS TEXT),
+    emailAddress,
+    status,
+    coverLetter,
+    notes,
+    createdAt,
+    updatedAt
 FROM 'Applications';
 
 -- Step 3: Drop the old table

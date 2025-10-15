@@ -109,10 +109,6 @@ For the best development experience, install the Biome extension for your editor
 - `GET /applications-with-roles` - Get all applications with job role details (admin)
 - `PUT /applications/:id/status` - Update application status (admin)
 
-### Documentation
-For detailed API documentation, see:
-- [My Applications API](docs/MY_APPLICATIONS_API.md) - User-facing endpoint for viewing job applications
-
 ## 🗄️ Database
 
 This project uses SQLite with Drizzle ORM for database management.
