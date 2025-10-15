@@ -39,7 +39,7 @@ export class ApplicationService {
       }
 
       // Check if job role is open for applications
-      if (!jobRole.statusId || jobRole.statusName !== 'Open') {
+      if (jobRole.statusName !== 'Open') {
         return {
           success: false,
           message: 'This job role is no longer accepting applications',
