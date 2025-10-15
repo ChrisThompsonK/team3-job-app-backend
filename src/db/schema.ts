@@ -38,7 +38,6 @@ export const applications = sqliteTable('Applications', {
   emailAddress: text('emailAddress').notNull(),
   status: text('status').notNull().default('Pending'),
   coverLetter: text('coverLetter'),
-  resumeUrl: text('resumeUrl'),
   notes: text('notes'),
   createdAt: text('createdAt').notNull(),
   updatedAt: text('updatedAt').notNull(),

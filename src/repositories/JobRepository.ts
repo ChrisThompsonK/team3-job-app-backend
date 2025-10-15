@@ -51,6 +51,8 @@ export class JobRepository {
 
   async getAllJobs(): Promise<JobRole[]> {
     // Query all job roles from the database with capability and band names - standardized property names
+    console.log('JobRepository.getAllJobs: Executing Drizzle query...');
+    const startTime = Date.now();
     const jobs = await db
       .select({
         id: jobRoles.jobRoleId,
@@ -66,6 +68,10 @@ export class JobRepository {
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
       .where(eq(jobRoles.deleted, 0));
+    const endTime = Date.now();
+    console.log(
+      `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
+    );
     return jobs;
   }
 

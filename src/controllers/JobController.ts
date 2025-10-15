@@ -11,7 +11,11 @@ export class JobController {
 
   async getJobs(_req: Request, res: Response): Promise<void> {
     try {
+      console.log('JobController.getJobs: Starting to fetch jobs...');
+      const startTime = Date.now();
       const jobs = await this.jobService.fetchJobs();
+      const endTime = Date.now();
+      console.log(`JobController.getJobs: Fetched ${jobs.length} jobs in ${endTime - startTime}ms`);
       res.json(jobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);

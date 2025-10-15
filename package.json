@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Team 3 Job Application Frontend",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
     "format": "biome format --write .",

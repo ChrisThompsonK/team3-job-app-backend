@@ -73,7 +73,12 @@ export class JobService {
   }
 
   async fetchJobs(): Promise<JobRole[]> {
-    return await this.jobRepository.getAllJobs();
+    console.log('JobService.fetchJobs: Starting database query...');
+    const startTime = Date.now();
+    const result = await this.jobRepository.getAllJobs();
+    const endTime = Date.now();
+    console.log(`JobService.fetchJobs: Database query completed in ${endTime - startTime}ms`);
+    return result;
   }
 
   async getJobById(jobID: number): Promise<JobRoleDetails | null> {
