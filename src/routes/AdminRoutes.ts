@@ -14,14 +14,14 @@ router.get('/scheduler/status', (_req, res) => {
       success: true,
       data: {
         tasks: statuses,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
   } catch (error) {
     console.error('Error getting scheduler status:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to get scheduler status'
+      error: 'Failed to get scheduler status',
     });
   }
 });
@@ -34,23 +34,23 @@ router.post('/scheduler/start/:taskName', (req, res) => {
   try {
     const { taskName } = req.params;
     const success = schedulerService.startTask(taskName);
-    
+
     if (success) {
       res.json({
         success: true,
-        message: `Task '${taskName}' started successfully`
+        message: `Task '${taskName}' started successfully`,
       });
     } else {
       res.status(400).json({
         success: false,
-        error: `Task '${taskName}' not found or already running`
+        error: `Task '${taskName}' not found or already running`,
       });
     }
   } catch (error) {
     console.error('Error starting task:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to start task'
+      error: 'Failed to start task',
     });
   }
 });
@@ -63,23 +63,23 @@ router.post('/scheduler/stop/:taskName', (req, res) => {
   try {
     const { taskName } = req.params;
     const success = schedulerService.stopTask(taskName);
-    
+
     if (success) {
       res.json({
         success: true,
-        message: `Task '${taskName}' stopped successfully`
+        message: `Task '${taskName}' stopped successfully`,
       });
     } else {
       res.status(400).json({
         success: false,
-        error: `Task '${taskName}' not found or already stopped`
+        error: `Task '${taskName}' not found or already stopped`,
       });
     }
   } catch (error) {
     console.error('Error stopping task:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to stop task'
+      error: 'Failed to stop task',
     });
   }
 });
@@ -93,13 +93,13 @@ router.post('/scheduler/start-all', (_req, res) => {
     schedulerService.startAllTasks();
     res.json({
       success: true,
-      message: 'All tasks started successfully'
+      message: 'All tasks started successfully',
     });
   } catch (error) {
     console.error('Error starting all tasks:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to start all tasks'
+      error: 'Failed to start all tasks',
     });
   }
 });
@@ -113,13 +113,13 @@ router.post('/scheduler/stop-all', (_req, res) => {
     schedulerService.stopAllTasks();
     res.json({
       success: true,
-      message: 'All tasks stopped successfully'
+      message: 'All tasks stopped successfully',
     });
   } catch (error) {
     console.error('Error stopping all tasks:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to stop all tasks'
+      error: 'Failed to stop all tasks',
     });
   }
 });
@@ -134,14 +134,14 @@ router.post('/scheduler/trigger/auto-close', async (_req, res) => {
     res.json({
       success: true,
       data: result,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Error triggering auto-close task:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to trigger auto-close task',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });

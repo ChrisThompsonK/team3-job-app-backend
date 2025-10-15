@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import express from 'express';
 import { setupApp } from './middleware/appSetup.js';
+import { adminRoutes } from './routes/AdminRoutes.js';
 import { applicationRoutes } from './routes/ApplicationRoutes.js';
 import { jobRoutes } from './routes/JobRoutes.js';
-import { adminRoutes } from './routes/AdminRoutes.js';
 
 // Initialize Express app
 const app = express();

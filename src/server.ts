@@ -1,5 +1,5 @@
-import app from './index.js';
 import { schedulerService } from './di/SchedulerService.js';
+import app from './index.js';
 import 'dotenv/config';
 
 const PORT = process.env['PORT'] || 3001;

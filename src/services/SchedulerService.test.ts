@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { SchedulerService } from './SchedulerService.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { JobService } from './JobService.js';
+import { SchedulerService } from './SchedulerService.js';
 
 // Mock JobService
 const mockJobService: JobService = {
   autoCloseExpiredJobRoles: vi.fn().mockResolvedValue({
     closedCount: 2,
-    message: 'Successfully auto-closed 2 job role(s)'
-  })
+    message: 'Successfully auto-closed 2 job role(s)',
+  }),
 } as any;
 
 describe('SchedulerService', () => {
@@ -43,7 +43,7 @@ describe('SchedulerService', () => {
     it('should stop a specific task', () => {
       const result = schedulerService.stopTask('auto-close-expired-jobs');
       expect(result).toBe(true);
-      
+
       const statuses = schedulerService.getTaskStatuses();
       expect(statuses['auto-close-expired-jobs']).toBe(false);
     });
@@ -52,7 +52,7 @@ describe('SchedulerService', () => {
       schedulerService.stopTask('auto-close-expired-jobs');
       const result = schedulerService.startTask('auto-close-expired-jobs');
       expect(result).toBe(true);
-      
+
       const statuses = schedulerService.getTaskStatuses();
       expect(statuses['auto-close-expired-jobs']).toBe(true);
     });
@@ -84,11 +84,11 @@ describe('SchedulerService', () => {
   describe('manual triggers', () => {
     it('should manually trigger auto-close job roles', async () => {
       const result = await schedulerService.triggerAutoCloseJobRoles();
-      
+
       expect(mockJobService.autoCloseExpiredJobRoles).toHaveBeenCalledOnce();
       expect(result).toEqual({
         closedCount: 2,
-        message: 'Successfully auto-closed 2 job role(s)'
+        message: 'Successfully auto-closed 2 job role(s)',
       });
     });
 
@@ -96,7 +96,9 @@ describe('SchedulerService', () => {
       const error = new Error('Database connection failed');
       vi.mocked(mockJobService.autoCloseExpiredJobRoles).mockRejectedValueOnce(error);
 
-      await expect(schedulerService.triggerAutoCloseJobRoles()).rejects.toThrow('Database connection failed');
+      await expect(schedulerService.triggerAutoCloseJobRoles()).rejects.toThrow(
+        'Database connection failed'
+      );
     });
   });
 
@@ -107,7 +109,7 @@ describe('SchedulerService', () => {
 
     it('should destroy all tasks', () => {
       expect(() => schedulerService.destroy()).not.toThrow();
-      
+
       // After destroy, task statuses should be empty
       const statuses = schedulerService.getTaskStatuses();
       expect(Object.keys(statuses)).toHaveLength(0);

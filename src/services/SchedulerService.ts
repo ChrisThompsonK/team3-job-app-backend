@@ -15,10 +15,10 @@ export class SchedulerService {
    */
   public initializeSchedules(): void {
     console.log('SchedulerService: Initializing scheduled tasks...');
-    
+
     // Schedule auto-close job roles to run daily at 1:00 AM
     this.scheduleAutoCloseJobRoles();
-    
+
     console.log('SchedulerService: All scheduled tasks initialized successfully');
   }
 
@@ -28,27 +28,33 @@ export class SchedulerService {
    */
   private scheduleAutoCloseJobRoles(): void {
     const taskName = 'auto-close-expired-jobs';
-    
+
     // Cron expression: 0 1 * * * (every day at 1:00 AM)
     const cronExpression = '0 1 * * *';
-    
-    const task = cron.schedule(cronExpression, async () => {
-      try {
-        console.log(`[${new Date().toISOString()}] Running scheduled task: Auto-close expired job roles`);
-        
-        const result = await this.jobService.autoCloseExpiredJobRoles();
-        
-        console.log(`[${new Date().toISOString()}] Auto-close task completed: ${result.message}`);
-      } catch (error) {
-        console.error(`[${new Date().toISOString()}] Error in auto-close task:`, error);
+
+    const task = cron.schedule(
+      cronExpression,
+      async () => {
+        try {
+          console.log(
+            `[${new Date().toISOString()}] Running scheduled task: Auto-close expired job roles`
+          );
+
+          const result = await this.jobService.autoCloseExpiredJobRoles();
+
+          console.log(`[${new Date().toISOString()}] Auto-close task completed: ${result.message}`);
+        } catch (error) {
+          console.error(`[${new Date().toISOString()}] Error in auto-close task:`, error);
+        }
+      },
+      {
+        timezone: 'UTC', // Use UTC timezone for consistency
       }
-    }, {
-      timezone: 'UTC' // Use UTC timezone for consistency
-    });
+    );
 
     this.tasks.set(taskName, task);
     this.taskStatuses.set(taskName, true);
-    
+
     console.log(`SchedulerService: Scheduled '${taskName}' to run daily at 1:00 AM UTC`);
   }
 
@@ -57,7 +63,7 @@ export class SchedulerService {
    */
   public startAllTasks(): void {
     console.log('SchedulerService: Starting all scheduled tasks...');
-    
+
     for (const [taskName, task] of this.tasks) {
       if (!this.taskStatuses.get(taskName)) {
         task.start();
@@ -72,7 +78,7 @@ export class SchedulerService {
    */
   public stopAllTasks(): void {
     console.log('SchedulerService: Stopping all scheduled tasks...');
-    
+
     for (const [taskName, task] of this.tasks) {
       if (this.taskStatuses.get(taskName)) {
         task.stop();
@@ -115,11 +121,11 @@ export class SchedulerService {
    */
   public getTaskStatuses(): Record<string, boolean> {
     const statuses: Record<string, boolean> = {};
-    
+
     for (const [taskName] of this.tasks) {
       statuses[taskName] = this.taskStatuses.get(taskName) || false;
     }
-    
+
     return statuses;
   }
 
@@ -128,7 +134,7 @@ export class SchedulerService {
    */
   public async triggerAutoCloseJobRoles(): Promise<{ closedCount: number; message: string }> {
     console.log('SchedulerService: Manually triggering auto-close expired job roles...');
-    
+
     try {
       const result = await this.jobService.autoCloseExpiredJobRoles();
       console.log(`SchedulerService: Manual trigger completed: ${result.message}`);
@@ -144,12 +150,12 @@ export class SchedulerService {
    */
   public destroy(): void {
     console.log('SchedulerService: Destroying all scheduled tasks...');
-    
+
     for (const [taskName, task] of this.tasks) {
       task.destroy();
       console.log(`SchedulerService: Destroyed task '${taskName}'`);
     }
-    
+
     this.tasks.clear();
     this.taskStatuses.clear();
     console.log('SchedulerService: All tasks destroyed and cleaned up');
