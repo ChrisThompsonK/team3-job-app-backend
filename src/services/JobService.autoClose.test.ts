@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { JobService } from './JobService.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
+import { JobService } from './JobService.js';
 
 describe('JobService - autoCloseExpiredJobRoles', () => {
   it('should call repository method and return formatted result', async () => {
