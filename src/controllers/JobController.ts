@@ -9,11 +9,16 @@ export class JobController {
     this.jobService = jobService;
   }
 
-  async getJobs(_req: Request, res: Response): Promise<void> {
+  async getJobs(req: Request, res: Response): Promise<void> {
     try {
       console.log('JobController.getJobs: Starting to fetch jobs...');
       const startTime = Date.now();
-      const jobs = await this.jobService.fetchJobs();
+
+      // Extract sort parameters from query string
+      const sortBy = (req.query['sortBy'] as string) || 'name';
+      const sortOrder = (req.query['sortOrder'] as string) || 'asc';
+
+      const jobs = await this.jobService.fetchJobs(sortBy, sortOrder);
       const endTime = Date.now();
       console.log(`JobController.getJobs: Fetched ${jobs.length} jobs in ${endTime - startTime}ms`);
       res.json(jobs);

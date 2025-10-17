@@ -1,4 +1,4 @@
-import { and, eq, lte, or } from 'drizzle-orm';
+import { and, asc, desc, eq, lte, or } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { bands, capabilities, jobAvailabilityStatus, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
@@ -50,10 +50,26 @@ export class JobRepository {
     });
   }
 
-  async getAllJobs(): Promise<JobRole[]> {
+  async getAllJobs(sortBy = 'name', sortOrder = 'asc'): Promise<JobRole[]> {
     // Query all job roles from the database with capability and band names - standardized property names
     console.log('JobRepository.getAllJobs: Executing Drizzle query...');
     const startTime = Date.now();
+
+    // Map sort field to actual database column
+    const sortFieldMap = {
+      name: jobRoles.roleName,
+      location: jobRoles.location,
+      closingDate: jobRoles.closingDate,
+      capabilityName: capabilities.capabilityName,
+      bandName: bands.bandName,
+      statusName: jobAvailabilityStatus.statusName,
+      openPositions: jobRoles.openPositions,
+    };
+
+    type SortField = keyof typeof sortFieldMap;
+    const sortColumn = sortFieldMap[sortBy as SortField] || jobRoles.roleName;
+    const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
+
     const jobs = await db
       .select({
         id: jobRoles.jobRoleId,
@@ -71,7 +87,8 @@ export class JobRepository {
       .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
       .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
       .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
-      .where(eq(jobRoles.deleted, 0));
+      .where(eq(jobRoles.deleted, 0))
+      .orderBy(orderFn(sortColumn));
     const endTime = Date.now();
     console.log(
       `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
