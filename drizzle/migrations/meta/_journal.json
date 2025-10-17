@@ -5,22 +5,36 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1759493565322,
-      "tag": "0000_perpetual_ulik",
+      "when": 1729155000000,
+      "tag": "0000_create_capabilities_table",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "6",
-      "when": 1759917638020,
-      "tag": "0001_light_nightmare",
+      "when": 1729155060000,
+      "tag": "0001_create_bands_table",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "6",
-      "when": 1759920649431,
-      "tag": "0002_high_nicolaos",
+      "when": 1729155120000,
+      "tag": "0002_create_job_availability_status_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1729155180000,
+      "tag": "0003_create_job_roles_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1729155240000,
+      "tag": "0004_create_applications_table",
       "breakpoints": true
     }
   ]
