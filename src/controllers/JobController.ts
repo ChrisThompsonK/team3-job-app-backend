@@ -18,7 +18,28 @@ export class JobController {
       const sortBy = (req.query['sortBy'] as string) || 'name';
       const sortOrder = (req.query['sortOrder'] as string) || 'asc';
 
-      const jobs = await this.jobService.fetchJobs(sortBy, sortOrder);
+      // Extract pagination parameters from query string
+      const limit = req.query['limit'] ? Number.parseInt(req.query['limit'] as string, 10) : undefined;
+      const offset = req.query['offset'] ? Number.parseInt(req.query['offset'] as string, 10) : undefined;
+
+      // Validate pagination parameters
+      if (limit !== undefined && (Number.isNaN(limit) || limit < 0)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid limit parameter',
+        });
+        return;
+      }
+
+      if (offset !== undefined && (Number.isNaN(offset) || offset < 0)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid offset parameter',
+        });
+        return;
+      }
+
+      const jobs = await this.jobService.fetchJobs(sortBy, sortOrder, limit, offset);
       const endTime = Date.now();
       console.log(`JobController.getJobs: Fetched ${jobs.length} jobs in ${endTime - startTime}ms`);
       res.json(jobs);
