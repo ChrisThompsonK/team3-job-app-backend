@@ -129,4 +129,26 @@ export class ApplicationRepository {
 
     return result;
   }
+
+  async getApplicationsByEmail(emailAddress: string): Promise<ApplicationWithJobRole[]> {
+    const result = await db
+      .select({
+        applicationID: applications.applicationID,
+        jobRoleId: applications.jobRoleId,
+        phoneNumber: applications.phoneNumber,
+        emailAddress: applications.emailAddress,
+        status: applications.status,
+        coverLetter: applications.coverLetter,
+        notes: applications.notes,
+        createdAt: applications.createdAt,
+        updatedAt: applications.updatedAt,
+        jobRoleName: jobRoles.roleName,
+        jobRoleLocation: jobRoles.location,
+      })
+      .from(applications)
+      .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
+      .where(eq(applications.emailAddress, emailAddress));
+
+    return result as ApplicationWithJobRole[];
+  }
 }

@@ -104,6 +104,14 @@ export class ApplicationService {
     return await this.applicationRepository.updateApplicationStatus(applicationID, status);
   }
 
+  async getApplicationsByEmail(emailAddress: string): Promise<ApplicationWithJobRole[]> {
+    if (!emailAddress || !this.isValidEmail(emailAddress)) {
+      throw new Error('Valid email address is required');
+    }
+
+    return await this.applicationRepository.getApplicationsByEmail(emailAddress);
+  }
+
   private validateApplicationData(data: ApplicationCreate): void {
     // Validate email format
     if (!data.emailAddress || !this.isValidEmail(data.emailAddress)) {
@@ -131,10 +139,12 @@ export class ApplicationService {
     return emailRegex.test(email);
   }
 
-  private isValidPhoneNumber(phone: number): boolean {
-    // Check if it's a positive number and has reasonable length (6-15 digits)
-    const phoneStr = phone.toString();
-    return phoneStr.length >= 6 && phoneStr.length <= 15 && /^\d+$/.test(phoneStr);
+  private isValidPhoneNumber(phone: string): boolean {
+    // Check if it's a valid phone number format
+    // Allow digits, spaces, hyphens, parentheses, and + sign
+    // Must have at least 6 digits total (international numbers can be longer)
+    const digitsOnly = phone.replace(/\D/g, '');
+    return digitsOnly.length >= 6 && digitsOnly.length <= 15 && /^[\d\s\-+()]+$/.test(phone);
   }
 
   private isValidStatus(status: string): boolean {

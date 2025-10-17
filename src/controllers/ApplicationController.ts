@@ -186,4 +186,28 @@ export class ApplicationController {
       });
     }
   }
+
+  // Get applications by email address (for logged-in user to view their own applications)
+  async getApplicationsByEmail(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.query;
+
+      if (!email || typeof email !== 'string') {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Email address is required as a query parameter',
+        });
+        return;
+      }
+
+      const applications = await this.applicationService.getApplicationsByEmail(email);
+      res.json(applications);
+    } catch (error) {
+      console.error('Error fetching applications by email:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch applications',
+      });
+    }
+  }
 }
