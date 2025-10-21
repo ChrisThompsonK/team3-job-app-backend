@@ -122,7 +122,7 @@ export class JobController {
       if (!createdJob) {
         res.status(500).json({
           success: false,
-          message: 'Failed to create job role',
+          message: 'Failed to create job role - no data returned',
         });
         return;
       }
@@ -131,9 +131,17 @@ export class JobController {
       res.status(201).json(createdJob);
     } catch (error) {
       console.error('Error in addJob controller:', error);
-      res.status(400).json({
+      const errorMessage = error instanceof Error ? error.message : 'Error creating job role';
+      
+      // Determine status code based on error type
+      let statusCode = 400;
+      if (errorMessage.includes('Failed to create') || errorMessage.includes('database')) {
+        statusCode = 500;
+      }
+      
+      res.status(statusCode).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Error creating job role',
+        message: errorMessage,
       });
     }
   }

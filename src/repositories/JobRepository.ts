@@ -119,7 +119,8 @@ export class JobRepository {
   }
   async addJobRole(jobRole: JobRoleCreate): Promise<JobRoleDetails | null> {
     try {
-      const [result] = await db
+      // Insert without .returning() to avoid SQLite auto-increment issues
+      const result = await db
         .insert(jobRoles)
         .values({
           roleName: jobRole.name,
@@ -133,10 +134,12 @@ export class JobRepository {
           jobSpecUrl: jobRole.jobSpecUrl || null,
           openPositions: jobRole.openPositions || 1,
           deleted: 0,
-        })
-        .returning();
+        });
 
-      if (!result) {
+      // Get the last inserted row ID from the result
+      const insertedId = result.lastInsertRowid;
+
+      if (!insertedId) {
         return null;
       }
 
@@ -162,13 +165,14 @@ export class JobRepository {
         .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
         .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
         .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
-        .where(eq(jobRoles.jobRoleId, result.jobRoleId))
+        .where(eq(jobRoles.jobRoleId, Number(insertedId)))
         .limit(1);
 
       return completeJob || null;
     } catch (error) {
       console.error('Error adding job role:', error);
-      return null;
+      // Re-throw the error so it can be handled by the service layer with proper error messages
+      throw error;
     }
   }
 

@@ -17,6 +17,14 @@ export async function seedBands() {
   ];
 
   try {
+    // Check if bands already exist
+    const existingBands = await db.select().from(bands);
+    
+    if (existingBands.length > 0) {
+      console.log(`Bands already seeded (${existingBands.length} found). Skipping...`);
+      return;
+    }
+    
     await db.insert(bands).values(bandsData);
     console.log(`✅ Successfully seeded ${bandsData.length} bands`);
   } catch (error) {

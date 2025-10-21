@@ -129,8 +129,21 @@ export class JobService {
       throw new Error('Open positions must be greater than 0');
     }
 
-    const createdJob = await this.jobRepository.addJobRole(jobData);
-    return createdJob;
+    try {
+      const createdJob = await this.jobRepository.addJobRole(jobData);
+      return createdJob;
+    } catch (error) {
+      // Handle database constraint errors
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Check for foreign key constraint violations
+      if (errorMessage.includes('FOREIGN KEY constraint failed')) {
+        throw new Error('Invalid capability ID or band ID. Please select valid options from the dropdown.');
+      }
+      
+      // Re-throw other errors
+      throw error;
+    }
   }
 
   async deleteJob(jobRoleId: number): Promise<boolean> {
