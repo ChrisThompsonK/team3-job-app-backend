@@ -17,7 +17,6 @@ const server = app.listen(PORT, () => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully...');
-  // schedulerService.destroy();
   server.close(() => {
     console.log('Server closed');
     process.exit(0);
