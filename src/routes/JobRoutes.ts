@@ -1,3 +1,4 @@
+import type { Request } from 'express';
 import { Router } from 'express';
 import { jobController } from '../di/JobController.js';
 import { requireAdmin } from '../middleware/adminAuth.js';
@@ -12,7 +13,9 @@ router.get('/jobs/:id', async (req, res) => jobController.getJobById(req, res));
 // Admin-only routes - requires admin role
 router.post('/jobs/job', requireAdmin, async (req, res) => jobController.addJobRole(req, res));
 
-router.delete('/job/:id', requireAdmin, async (req, res) => jobController.deleteJobRole(req, res));
+router.delete('/job/:id', requireAdmin, async (req: Request<{ id: string }>, res) =>
+  jobController.deleteJobRole(req, res)
+);
 
 router.put('/jobs/:id', requireAdmin, async (req, res) => jobController.updateJobRole(req, res));
 

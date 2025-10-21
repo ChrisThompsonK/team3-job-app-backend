@@ -16,7 +16,9 @@ router.get('/applications/my-applications', async (req, res) =>
 
 // Admin-only routes - requires admin role for reports and management
 // Get all applications (admin report)
-router.get('/applications', requireAdmin, async (req, res) => applicationController.getAllApplications(req, res));
+router.get('/applications', requireAdmin, async (req, res) =>
+  applicationController.getAllApplications(req, res)
+);
 
 // Get a specific application by ID (admin access)
 // IMPORTANT: This must come AFTER more specific routes like /applications/my-applications
