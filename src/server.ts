@@ -25,7 +25,6 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully...');
-  // schedulerService.destroy();
   server.close(() => {
     console.log('Server closed');
     process.exit(0);
