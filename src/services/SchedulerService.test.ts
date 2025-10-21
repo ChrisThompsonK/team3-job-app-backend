@@ -2,13 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { JobService } from './JobService.js';
 import { SchedulerService } from './SchedulerService.js';
 
-// Mock JobService
-const mockJobService: JobService = {
+// Mock JobService - only implement the methods we need for this test
+const mockJobService = {
   autoCloseExpiredJobRoles: vi.fn().mockResolvedValue({
     closedCount: 2,
     message: 'Successfully auto-closed 2 job role(s)',
   }),
-} as any;
+} as Pick<JobService, 'autoCloseExpiredJobRoles'> as JobService;
 
 describe('SchedulerService', () => {
   let schedulerService: SchedulerService;
