@@ -19,8 +19,12 @@ export class JobController {
       const sortOrder = (req.query['sortOrder'] as string) || 'asc';
 
       // Extract pagination parameters from query string
-      const limit = req.query['limit'] ? Number.parseInt(req.query['limit'] as string, 10) : undefined;
-      const offset = req.query['offset'] ? Number.parseInt(req.query['offset'] as string, 10) : undefined;
+      const limit = req.query['limit']
+        ? Number.parseInt(req.query['limit'] as string, 10)
+        : undefined;
+      const offset = req.query['offset']
+        ? Number.parseInt(req.query['offset'] as string, 10)
+        : undefined;
 
       // Validate pagination parameters
       if (limit !== undefined && (Number.isNaN(limit) || limit < 0)) {

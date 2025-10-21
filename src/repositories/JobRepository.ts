@@ -50,7 +50,12 @@ export class JobRepository {
     });
   }
 
-  async getAllJobs(sortBy = 'name', sortOrder = 'asc', limit?: number, offset?: number): Promise<JobRole[]> {
+  async getAllJobs(
+    sortBy = 'name',
+    sortOrder = 'asc',
+    limit?: number,
+    offset?: number
+  ): Promise<JobRole[]> {
     // Query all job roles from the database with capability and band names - standardized property names
     console.log('JobRepository.getAllJobs: Executing Drizzle query...');
     const startTime = Date.now();
