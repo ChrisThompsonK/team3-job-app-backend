@@ -50,7 +50,12 @@ export class JobRepository {
     });
   }
 
-  async getAllJobs(sortBy = 'name', sortOrder = 'asc'): Promise<JobRole[]> {
+  async getAllJobs(
+    sortBy = 'name',
+    sortOrder = 'asc',
+    limit?: number,
+    offset?: number
+  ): Promise<JobRole[]> {
     // Query all job roles from the database with capability and band names - standardized property names
     console.log('JobRepository.getAllJobs: Executing Drizzle query...');
     const startTime = Date.now();
@@ -70,7 +75,7 @@ export class JobRepository {
     const sortColumn = sortFieldMap[sortBy as SortField] || jobRoles.roleName;
     const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
 
-    const jobs = await db
+    let query = db
       .select({
         id: jobRoles.jobRoleId,
         name: jobRoles.roleName,
@@ -89,6 +94,18 @@ export class JobRepository {
       .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(eq(jobRoles.deleted, 0))
       .orderBy(orderFn(sortColumn));
+
+    // Add pagination if limit is provided
+    if (limit !== undefined) {
+      query = query.limit(limit) as typeof query;
+    }
+
+    // Add offset if provided
+    if (offset !== undefined) {
+      query = query.offset(offset) as typeof query;
+    }
+
+    const jobs = await query;
     const endTime = Date.now();
     console.log(
       `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`

@@ -73,10 +73,15 @@ export class JobService {
     return `Hello, ${cleanName}! Welcome to the ${serverName}.`;
   }
 
-  async fetchJobs(sortBy = 'name', sortOrder = 'asc'): Promise<JobRole[]> {
+  async fetchJobs(
+    sortBy = 'name',
+    sortOrder = 'asc',
+    limit?: number,
+    offset?: number
+  ): Promise<JobRole[]> {
     console.log('JobService.fetchJobs: Starting database query...');
     const startTime = Date.now();
-    const result = await this.jobRepository.getAllJobs(sortBy, sortOrder);
+    const result = await this.jobRepository.getAllJobs(sortBy, sortOrder, limit, offset);
     const endTime = Date.now();
     console.log(`JobService.fetchJobs: Database query completed in ${endTime - startTime}ms`);
     return result;
