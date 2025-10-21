@@ -120,21 +120,19 @@ export class JobRepository {
   async addJobRole(jobRole: JobRoleCreate): Promise<JobRoleDetails | null> {
     try {
       // Insert without .returning() to avoid SQLite auto-increment issues
-      const result = await db
-        .insert(jobRoles)
-        .values({
-          roleName: jobRole.name,
-          location: jobRole.location,
-          closingDate: jobRole.closingDate,
-          capabilityId: jobRole.capabilityId,
-          bandId: jobRole.bandId,
-          statusId: jobRole.statusId || 1, // Default to 'Open' (ID 1)
-          description: jobRole.description || null,
-          responsibilities: jobRole.responsibilities || null,
-          jobSpecUrl: jobRole.jobSpecUrl || null,
-          openPositions: jobRole.openPositions || 1,
-          deleted: 0,
-        });
+      const result = await db.insert(jobRoles).values({
+        roleName: jobRole.name,
+        location: jobRole.location,
+        closingDate: jobRole.closingDate,
+        capabilityId: jobRole.capabilityId,
+        bandId: jobRole.bandId,
+        statusId: jobRole.statusId || 1, // Default to 'Open' (ID 1)
+        description: jobRole.description || null,
+        responsibilities: jobRole.responsibilities || null,
+        jobSpecUrl: jobRole.jobSpecUrl || null,
+        openPositions: jobRole.openPositions || 1,
+        deleted: 0,
+      });
 
       // Get the last inserted row ID from the result
       const insertedId = result.lastInsertRowid;

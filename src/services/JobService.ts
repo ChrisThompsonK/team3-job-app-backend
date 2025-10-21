@@ -135,12 +135,14 @@ export class JobService {
     } catch (error) {
       // Handle database constraint errors
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       // Check for foreign key constraint violations
       if (errorMessage.includes('FOREIGN KEY constraint failed')) {
-        throw new Error('Invalid capability ID or band ID. Please select valid options from the dropdown.');
+        throw new Error(
+          'Invalid capability ID or band ID. Please select valid options from the dropdown.'
+        );
       }
-      
+
       // Re-throw other errors
       throw error;
     }

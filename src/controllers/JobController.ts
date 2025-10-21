@@ -132,13 +132,13 @@ export class JobController {
     } catch (error) {
       console.error('Error in addJob controller:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error creating job role';
-      
+
       // Determine status code based on error type
       let statusCode = 400;
       if (errorMessage.includes('Failed to create') || errorMessage.includes('database')) {
         statusCode = 500;
       }
-      
+
       res.status(statusCode).json({
         success: false,
         message: errorMessage,
