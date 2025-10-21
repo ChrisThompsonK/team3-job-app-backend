@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import { applicationController } from '../di/ApplicationController.js';
+import { requireAdmin } from '../middleware/adminAuth.js';
 
 const router = Router();
 
+// Public routes - users can submit applications and view their own
 // Submit a new application
 router.post('/applications', async (req, res) => applicationController.submitApplication(req, res));
 
@@ -12,22 +14,25 @@ router.get('/applications/my-applications', async (req, res) =>
   applicationController.getApplicationsByEmail(req, res)
 );
 
-// Get all applications
-router.get('/applications', async (req, res) => applicationController.getAllApplications(req, res));
+// Admin-only routes - requires admin role for reports and management
+// Get all applications (admin report)
+router.get('/applications', requireAdmin, async (req, res) =>
+  applicationController.getAllApplications(req, res)
+);
 
-// Get a specific application by ID
+// Get a specific application by ID (admin access)
 // IMPORTANT: This must come AFTER more specific routes like /applications/my-applications
-router.get('/applications/:id', async (req, res) =>
+router.get('/applications/:id', requireAdmin, async (req, res) =>
   applicationController.getApplicationById(req, res)
 );
 
-// Get all applications with job role details
-router.get('/applications-with-roles', async (req, res) =>
+// Get all applications with job role details (admin report)
+router.get('/applications-with-roles', requireAdmin, async (req, res) =>
   applicationController.getApplicationsWithJobRoles(req, res)
 );
 
-// Update application status
-router.put('/applications/:id/status', async (req, res) =>
+// Update application status (admin only)
+router.put('/applications/:id/status', requireAdmin, async (req, res) =>
   applicationController.updateApplicationStatus(req, res)
 );
 
