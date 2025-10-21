@@ -7,6 +7,16 @@ export async function seedStatuses() {
   const statusData = [{ statusName: 'Open' }, { statusName: 'Closed' }];
 
   try {
+    // Check if statuses already exist
+    const existingStatuses = await db.select().from(jobAvailabilityStatus);
+
+    if (existingStatuses.length > 0) {
+      console.log(
+        `Job availability statuses already seeded (${existingStatuses.length} found). Skipping...`
+      );
+      return;
+    }
+
     await db.insert(jobAvailabilityStatus).values(statusData);
     console.log(`✅ Successfully seeded ${statusData.length} job availability statuses`);
   } catch (error) {

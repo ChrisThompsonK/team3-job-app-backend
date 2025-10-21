@@ -23,6 +23,16 @@ export async function seedCapabilities() {
   ];
 
   try {
+    // Check if capabilities already exist
+    const existingCapabilities = await db.select().from(capabilities);
+
+    if (existingCapabilities.length > 0) {
+      console.log(
+        ` Capabilities already seeded (${existingCapabilities.length} found). Skipping...`
+      );
+      return;
+    }
+
     await db.insert(capabilities).values(capabilitiesData);
     console.log(`✅ Successfully seeded ${capabilitiesData.length} capabilities`);
   } catch (error) {

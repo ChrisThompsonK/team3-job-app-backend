@@ -9,8 +9,8 @@ const app = express();
 setupApp(app);
 
 // Routes
-app.use('/', jobRoutes);
-app.use('/', applicationRoutes);
+app.use('/api', jobRoutes);
+app.use('/api', applicationRoutes);
 app.get('/', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
