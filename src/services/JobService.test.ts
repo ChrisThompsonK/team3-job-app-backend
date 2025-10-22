@@ -17,6 +17,8 @@ describe('JobService.addJob', () => {
       deleteJob: vi.fn(),
       getAllCapabilities: vi.fn(),
       getAllBands: vi.fn(),
+      getAllStatuses: vi.fn(),
+      autoCloseExpiredJobRoles: vi.fn(),
       getServerName: vi.fn(),
       getAppInfo: vi.fn(),
       getHealthInfo: vi.fn(),
@@ -45,7 +47,8 @@ describe('JobService.addJob', () => {
       description: null,
       responsibilities: null,
       jobSpecUrl: null,
-      status: 'Open',
+      statusId: 1,
+      statusName: 'Open',
       openPositions: 1,
     };
 
@@ -67,7 +70,7 @@ describe('JobService.addJob', () => {
       description: 'A senior role requiring extensive experience',
       responsibilities: 'Lead development projects',
       jobSpecUrl: 'https://example.com/job-spec.pdf',
-      status: 'Open',
+      statusId: 1,
       openPositions: 3,
     };
 
@@ -83,7 +86,8 @@ describe('JobService.addJob', () => {
       description: 'A senior role requiring extensive experience',
       responsibilities: 'Lead development projects',
       jobSpecUrl: 'https://example.com/job-spec.pdf',
-      status: 'Open',
+      statusId: 1,
+      statusName: 'Open',
       openPositions: 3,
     };
 
@@ -267,7 +271,8 @@ describe('JobService.addJob', () => {
       description: null,
       responsibilities: null,
       jobSpecUrl: null,
-      status: 'Open',
+      statusId: 1,
+      statusName: 'Open',
       openPositions: 1,
     };
 
@@ -293,6 +298,8 @@ describe('JobService.getCapabilities', () => {
       deleteJob: vi.fn(),
       getAllCapabilities: vi.fn(),
       getAllBands: vi.fn(),
+      getAllStatuses: vi.fn(),
+      autoCloseExpiredJobRoles: vi.fn(),
       getServerName: vi.fn(),
       getAppInfo: vi.fn(),
       getHealthInfo: vi.fn(),
@@ -339,6 +346,8 @@ describe('JobService.getBands', () => {
       deleteJob: vi.fn(),
       getAllCapabilities: vi.fn(),
       getAllBands: vi.fn(),
+      getAllStatuses: vi.fn(),
+      autoCloseExpiredJobRoles: vi.fn(),
       getServerName: vi.fn(),
       getAppInfo: vi.fn(),
       getHealthInfo: vi.fn(),
