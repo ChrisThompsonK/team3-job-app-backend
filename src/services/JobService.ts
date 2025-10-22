@@ -27,7 +27,9 @@ export class JobService {
     // Business logic: Extract and validate updates from request body - standardized names
     const updates: JobRoleUpdate = {};
 
+    // Handle both 'name' and 'roleName' for compatibility with frontend
     if (requestBody['name'] !== undefined) updates.name = String(requestBody['name']);
+    if (requestBody['roleName'] !== undefined) updates.name = String(requestBody['roleName']);
     if (requestBody['location'] !== undefined) updates.location = String(requestBody['location']);
     if (requestBody['capabilityId'] !== undefined)
       updates.capabilityId = Number(requestBody['capabilityId']);
