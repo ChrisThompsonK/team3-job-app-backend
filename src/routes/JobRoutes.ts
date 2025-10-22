@@ -13,7 +13,7 @@ router.get('/jobs/:id', async (req, res) => jobController.getJobById(req, res));
 // Admin-only routes - requires admin role
 router.post('/jobs/job', requireAdmin, async (req, res) => jobController.addJobRole(req, res));
 
-router.delete('/job/:id', requireAdmin, async (req: Request<{ id: string }>, res) =>
+router.delete('/jobs/:id', requireAdmin, async (req: Request<{ id: string }>, res) =>
   jobController.deleteJobRole(req, res)
 );
 
