@@ -27,7 +27,7 @@ declare global {
  */
 export const authMiddleware = (req: Request, _res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     // No token provided, continue as anonymous user
     next();
@@ -40,7 +40,7 @@ export const authMiddleware = (req: Request, _res: Response, next: NextFunction)
     // Use the same JWT secret as frontend (you may need to configure this)
     const JWT_SECRET = process.env['JWT_ACCESS_SECRET'] || 'your-jwt-secret';
     const payload = jwt.verify(token, JWT_SECRET) as AccessTokenPayload;
-    
+
     // Attach user info to request
     req.user = {
       id: payload.sub,

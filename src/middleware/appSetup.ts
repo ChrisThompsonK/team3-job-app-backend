@@ -10,10 +10,10 @@ export const setupApp = (app: Express): void => {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(morgan('dev'));
-  
+
   // JWT Authentication middleware - must come after body parsing
   app.use(authMiddleware);
-  
+
   // Log all incoming requests
   app.use((req, _res, next) => {
     console.log(`📨 ${req.method} ${req.path}`);
