@@ -39,7 +39,9 @@ export class ApplicationService {
       }
 
       // Check if job role is open for applications
-      if (jobRole.statusName !== 'Open') {
+      // Check both statusName and statusId for backward compatibility
+      const isOpen = jobRole.statusName === 'Open' || jobRole.statusId === 1;
+      if (!isOpen) {
         return {
           success: false,
           message: 'This job role is no longer accepting applications',
