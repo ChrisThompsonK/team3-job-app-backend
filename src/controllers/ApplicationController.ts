@@ -210,4 +210,38 @@ export class ApplicationController {
       });
     }
   }
+
+  // Get all applications for a specific job role (admin only)
+  async getApplicationsByJobRole(req: Request, res: Response): Promise<void> {
+    try {
+      const { jobRoleId } = req.params;
+
+      if (!jobRoleId) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Job role ID is required',
+        });
+        return;
+      }
+
+      const parsedJobRoleId = Number.parseInt(jobRoleId, 10);
+
+      if (Number.isNaN(parsedJobRoleId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid job role ID',
+        });
+        return;
+      }
+
+      const applications = await this.applicationService.getApplicationsByJobRole(parsedJobRoleId);
+      res.json(applications);
+    } catch (error) {
+      console.error('Error fetching applications by job role:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch applications',
+      });
+    }
+  }
 }
