@@ -287,9 +287,7 @@ export class ApplicationController {
       // Accept email from either request body or query parameter (frontend compatibility)
       const email = req.body.email || (req.query['email'] as string);
 
-      logger.info(`Withdrawal request - ID: ${id}, Body:`, req.body, 'Query:', req.query);
-      logger.info(`Request headers:`, req.headers);
-      logger.info(`Full URL:`, req.url);
+      logger.info(`Withdrawal request - Application ID: ${id}, User: ${email}`);
 
       if (!id) {
         res.status(400).json({
@@ -299,20 +297,12 @@ export class ApplicationController {
         return;
       }
 
-      // If no email is provided, we need to handle this differently
-      // This is a temporary workaround - the frontend should send the user's email for security
+      // Email is required to verify the user owns this application
       if (!email || typeof email !== 'string') {
-        logger.warn(`Withdrawal attempt without email verification - ID: ${id}`);
-        logger.warn(`SECURITY WARNING: Frontend not sending email for ownership verification`);
-        logger.warn(`Request body:`, req.body, 'Query:', req.query);
-
-        // For now, return an error requiring the email
-        // The frontend MUST be fixed to send the user's email
         res.status(400).json({
           success: false,
           error: 'Bad request',
-          message:
-            'Email address is required for security verification. The frontend must send the user email in the request body: {"email": "user@example.com"} or as query parameter: ?email=user@example.com',
+          message: 'Email address is required for verification',
         });
         return;
       }
