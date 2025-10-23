@@ -128,6 +128,22 @@ npm run db:migrate
 3. Apply the migration: `npm run db:migrate`
 4. Commit both the schema changes and the generated migration files
 
+## 📝 Logging
+
+This application uses a structured logging system with environment-based configuration:
+
+```bash
+# Set log level: debug, info, warn, error
+LOG_LEVEL=debug
+```
+
+```typescript
+import { logger } from '../utils/logger.js';
+
+logger.info('Application started');
+logger.error('Something went wrong', error);
+```
+
 ## 🏗️ Project Structure
 
 ```

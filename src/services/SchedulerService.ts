@@ -1,4 +1,5 @@
 import cron, { type ScheduledTask } from 'node-cron';
+import { logger } from '../utils/logger.js';
 import type { JobService } from './JobService.js';
 
 export class SchedulerService {
@@ -13,12 +14,12 @@ export class SchedulerService {
    * Initialize all scheduled tasks
    */
   public initializeSchedules(): void {
-    console.log('SchedulerService: Initializing scheduled tasks...');
+    logger.info('SchedulerService: Initializing scheduled tasks...');
 
     // Schedule auto-close job roles to run daily at 1:00 AM
     this.scheduleAutoCloseJobRoles();
 
-    console.log('SchedulerService: All scheduled tasks initialized successfully');
+    logger.info('SchedulerService: All scheduled tasks initialized successfully');
   }
 
   /**
@@ -34,15 +35,15 @@ export class SchedulerService {
       cronExpression,
       async () => {
         try {
-          console.log(
+          logger.info(
             `[${new Date().toISOString()}] Running scheduled task: Auto-close expired job roles`
           );
 
           const result = await this.jobService.autoCloseExpiredJobRoles();
 
-          console.log(`[${new Date().toISOString()}] Auto-close task completed: ${result.message}`);
+          logger.info(`[${new Date().toISOString()}] Auto-close task completed: ${result.message}`);
         } catch (error) {
-          console.error(`[${new Date().toISOString()}] Error in auto-close task:`, error);
+          logger.error(`[${new Date().toISOString()}] Error in auto-close task:`, error);
         }
       },
       {
@@ -50,7 +51,7 @@ export class SchedulerService {
       }
     );
 
-    console.log(
+    logger.info(
       `SchedulerService: Scheduled 'auto-close-expired-jobs' with cron expression '${cronExpression}' (UTC)`
     );
   }
@@ -59,14 +60,14 @@ export class SchedulerService {
    * Manually trigger the auto-close job roles task (for testing)
    */
   public async triggerAutoCloseJobRoles(): Promise<{ closedCount: number; message: string }> {
-    console.log('SchedulerService: Manually triggering auto-close expired job roles...');
+    logger.info('SchedulerService: Manually triggering auto-close expired job roles...');
 
     try {
       const result = await this.jobService.autoCloseExpiredJobRoles();
-      console.log(`SchedulerService: Manual trigger completed: ${result.message}`);
+      logger.info(`SchedulerService: Manual trigger completed: ${result.message}`);
       return result;
     } catch (error) {
-      console.error('SchedulerService: Error in manual trigger:', error);
+      logger.error('SchedulerService: Error in manual trigger:', error);
       throw error;
     }
   }
@@ -75,14 +76,14 @@ export class SchedulerService {
    * Destroy all tasks and clean up
    */
   public destroy(): void {
-    console.log('SchedulerService: Destroying all scheduled tasks...');
+    logger.info('SchedulerService: Destroying all scheduled tasks...');
 
     if (this.autoCloseTask) {
       this.autoCloseTask.destroy();
       this.autoCloseTask = null;
-      console.log('SchedulerService: Destroyed auto-close task');
+      logger.info('SchedulerService: Destroyed auto-close task');
     }
 
-    console.log('SchedulerService: All tasks destroyed and cleaned up');
+    logger.info('SchedulerService: All tasks destroyed and cleaned up');
   }
 }

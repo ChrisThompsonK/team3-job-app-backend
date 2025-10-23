@@ -8,6 +8,7 @@ import type {
   Status,
 } from '../models/JobModel.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
+import { logger } from '../utils/logger.js';
 export class JobService {
   private jobRepository: JobRepository;
 
@@ -81,11 +82,11 @@ export class JobService {
     limit?: number,
     offset?: number
   ): Promise<JobRole[]> {
-    console.log('JobService.fetchJobs: Starting database query...');
+    logger.info('JobService.fetchJobs: Starting database query...');
     const startTime = Date.now();
     const result = await this.jobRepository.getAllJobs(sortBy, sortOrder, limit, offset);
     const endTime = Date.now();
-    console.log(`JobService.fetchJobs: Database query completed in ${endTime - startTime}ms`);
+    logger.info(`JobService.fetchJobs: Database query completed in ${endTime - startTime}ms`);
     return result;
   }
 
@@ -180,7 +181,7 @@ export class JobService {
    * @returns Object with count of closed jobs and details
    */
   async autoCloseExpiredJobRoles(): Promise<{ closedCount: number; message: string }> {
-    console.log('JobService.autoCloseExpiredJobRoles: Starting auto-close process...');
+    logger.info('JobService.autoCloseExpiredJobRoles: Starting auto-close process...');
     const closedCount = await this.jobRepository.autoCloseExpiredJobRoles();
 
     const message =
@@ -188,7 +189,7 @@ export class JobService {
         ? `Successfully auto-closed ${closedCount} job role(s)`
         : 'No job roles needed to be closed';
 
-    console.log(`JobService.autoCloseExpiredJobRoles: ${message}`);
+    logger.info(`JobService.autoCloseExpiredJobRoles: ${message}`);
     return { closedCount, message };
   }
 }

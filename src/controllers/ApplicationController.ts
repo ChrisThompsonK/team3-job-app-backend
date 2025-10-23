@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { ApplicationCreate } from '../models/ApplicationModel.js';
 import type { ApplicationService } from '../services/ApplicationService.js';
+import { logger } from '../utils/logger.js';
 
 export class ApplicationController {
   private applicationService: ApplicationService;
@@ -41,7 +42,7 @@ export class ApplicationController {
         });
       }
     } catch (error) {
-      console.error('Error submitting application:', error);
+      logger.error('Error submitting application', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to submit application',
@@ -83,7 +84,7 @@ export class ApplicationController {
 
       res.json(application);
     } catch (error) {
-      console.error('Error fetching application:', error);
+      logger.error('Error fetching application:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch application',
@@ -100,7 +101,7 @@ export class ApplicationController {
       const applications = await this.applicationService.getAllApplications(sortBy, sortOrder);
       res.json(applications);
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      logger.error('Error fetching applications:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch applications',
@@ -120,7 +121,7 @@ export class ApplicationController {
       );
       res.json(applications);
     } catch (error) {
-      console.error('Error fetching applications with job roles:', error);
+      logger.error('Error fetching applications with job roles:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch applications',
@@ -179,7 +180,7 @@ export class ApplicationController {
         application: updatedApplication,
       });
     } catch (error) {
-      console.error('Error updating application status:', error);
+      logger.error('Error updating application status:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to update application status',
@@ -203,7 +204,7 @@ export class ApplicationController {
       const applications = await this.applicationService.getApplicationsByEmail(email);
       res.json(applications);
     } catch (error) {
-      console.error('Error fetching applications by email:', error);
+      logger.error('Error fetching applications by email:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch applications',
@@ -271,7 +272,7 @@ export class ApplicationController {
       const applications = await this.applicationService.getApplicationsByJobRole(parsedJobRoleId);
       res.json(applications);
     } catch (error) {
-      console.error('Error fetching applications by job role:', error);
+      logger.error('Error fetching applications by job role:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch applications',
