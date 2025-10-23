@@ -370,7 +370,7 @@ export class ApplicationController {
         res.status(404).json({
           success: false,
           error: 'Not found',
-          message: 'Application not found or could not be withdrawn',
+          message: 'Failed to withdraw application',
         });
         return;
       }
