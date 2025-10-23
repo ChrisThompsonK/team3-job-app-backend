@@ -37,7 +37,9 @@ export class ApplicationRepository {
     return result.length > 0 ? (result[0] as Application) : null;
   }
 
-  async getApplicationByIdWithJobRole(applicationID: number): Promise<ApplicationWithJobRole | null> {
+  async getApplicationByIdWithJobRole(
+    applicationID: number
+  ): Promise<ApplicationWithJobRole | null> {
     const result = await db
       .select({
         applicationID: applications.applicationID,

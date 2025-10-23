@@ -114,7 +114,8 @@ export class ApplicationController {
         return;
       }
 
-      const application = await this.applicationService.getApplicationByIdWithJobRole(applicationId);
+      const application =
+        await this.applicationService.getApplicationByIdWithJobRole(applicationId);
 
       if (!application) {
         res.status(404).json({

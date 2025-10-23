@@ -80,7 +80,9 @@ export class ApplicationService {
     return await this.applicationRepository.getApplicationById(applicationID);
   }
 
-  async getApplicationByIdWithJobRole(applicationID: number): Promise<ApplicationWithJobRole | null> {
+  async getApplicationByIdWithJobRole(
+    applicationID: number
+  ): Promise<ApplicationWithJobRole | null> {
     if (!applicationID || applicationID <= 0) {
       throw new Error('Invalid application ID');
     }
