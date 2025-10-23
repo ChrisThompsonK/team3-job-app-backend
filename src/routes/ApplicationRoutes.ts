@@ -31,6 +31,11 @@ router.get('/applications-with-roles', requireAdmin, async (req, res) =>
   applicationController.getApplicationsWithJobRoles(req, res)
 );
 
+// Get applications for a specific job role (admin only)
+router.get('/applications/job-role/:jobRoleId', requireAdmin, async (req, res) =>
+  applicationController.getApplicationsByJobRole(req, res)
+);
+
 // Update application status (admin only)
 router.put('/applications/:id/status', requireAdmin, async (req, res) =>
   applicationController.updateApplicationStatus(req, res)
