@@ -153,4 +153,31 @@ export class ApplicationService {
     const validStatuses = ['Pending', 'Reviewed', 'Accepted', 'Rejected'];
     return validStatuses.includes(status);
   }
+
+  async getApplicationAnalytics(targetDate: Date): Promise<{
+    applicationsCreatedToday: number;
+    applicationsHiredToday: number;
+    applicationsRejectedToday: number;
+    applicationsAcceptedToday: number;
+    totalApplicationsToday: number;
+  }> {
+    try {
+      // Set the date range for the target day (start and end of day)
+      const startOfDay = new Date(targetDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(targetDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      // Get analytics data from the repository
+      const analytics = await this.applicationRepository.getApplicationAnalytics(
+        startOfDay.toISOString(),
+        endOfDay.toISOString()
+      );
+
+      return analytics;
+    } catch (error) {
+      throw new Error(`Failed to get application analytics: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 }

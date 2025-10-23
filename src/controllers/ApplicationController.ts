@@ -210,4 +210,38 @@ export class ApplicationController {
       });
     }
   }
+
+  // Get daily application analytics
+  async getApplicationAnalytics(req: Request, res: Response): Promise<void> {
+    try {
+      const { date } = req.query;
+      
+      // Default to today if no date provided
+      let targetDate = new Date();
+      if (date && typeof date === 'string') {
+        targetDate = new Date(date);
+        if (isNaN(targetDate.getTime())) {
+          res.status(400).json({
+            error: 'Bad request',
+            message: 'Invalid date format. Please use YYYY-MM-DD format.',
+          });
+          return;
+        }
+      }
+
+      const analytics = await this.applicationService.getApplicationAnalytics(targetDate);
+      
+      res.json({
+        success: true,
+        data: analytics,
+        date: targetDate.toISOString().split('T')[0]
+      });
+    } catch (error) {
+      console.error('Error fetching application analytics:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch analytics data',
+      });
+    }
+  }
 }
