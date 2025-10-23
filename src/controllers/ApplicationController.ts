@@ -220,7 +220,7 @@ export class ApplicationController {
       let targetDate = new Date();
       if (date && typeof date === 'string') {
         targetDate = new Date(date);
-        if (isNaN(targetDate.getTime())) {
+        if (Number.isNaN(targetDate.getTime())) {
           res.status(400).json({
             error: 'Bad request',
             message: 'Invalid date format. Please use YYYY-MM-DD format.',
