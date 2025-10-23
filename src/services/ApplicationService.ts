@@ -6,6 +6,7 @@ import type {
 } from '../models/ApplicationModel.js';
 import type { ApplicationRepository } from '../repositories/ApplicationRepository.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
+import { logger } from '../utils/logger.js';
 
 export class ApplicationService {
   private applicationRepository: ApplicationRepository;
@@ -120,6 +121,46 @@ export class ApplicationService {
     }
 
     return await this.applicationRepository.getApplicationsByJobRole(jobRoleId);
+  }
+
+  async withdrawApplication(applicationID: number, userEmail: string): Promise<boolean> {
+    logger.info(`Attempting to withdraw application ${applicationID} for user ${userEmail}`);
+
+    if (!applicationID || applicationID <= 0) {
+      logger.warn(`Invalid application ID: ${applicationID}`);
+      throw new Error('Invalid application ID');
+    }
+
+    if (!userEmail || !this.isValidEmail(userEmail)) {
+      logger.warn(`Invalid email for withdrawal: ${userEmail}`);
+      throw new Error('Valid user email is required for withdrawal');
+    }
+
+    // Verify that the application exists and belongs to that user
+    const application = await this.applicationRepository.getApplicationById(applicationID);
+    if (!application) {
+      logger.warn(`Application ${applicationID} not found`);
+      throw new Error('Application not found');
+    }
+
+    logger.info(`Found application ${applicationID} with email: ${application.emailAddress}`);
+
+    if (application.emailAddress !== userEmail) {
+      logger.warn(
+        `Email mismatch - application email: ${application.emailAddress}, provided: ${userEmail}`
+      );
+      throw new Error('You can only withdraw your own applications');
+    }
+
+    const deleted = await this.applicationRepository.deleteApplication(applicationID);
+
+    if (deleted) {
+      logger.info(`Successfully deleted application ${applicationID}`);
+    } else {
+      logger.error(`Failed to delete application ${applicationID} from database`);
+    }
+
+    return deleted;
   }
 
   private validateApplicationData(data: ApplicationCreate): void {

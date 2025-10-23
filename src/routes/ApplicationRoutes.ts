@@ -14,6 +14,16 @@ router.get('/applications/my-applications', async (req, res) =>
   applicationController.getApplicationsByEmail(req, res)
 );
 
+// Withdraw application (delete from database)
+// Public route - users can withdraw their own applications
+// Support both DELETE and POST methods for frontend compatibility
+router.delete('/applications/:id/withdraw', async (req, res) =>
+  applicationController.withdrawApplication(req, res)
+);
+router.post('/applications/:id/withdraw', async (req, res) =>
+  applicationController.withdrawApplication(req, res)
+);
+
 // Admin-only routes - requires admin role for reports and management
 // Get all applications (admin report)
 router.get('/applications', requireAdmin, async (req, res) =>

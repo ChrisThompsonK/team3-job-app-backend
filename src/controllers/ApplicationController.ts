@@ -279,4 +279,103 @@ export class ApplicationController {
       });
     }
   }
+
+  // Withdraw application (delete from database)
+  async withdrawApplication(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      // Accept email from either request body or query parameter (frontend compatibility)
+      const email = req.body.email || (req.query['email'] as string);
+
+      logger.info(`Withdrawal request - ID: ${id}, Body:`, req.body, 'Query:', req.query);
+      logger.info(`Request headers:`, req.headers);
+      logger.info(`Full URL:`, req.url);
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      // If no email is provided, we need to handle this differently
+      // This is a temporary workaround - the frontend should send the user's email for security
+      if (!email || typeof email !== 'string') {
+        logger.warn(`Withdrawal attempt without email verification - ID: ${id}`);
+        logger.warn(`SECURITY WARNING: Frontend not sending email for ownership verification`);
+        logger.warn(`Request body:`, req.body, 'Query:', req.query);
+
+        // For now, return an error requiring the email
+        // The frontend MUST be fixed to send the user's email
+        res.status(400).json({
+          success: false,
+          error: 'Bad request',
+          message:
+            'Email address is required for security verification. The frontend must send the user email in the request body: {"email": "user@example.com"} or as query parameter: ?email=user@example.com',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const success = await this.applicationService.withdrawApplication(applicationId, email);
+
+      if (!success) {
+        logger.warn(
+          `Withdrawal failed - application ${applicationId} not found or unauthorized for ${email}`
+        );
+        res.status(404).json({
+          success: false,
+          error: 'Not found',
+          message: 'Application not found or could not be withdrawn',
+        });
+        return;
+      }
+
+      logger.info(`Application ${applicationId} successfully withdrawn by ${email}`);
+      res.status(200).json({
+        success: true,
+        message: 'Application withdrawn successfully',
+      });
+    } catch (error) {
+      logger.error('Error withdrawing application:', error);
+      if (error instanceof Error) {
+        // Handle specific error cases
+        if (error.message.includes('not found')) {
+          res.status(404).json({
+            success: false,
+            error: 'Not found',
+            message: error.message,
+          });
+        } else if (error.message.includes('only withdraw your own')) {
+          res.status(403).json({
+            success: false,
+            error: 'Forbidden',
+            message: error.message,
+          });
+        } else {
+          res.status(400).json({
+            success: false,
+            error: 'Bad request',
+            message: error.message,
+          });
+        }
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Internal server error',
+          message: 'Error processing withdraw request',
+        });
+      }
+    }
+  }
 }
