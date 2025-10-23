@@ -241,6 +241,10 @@ export class ApplicationController {
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch analytics data',
+      });
+    }
+  }
+
   // Get all applications for a specific job role (admin only)
   async getApplicationsByJobRole(req: Request, res: Response): Promise<void> {
     try {
