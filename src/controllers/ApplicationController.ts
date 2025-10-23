@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { ApplicationCreate } from '../models/ApplicationModel.js';
 import type { ApplicationService } from '../services/ApplicationService.js';
+import { AppError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 export class ApplicationController {
@@ -381,27 +382,25 @@ export class ApplicationController {
       });
     } catch (error) {
       logger.error('Error withdrawing application:', error);
-      if (error instanceof Error) {
-        // Handle specific error cases
-        if (error.message.includes('not found')) {
-          res.status(404).json({
-            success: false,
-            error: 'Not found',
-            message: error.message,
-          });
-        } else if (error.message.includes('only withdraw your own')) {
-          res.status(403).json({
-            success: false,
-            error: 'Forbidden',
-            message: error.message,
-          });
-        } else {
-          res.status(400).json({
-            success: false,
-            error: 'Bad request',
-            message: error.message,
-          });
-        }
+
+      // Use status code from AppError instead of string matching
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error:
+            error.statusCode === 404
+              ? 'Not found'
+              : error.statusCode === 403
+                ? 'Forbidden'
+                : 'Bad request',
+          message: error.message,
+        });
+      } else if (error instanceof Error) {
+        res.status(400).json({
+          success: false,
+          error: 'Bad request',
+          message: error.message,
+        });
       } else {
         res.status(500).json({
           success: false,
