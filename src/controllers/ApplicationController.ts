@@ -328,7 +328,7 @@ export class ApplicationController {
   async withdrawApplication(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      
+
       // Get authenticated user's email from JWT token (set by authMiddleware)
       // This prevents email spoofing as the email comes from the verified JWT
       const userEmail = req.user?.id; // The 'id' field contains the email from JWT payload (sub)
