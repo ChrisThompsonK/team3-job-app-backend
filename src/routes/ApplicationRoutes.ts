@@ -41,4 +41,9 @@ router.put('/applications/:id/status', requireAdmin, async (req, res) =>
   applicationController.updateApplicationStatus(req, res)
 );
 
+// Get application analytics (admin only)
+router.get('/analytics/applications', requireAdmin, async (req, res) =>
+  applicationController.getApplicationAnalytics(req, res)
+);
+
 export { router as applicationRoutes };

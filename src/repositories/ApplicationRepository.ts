@@ -1,4 +1,4 @@
-import { asc, desc, eq } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { applications, jobRoles } from '../db/schema.js';
 import type {
@@ -150,5 +150,77 @@ export class ApplicationRepository {
       .where(eq(applications.emailAddress, emailAddress));
 
     return result as ApplicationWithJobRole[];
+  }
+
+  async getApplicationAnalytics(
+    startDate: string,
+    endDate: string
+  ): Promise<{
+    applicationsCreatedToday: number;
+    applicationsHiredToday: number;
+    applicationsRejectedToday: number;
+    applicationsAcceptedToday: number;
+    totalApplicationsToday: number;
+  }> {
+    try {
+      // Applications created today (based on createdAt)
+      const createdResult = await db
+        .select({ count: count() })
+        .from(applications)
+        .where(and(gte(applications.createdAt, startDate), lte(applications.createdAt, endDate)));
+
+      // Applications hired today (status = 'Hired' and updatedAt within date range)
+      const hiredResult = await db
+        .select({ count: count() })
+        .from(applications)
+        .where(
+          and(
+            eq(applications.status, 'Hired'),
+            gte(applications.updatedAt, startDate),
+            lte(applications.updatedAt, endDate)
+          )
+        );
+
+      // Applications rejected today (status = 'Rejected' and updatedAt within date range)
+      const rejectedResult = await db
+        .select({ count: count() })
+        .from(applications)
+        .where(
+          and(
+            eq(applications.status, 'Rejected'),
+            gte(applications.updatedAt, startDate),
+            lte(applications.updatedAt, endDate)
+          )
+        );
+
+      // Applications accepted today (status = 'Accepted' and updatedAt within date range)
+      const acceptedResult = await db
+        .select({ count: count() })
+        .from(applications)
+        .where(
+          and(
+            eq(applications.status, 'Accepted'),
+            gte(applications.updatedAt, startDate),
+            lte(applications.updatedAt, endDate)
+          )
+        );
+
+      const applicationsCreatedToday = createdResult[0]?.count || 0;
+      const applicationsHiredToday = hiredResult[0]?.count || 0;
+      const applicationsRejectedToday = rejectedResult[0]?.count || 0;
+      const applicationsAcceptedToday = acceptedResult[0]?.count || 0;
+
+      return {
+        applicationsCreatedToday,
+        applicationsHiredToday,
+        applicationsRejectedToday,
+        applicationsAcceptedToday,
+        totalApplicationsToday: applicationsCreatedToday, // Total created = total new applications
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to get application analytics: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
   }
 }
