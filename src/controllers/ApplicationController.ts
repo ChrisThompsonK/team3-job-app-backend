@@ -411,4 +411,104 @@ export class ApplicationController {
       }
     }
   }
+
+  // Hire applicant - convenience endpoint that updates status to 'Hired'
+  async hireApplicant(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const updatedApplication = await this.applicationService.updateApplicationStatus(
+        applicationId,
+        'Hired'
+      );
+
+      if (!updatedApplication) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Application not found',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'Applicant hired successfully',
+        application: updatedApplication,
+      });
+    } catch (error) {
+      logger.error('Error hiring applicant:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to hire applicant',
+      });
+    }
+  }
+
+  // Reject applicant - convenience endpoint that updates status to 'Rejected'
+  async rejectApplicant(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const updatedApplication = await this.applicationService.updateApplicationStatus(
+        applicationId,
+        'Rejected'
+      );
+
+      if (!updatedApplication) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Application not found',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'Applicant rejected successfully',
+        application: updatedApplication,
+      });
+    } catch (error) {
+      logger.error('Error rejecting applicant:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to reject applicant',
+      });
+    }
+  }
 }
