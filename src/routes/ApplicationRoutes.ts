@@ -16,11 +16,7 @@ router.get('/applications/my-applications', async (req, res) =>
 
 // Withdraw application (delete from database)
 // Public route - users can withdraw their own applications
-// Support both DELETE and POST methods for frontend compatibility
 router.delete('/applications/:id/withdraw', async (req, res) =>
-  applicationController.withdrawApplication(req, res)
-);
-router.post('/applications/:id/withdraw', async (req, res) =>
   applicationController.withdrawApplication(req, res)
 );
 
