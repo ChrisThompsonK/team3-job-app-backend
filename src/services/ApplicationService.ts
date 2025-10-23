@@ -114,6 +114,14 @@ export class ApplicationService {
     return await this.applicationRepository.getApplicationsByEmail(emailAddress);
   }
 
+  async getApplicationsByJobRole(jobRoleId: number): Promise<Application[]> {
+    if (!jobRoleId || jobRoleId <= 0) {
+      throw new Error('Valid job role ID is required');
+    }
+
+    return await this.applicationRepository.getApplicationsByJobRole(jobRoleId);
+  }
+
   private validateApplicationData(data: ApplicationCreate): void {
     // Validate email format
     if (!data.emailAddress || !this.isValidEmail(data.emailAddress)) {
