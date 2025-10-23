@@ -165,7 +165,7 @@ export class ApplicationService {
       // Set the date range for the target day (start and end of day)
       const startOfDay = new Date(targetDate);
       startOfDay.setHours(0, 0, 0, 0);
-      
+
       const endOfDay = new Date(targetDate);
       endOfDay.setHours(23, 59, 59, 999);
 
@@ -177,7 +177,9 @@ export class ApplicationService {
 
       return analytics;
     } catch (error) {
-      throw new Error(`Failed to get application analytics: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to get application analytics: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 }

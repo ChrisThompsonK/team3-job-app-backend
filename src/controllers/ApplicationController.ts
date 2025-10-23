@@ -215,7 +215,7 @@ export class ApplicationController {
   async getApplicationAnalytics(req: Request, res: Response): Promise<void> {
     try {
       const { date } = req.query;
-      
+
       // Default to today if no date provided
       let targetDate = new Date();
       if (date && typeof date === 'string') {
@@ -230,11 +230,11 @@ export class ApplicationController {
       }
 
       const analytics = await this.applicationService.getApplicationAnalytics(targetDate);
-      
+
       res.json({
         success: true,
         data: analytics,
-        date: targetDate.toISOString().split('T')[0]
+        date: targetDate.toISOString().split('T')[0],
       });
     } catch (error) {
       console.error('Error fetching application analytics:', error);

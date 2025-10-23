@@ -1,4 +1,4 @@
-import { asc, desc, eq, and, gte, lte, count } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
 import { db } from '../db/database.js';
 import { applications, jobRoles } from '../db/schema.js';
 import type {
@@ -152,7 +152,10 @@ export class ApplicationRepository {
     return result as ApplicationWithJobRole[];
   }
 
-  async getApplicationAnalytics(startDate: string, endDate: string): Promise<{
+  async getApplicationAnalytics(
+    startDate: string,
+    endDate: string
+  ): Promise<{
     applicationsCreatedToday: number;
     applicationsHiredToday: number;
     applicationsRejectedToday: number;
@@ -164,40 +167,43 @@ export class ApplicationRepository {
       const createdResult = await db
         .select({ count: count() })
         .from(applications)
-        .where(and(
-          gte(applications.createdAt, startDate),
-          lte(applications.createdAt, endDate)
-        ));
+        .where(and(gte(applications.createdAt, startDate), lte(applications.createdAt, endDate)));
 
       // Applications hired today (status = 'Hired' and updatedAt within date range)
       const hiredResult = await db
         .select({ count: count() })
         .from(applications)
-        .where(and(
-          eq(applications.status, 'Hired'),
-          gte(applications.updatedAt, startDate),
-          lte(applications.updatedAt, endDate)
-        ));
+        .where(
+          and(
+            eq(applications.status, 'Hired'),
+            gte(applications.updatedAt, startDate),
+            lte(applications.updatedAt, endDate)
+          )
+        );
 
       // Applications rejected today (status = 'Rejected' and updatedAt within date range)
       const rejectedResult = await db
         .select({ count: count() })
         .from(applications)
-        .where(and(
-          eq(applications.status, 'Rejected'),
-          gte(applications.updatedAt, startDate),
-          lte(applications.updatedAt, endDate)
-        ));
+        .where(
+          and(
+            eq(applications.status, 'Rejected'),
+            gte(applications.updatedAt, startDate),
+            lte(applications.updatedAt, endDate)
+          )
+        );
 
       // Applications accepted today (status = 'Accepted' and updatedAt within date range)
       const acceptedResult = await db
         .select({ count: count() })
         .from(applications)
-        .where(and(
-          eq(applications.status, 'Accepted'),
-          gte(applications.updatedAt, startDate),
-          lte(applications.updatedAt, endDate)
-        ));
+        .where(
+          and(
+            eq(applications.status, 'Accepted'),
+            gte(applications.updatedAt, startDate),
+            lte(applications.updatedAt, endDate)
+          )
+        );
 
       const applicationsCreatedToday = createdResult[0]?.count || 0;
       const applicationsHiredToday = hiredResult[0]?.count || 0;
@@ -212,7 +218,9 @@ export class ApplicationRepository {
         totalApplicationsToday: applicationsCreatedToday, // Total created = total new applications
       };
     } catch (error) {
-      throw new Error(`Failed to get application analytics: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to get application analytics: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 }
