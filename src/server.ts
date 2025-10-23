@@ -1,32 +1,33 @@
 import { schedulerService } from './di/SchedulerService.js';
 import app from './index.js';
 import 'dotenv/config';
+import { logger } from './utils/logger.js';
 
 const PORT = process.env['PORT'] || 3001;
 
 // Initialize scheduler before starting the server
-console.log('Initializing scheduler...');
+logger.info('Initializing scheduler...');
 schedulerService.initializeSchedules();
 
 // Start server
 const server = app.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
-  console.log('Scheduler is active and running...');
+  logger.app.started(PORT);
+  logger.info('Scheduler is active and running...');
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully...');
+  logger.app.stopping();
   server.close(() => {
-    console.log('Server closed');
+    logger.app.stopped();
     process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully...');
+  logger.app.stopping();
   server.close(() => {
-    console.log('Server closed');
+    logger.app.stopped();
     process.exit(0);
   });
 });

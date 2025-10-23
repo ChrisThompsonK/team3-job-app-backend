@@ -56,4 +56,9 @@ router.put('/applications/:id/reject', requireAdmin, async (req, res) =>
   applicationController.rejectApplicant(req, res)
 );
 
+// Get application analytics (admin only)
+router.get('/analytics/applications', requireAdmin, async (req, res) =>
+  applicationController.getApplicationAnalytics(req, res)
+);
+
 export { router as applicationRoutes };
