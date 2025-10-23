@@ -26,6 +26,11 @@ router.get('/applications/:id', requireAdmin, async (req, res) =>
   applicationController.getApplicationById(req, res)
 );
 
+// Get application details with job role information (admin access)
+router.get('/applications/:id/details', requireAdmin, async (req, res) =>
+  applicationController.getApplicationByIdWithJobRole(req, res)
+);
+
 // Get all applications with job role details (admin report)
 router.get('/applications-with-roles', requireAdmin, async (req, res) =>
   applicationController.getApplicationsWithJobRoles(req, res)
@@ -39,6 +44,16 @@ router.get('/applications/job-role/:jobRoleId', requireAdmin, async (req, res) =
 // Update application status (admin only)
 router.put('/applications/:id/status', requireAdmin, async (req, res) =>
   applicationController.updateApplicationStatus(req, res)
+);
+
+// Hire applicant (admin only) - convenience endpoint
+router.put('/applications/:id/hire', requireAdmin, async (req, res) =>
+  applicationController.hireApplicant(req, res)
+);
+
+// Reject applicant (admin only) - convenience endpoint
+router.put('/applications/:id/reject', requireAdmin, async (req, res) =>
+  applicationController.rejectApplicant(req, res)
 );
 
 // Get application analytics (admin only)

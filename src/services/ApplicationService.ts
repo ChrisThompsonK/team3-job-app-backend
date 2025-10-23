@@ -80,6 +80,16 @@ export class ApplicationService {
     return await this.applicationRepository.getApplicationById(applicationID);
   }
 
+  async getApplicationByIdWithJobRole(
+    applicationID: number
+  ): Promise<ApplicationWithJobRole | null> {
+    if (!applicationID || applicationID <= 0) {
+      throw new Error('Invalid application ID');
+    }
+
+    return await this.applicationRepository.getApplicationByIdWithJobRole(applicationID);
+  }
+
   async getAllApplications(sortBy = 'createdAt', sortOrder = 'desc'): Promise<Application[]> {
     return await this.applicationRepository.getAllApplications(sortBy, sortOrder);
   }

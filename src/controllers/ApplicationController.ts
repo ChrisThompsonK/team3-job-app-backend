@@ -92,6 +92,49 @@ export class ApplicationController {
     }
   }
 
+  async getApplicationByIdWithJobRole(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const application =
+        await this.applicationService.getApplicationByIdWithJobRole(applicationId);
+
+      if (!application) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Application not found',
+        });
+        return;
+      }
+
+      res.json(application);
+    } catch (error) {
+      console.error('Error fetching application details:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch application details',
+      });
+    }
+  }
+
   async getAllApplications(req: Request, res: Response): Promise<void> {
     try {
       // Extract sort parameters from query string
@@ -276,6 +319,106 @@ export class ApplicationController {
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to fetch applications',
+      });
+    }
+  }
+
+  // Hire an applicant (admin only) - convenience endpoint for accepting
+  async hireApplicant(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const updatedApplication = await this.applicationService.updateApplicationStatus(
+        applicationId,
+        'Accepted'
+      );
+
+      if (!updatedApplication) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Application not found',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'Applicant hired successfully',
+        application: updatedApplication,
+      });
+    } catch (error) {
+      console.error('Error hiring applicant:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to hire applicant',
+      });
+    }
+  }
+
+  // Reject an applicant (admin only) - convenience endpoint for rejecting
+  async rejectApplicant(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const updatedApplication = await this.applicationService.updateApplicationStatus(
+        applicationId,
+        'Rejected'
+      );
+
+      if (!updatedApplication) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Application not found',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'Applicant rejected successfully',
+        application: updatedApplication,
+      });
+    } catch (error) {
+      console.error('Error rejecting applicant:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to reject applicant',
       });
     }
   }
