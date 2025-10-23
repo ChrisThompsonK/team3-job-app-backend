@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { applicationController } from '../di/ApplicationController.js';
-import { requireAdmin } from '../middleware/adminAuth.js';
+import { requireAdmin, requireAuth } from '../middleware/adminAuth.js';
 
 const router = Router();
 
@@ -15,8 +15,8 @@ router.get('/applications/my-applications', async (req, res) =>
 );
 
 // Withdraw application (delete from database)
-// Public route - users can withdraw their own applications
-router.delete('/applications/:id/withdraw', async (req, res) =>
+// Protected route - users can only withdraw their own applications (requires authentication)
+router.delete('/applications/:id/withdraw', requireAuth, async (req, res) =>
   applicationController.withdrawApplication(req, res)
 );
 

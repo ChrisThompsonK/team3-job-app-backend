@@ -328,10 +328,12 @@ export class ApplicationController {
   async withdrawApplication(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      // Accept email only from request body to prevent exposure in logs and browser history
-      const email = req.body.email;
+      
+      // Get authenticated user's email from JWT token (set by authMiddleware)
+      // This prevents email spoofing as the email comes from the verified JWT
+      const userEmail = req.user?.id; // The 'id' field contains the email from JWT payload (sub)
 
-      logger.info(`Withdrawal request - Application ID: ${id}, User: ${email}`);
+      logger.info(`Withdrawal request - Application ID: ${id}, Authenticated User: ${userEmail}`);
 
       if (!id) {
         res.status(400).json({
@@ -341,12 +343,12 @@ export class ApplicationController {
         return;
       }
 
-      // Email is required to verify the user owns this application
-      if (!email || typeof email !== 'string') {
-        res.status(400).json({
+      // User must be authenticated (verified by requireAuth middleware)
+      if (!userEmail) {
+        res.status(401).json({
           success: false,
-          error: 'Bad request',
-          message: 'Email address is required for verification',
+          error: 'Unauthorized',
+          message: 'Authentication required to withdraw application',
         });
         return;
       }
@@ -361,11 +363,11 @@ export class ApplicationController {
         return;
       }
 
-      const success = await this.applicationService.withdrawApplication(applicationId, email);
+      const success = await this.applicationService.withdrawApplication(applicationId, userEmail);
 
       if (!success) {
         logger.warn(
-          `Withdrawal failed - application ${applicationId} not found or unauthorized for ${email}`
+          `Withdrawal failed - application ${applicationId} not found or unauthorized for ${userEmail}`
         );
         res.status(404).json({
           success: false,
@@ -375,7 +377,7 @@ export class ApplicationController {
         return;
       }
 
-      logger.info(`Application ${applicationId} successfully withdrawn by ${email}`);
+      logger.info(`Application ${applicationId} successfully withdrawn by ${userEmail}`);
       res.status(200).json({
         success: true,
         message: 'Application withdrawn successfully',
