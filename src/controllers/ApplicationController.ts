@@ -327,8 +327,8 @@ export class ApplicationController {
   async withdrawApplication(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      // Accept email from either request body or query parameter (frontend compatibility)
-      const email = req.body.email || (req.query['email'] as string);
+      // Accept email only from request body to prevent exposure in logs and browser history
+      const email = req.body.email;
 
       logger.info(`Withdrawal request - Application ID: ${id}, User: ${email}`);
 
