@@ -37,6 +37,30 @@ export class ApplicationRepository {
     return result.length > 0 ? (result[0] as Application) : null;
   }
 
+  async getApplicationByIdWithJobRole(
+    applicationID: number
+  ): Promise<ApplicationWithJobRole | null> {
+    const result = await db
+      .select({
+        applicationID: applications.applicationID,
+        jobRoleId: applications.jobRoleId,
+        phoneNumber: applications.phoneNumber,
+        emailAddress: applications.emailAddress,
+        status: applications.status,
+        coverLetter: applications.coverLetter,
+        notes: applications.notes,
+        createdAt: applications.createdAt,
+        updatedAt: applications.updatedAt,
+        jobRoleName: jobRoles.roleName,
+        jobRoleLocation: jobRoles.location,
+      })
+      .from(applications)
+      .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
+      .where(eq(applications.applicationID, applicationID));
+
+    return result.length > 0 ? (result[0] as ApplicationWithJobRole) : null;
+  }
+
   async getAllApplications(sortBy = 'createdAt', sortOrder = 'desc'): Promise<Application[]> {
     // Map sort field to actual database column
     const sortFieldMap = {

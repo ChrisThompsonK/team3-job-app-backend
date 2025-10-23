@@ -92,6 +92,49 @@ export class ApplicationController {
     }
   }
 
+  async getApplicationByIdWithJobRole(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const application =
+        await this.applicationService.getApplicationByIdWithJobRole(applicationId);
+
+      if (!application) {
+        res.status(404).json({
+          error: 'Not found',
+          message: 'Application not found',
+        });
+        return;
+      }
+
+      res.json(application);
+    } catch (error) {
+      console.error('Error fetching application details:', error);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to fetch application details',
+      });
+    }
+  }
+
   async getAllApplications(req: Request, res: Response): Promise<void> {
     try {
       // Extract sort parameters from query string
