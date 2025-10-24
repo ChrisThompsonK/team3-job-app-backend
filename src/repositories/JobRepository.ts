@@ -380,4 +380,40 @@ export class JobRepository {
 
     return result.length;
   }
+
+  /**
+   * Decrement the openPositions count for a job role by 1
+   * @param jobRoleId - The ID of the job role to update
+   * @returns The updated job role details or null if not found
+   */
+  async decrementOpenPositions(jobRoleId: number): Promise<JobRoleDetails | null> {
+    // First get the current job role to check openPositions
+    const currentJob = await this.getJobById(jobRoleId);
+
+    if (!currentJob) {
+      return null;
+    }
+
+    // Only decrement if there are open positions available
+    if (currentJob.openPositions <= 0) {
+      console.warn(`Cannot decrement openPositions for job ${jobRoleId}: already at 0`);
+      return currentJob;
+    }
+
+    const newOpenPositions = currentJob.openPositions - 1;
+
+    // Update the job role
+    await db
+      .update(jobRoles)
+      .set({ openPositions: newOpenPositions })
+      .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)));
+
+    console.log(
+      `✅ Decremented openPositions for job ${jobRoleId} from ${currentJob.openPositions} to ${newOpenPositions}`
+    );
+
+    // If openPositions reaches 0, the auto-close job will handle closing it
+    // Return the updated job role
+    return await this.getJobById(jobRoleId);
+  }
 }
