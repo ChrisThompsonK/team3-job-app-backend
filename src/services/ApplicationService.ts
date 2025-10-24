@@ -226,20 +226,22 @@ export class ApplicationService {
 
     // Get the application to find the associated job role
     const application = await this.applicationRepository.getApplicationById(applicationID);
-    
+
     if (!application) {
       throw new NotFoundError('Application not found');
     }
 
     // Check if the job role has open positions available
     const jobRole = await this.jobRepository.getJobById(application.jobRoleId);
-    
+
     if (!jobRole) {
       throw new NotFoundError('Job role not found');
     }
 
     if (!jobRole.openPositions || jobRole.openPositions <= 0) {
-      throw new ForbiddenError('Cannot hire applicant: No open positions available for this job role');
+      throw new ForbiddenError(
+        'Cannot hire applicant: No open positions available for this job role'
+      );
     }
 
     // Update the application status to 'Hired'
@@ -255,7 +257,9 @@ export class ApplicationService {
     // Decrement the openPositions for the job role
     try {
       await this.jobRepository.decrementOpenPositions(application.jobRoleId);
-      logger.info(`Successfully hired applicant ${applicationID} and decremented openPositions for job ${application.jobRoleId}`);
+      logger.info(
+        `Successfully hired applicant ${applicationID} and decremented openPositions for job ${application.jobRoleId}`
+      );
     } catch (error) {
       logger.error(`Failed to decrement openPositions for job ${application.jobRoleId}:`, error);
       // We still return the updated application even if decrement fails

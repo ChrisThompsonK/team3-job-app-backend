@@ -389,7 +389,7 @@ export class JobRepository {
   async decrementOpenPositions(jobRoleId: number): Promise<JobRoleDetails | null> {
     // First get the current job role to check openPositions
     const currentJob = await this.getJobById(jobRoleId);
-    
+
     if (!currentJob) {
       return null;
     }
@@ -408,7 +408,9 @@ export class JobRepository {
       .set({ openPositions: newOpenPositions })
       .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)));
 
-    console.log(`✅ Decremented openPositions for job ${jobRoleId} from ${currentJob.openPositions} to ${newOpenPositions}`);
+    console.log(
+      `✅ Decremented openPositions for job ${jobRoleId} from ${currentJob.openPositions} to ${newOpenPositions}`
+    );
 
     // If openPositions reaches 0, the auto-close job will handle closing it
     // Return the updated job role
