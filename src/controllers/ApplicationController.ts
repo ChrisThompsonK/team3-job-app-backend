@@ -413,7 +413,7 @@ export class ApplicationController {
     }
   }
 
-  // Hire applicant - convenience endpoint that updates status to 'Hired'
+  // Hire applicant - convenience endpoint that updates status to 'Hired' and decrements openPositions
   async hireApplicant(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -436,10 +436,8 @@ export class ApplicationController {
         return;
       }
 
-      const updatedApplication = await this.applicationService.updateApplicationStatus(
-        applicationId,
-        'Hired'
-      );
+      // Use the new hireApplicant method that handles both status update and position decrement
+      const updatedApplication = await this.applicationService.hireApplicant(applicationId);
 
       if (!updatedApplication) {
         res.status(404).json({

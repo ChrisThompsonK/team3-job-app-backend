@@ -192,4 +192,14 @@ export class JobService {
     logger.info(`JobService.autoCloseExpiredJobRoles: ${message}`);
     return { closedCount, message };
   }
+
+  /**
+   * Decrement the openPositions count for a job role by 1
+   * Used when hiring an applicant
+   * @param jobRoleId - The ID of the job role
+   * @returns The updated job role or null if not found
+   */
+  async decrementOpenPositions(jobRoleId: number): Promise<JobRoleDetails | null> {
+    return await this.jobRepository.decrementOpenPositions(jobRoleId);
+  }
 }
