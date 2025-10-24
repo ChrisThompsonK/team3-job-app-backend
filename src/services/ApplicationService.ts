@@ -6,7 +6,7 @@ import type {
 } from '../models/ApplicationModel.js';
 import type { ApplicationRepository } from '../repositories/ApplicationRepository.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
-import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors.js';
+import { BadRequestError, NotFoundError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 export class ApplicationService {
@@ -200,61 +200,6 @@ export class ApplicationService {
   private isValidStatus(status: string): boolean {
     const validStatuses = ['Pending', 'Reviewed', 'Accepted', 'Rejected'];
     return validStatuses.includes(status);
-  }
-
-  /**
-   * Hire an applicant - updates application status to 'Hired' and decrements openPositions
-   * @param applicationID - The application ID to hire
-   * @returns The updated application or null if not found
-   */
-  async hireApplicant(applicationID: number): Promise<Application | null> {
-    if (!applicationID || applicationID <= 0) {
-      throw new Error('Invalid application ID');
-    }
-
-    // Get the application to find the associated job role
-    const application = await this.applicationRepository.getApplicationById(applicationID);
-
-    if (!application) {
-      throw new NotFoundError('Application not found');
-    }
-
-    // Check if the job role has open positions available
-    const jobRole = await this.jobRepository.getJobById(application.jobRoleId);
-
-    if (!jobRole) {
-      throw new NotFoundError('Job role not found');
-    }
-
-    if (!jobRole.openPositions || jobRole.openPositions <= 0) {
-      throw new ForbiddenError(
-        'Cannot hire applicant: No open positions available for this job role'
-      );
-    }
-
-    // Update the application status to 'Hired'
-    const updatedApplication = await this.applicationRepository.updateApplicationStatus(
-      applicationID,
-      'Hired'
-    );
-
-    if (!updatedApplication) {
-      throw new Error('Failed to update application status');
-    }
-
-    // Decrement the openPositions for the job role
-    try {
-      await this.jobRepository.decrementOpenPositions(application.jobRoleId);
-      logger.info(
-        `Successfully hired applicant ${applicationID} and decremented openPositions for job ${application.jobRoleId}`
-      );
-    } catch (error) {
-      logger.error(`Failed to decrement openPositions for job ${application.jobRoleId}:`, error);
-      // We still return the updated application even if decrement fails
-      // The position decrement is not critical to the hire process
-    }
-
-    return updatedApplication;
   }
 
   async getApplicationAnalytics(targetDate: Date): Promise<{
