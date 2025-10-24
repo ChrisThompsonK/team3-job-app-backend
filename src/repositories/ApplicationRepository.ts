@@ -176,6 +176,15 @@ export class ApplicationRepository {
     return result as ApplicationWithJobRole[];
   }
 
+  async deleteApplication(applicationID: number): Promise<boolean> {
+    const result = await db
+      .delete(applications)
+      .where(eq(applications.applicationID, applicationID))
+      .returning();
+
+    return result.length > 0;
+  }
+
   async getApplicationAnalytics(
     startDate: string,
     endDate: string

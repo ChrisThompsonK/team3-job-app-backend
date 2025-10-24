@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { ApplicationCreate } from '../models/ApplicationModel.js';
 import type { ApplicationService } from '../services/ApplicationService.js';
+import { AppError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 export class ApplicationController {
@@ -323,7 +324,96 @@ export class ApplicationController {
     }
   }
 
-  // Hire an applicant (admin only) - convenience endpoint for accepting
+  // Withdraw application (delete from database)
+  async withdrawApplication(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      // Get authenticated user's email from JWT token (set by authMiddleware)
+      // This prevents email spoofing as the email comes from the verified JWT
+      const userEmail = req.user?.id; // The 'id' field contains the email from JWT payload (sub)
+
+      logger.info(`Withdrawal request - Application ID: ${id}, Authenticated User: ${userEmail}`);
+
+      if (!id) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Application ID is required',
+        });
+        return;
+      }
+
+      // User must be authenticated (verified by requireAuth middleware)
+      if (!userEmail) {
+        res.status(401).json({
+          success: false,
+          error: 'Unauthorized',
+          message: 'Authentication required to withdraw application',
+        });
+        return;
+      }
+
+      const applicationId = Number.parseInt(id, 10);
+
+      if (Number.isNaN(applicationId)) {
+        res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid application ID',
+        });
+        return;
+      }
+
+      const success = await this.applicationService.withdrawApplication(applicationId, userEmail);
+
+      if (!success) {
+        logger.warn(
+          `Withdrawal failed - application ${applicationId} not found or unauthorized for ${userEmail}`
+        );
+        res.status(404).json({
+          success: false,
+          error: 'Not found',
+          message: 'Failed to withdraw application',
+        });
+        return;
+      }
+
+      logger.info(`Application ${applicationId} successfully withdrawn by ${userEmail}`);
+      res.status(200).json({
+        success: true,
+        message: 'Application withdrawn successfully',
+      });
+    } catch (error) {
+      logger.error('Error withdrawing application:', error);
+
+      // Use status code from AppError instead of string matching
+      if (error instanceof AppError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error:
+            error.statusCode === 404
+              ? 'Not found'
+              : error.statusCode === 403
+                ? 'Forbidden'
+                : 'Bad request',
+          message: error.message,
+        });
+      } else if (error instanceof Error) {
+        res.status(400).json({
+          success: false,
+          error: 'Bad request',
+          message: error.message,
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Internal server error',
+          message: 'Error processing withdraw request',
+        });
+      }
+    }
+  }
+
+  // Hire applicant - convenience endpoint that updates status to 'Hired'
   async hireApplicant(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -348,7 +438,7 @@ export class ApplicationController {
 
       const updatedApplication = await this.applicationService.updateApplicationStatus(
         applicationId,
-        'Accepted'
+        'Hired'
       );
 
       if (!updatedApplication) {
@@ -365,7 +455,7 @@ export class ApplicationController {
         application: updatedApplication,
       });
     } catch (error) {
-      console.error('Error hiring applicant:', error);
+      logger.error('Error hiring applicant:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to hire applicant',
@@ -373,7 +463,7 @@ export class ApplicationController {
     }
   }
 
-  // Reject an applicant (admin only) - convenience endpoint for rejecting
+  // Reject applicant - convenience endpoint that updates status to 'Rejected'
   async rejectApplicant(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -415,7 +505,7 @@ export class ApplicationController {
         application: updatedApplication,
       });
     } catch (error) {
-      console.error('Error rejecting applicant:', error);
+      logger.error('Error rejecting applicant:', error);
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to reject applicant',

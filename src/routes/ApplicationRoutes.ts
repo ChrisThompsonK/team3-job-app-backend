@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { applicationController } from '../di/ApplicationController.js';
-import { requireAdmin } from '../middleware/adminAuth.js';
+import { requireAdmin, requireAuth } from '../middleware/adminAuth.js';
 
 const router = Router();
 
@@ -12,6 +12,12 @@ router.post('/applications', async (req, res) => applicationController.submitApp
 // IMPORTANT: This must come BEFORE /applications/:id to avoid route conflicts
 router.get('/applications/my-applications', async (req, res) =>
   applicationController.getApplicationsByEmail(req, res)
+);
+
+// Withdraw application (delete from database)
+// Protected route - users can only withdraw their own applications (requires authentication)
+router.delete('/applications/:id/withdraw', requireAuth, async (req, res) =>
+  applicationController.withdrawApplication(req, res)
 );
 
 // Admin-only routes - requires admin role for reports and management

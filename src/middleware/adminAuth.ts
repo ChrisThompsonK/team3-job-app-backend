@@ -56,6 +56,22 @@ export const authMiddleware = (req: Request, _res: Response, next: NextFunction)
 };
 
 /**
+ * Middleware to require authentication (any authenticated user)
+ * Expects a valid JWT token
+ */
+export const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
+  if (!req.user) {
+    res.status(401).json({
+      error: 'Unauthorized',
+      message: 'Authentication required. Please provide a valid JWT token.',
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
  * Middleware to check if the user has admin privileges
  * Expects a valid JWT token with admin role
  */
