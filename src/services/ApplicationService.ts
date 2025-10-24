@@ -6,7 +6,7 @@ import type {
 } from '../models/ApplicationModel.js';
 import type { ApplicationRepository } from '../repositories/ApplicationRepository.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
-import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors.js';
+import { BadRequestError, NotFoundError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 export class ApplicationService {
@@ -134,34 +134,22 @@ export class ApplicationService {
     return await this.applicationRepository.getApplicationsByJobRole(jobRoleId);
   }
 
-  async withdrawApplication(applicationID: number, userEmail: string): Promise<boolean> {
-    logger.info(`Attempting to withdraw application ${applicationID} for user ${userEmail}`);
+  async withdrawApplication(applicationID: number): Promise<boolean> {
+    logger.info(`Attempting to withdraw application ${applicationID}`);
 
     if (!applicationID || applicationID <= 0) {
       logger.warn(`Invalid application ID: ${applicationID}`);
       throw new BadRequestError('Invalid application ID');
     }
 
-    if (!userEmail || !this.isValidEmail(userEmail)) {
-      logger.warn(`Invalid email for withdrawal: ${userEmail}`);
-      throw new BadRequestError('Valid user email is required for withdrawal');
-    }
-
-    // Verify that the application exists and belongs to that user
+    // Verify that the application exists
     const application = await this.applicationRepository.getApplicationById(applicationID);
     if (!application) {
       logger.warn(`Application ${applicationID} not found`);
       throw new NotFoundError('Application not found');
     }
 
-    logger.info(`Found application ${applicationID} with email: ${application.emailAddress}`);
-
-    if (application.emailAddress !== userEmail) {
-      logger.warn(
-        `Email mismatch - application email: ${application.emailAddress}, provided: ${userEmail}`
-      );
-      throw new ForbiddenError('You can only withdraw your own applications');
-    }
+    logger.info(`Found application ${applicationID}, proceeding with withdrawal`);
 
     const deleted = await this.applicationRepository.deleteApplication(applicationID);
 

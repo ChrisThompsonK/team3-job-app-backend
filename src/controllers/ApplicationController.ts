@@ -329,11 +329,10 @@ export class ApplicationController {
     try {
       const { id } = req.params;
 
-      // Get authenticated user's email from JWT token (set by authMiddleware)
-      // This prevents email spoofing as the email comes from the verified JWT
-      const userEmail = req.user?.id; // The 'id' field contains the email from JWT payload (sub)
+      // User authentication is verified by requireAuth middleware
+      const userId = req.user?.id;
 
-      logger.info(`Withdrawal request - Application ID: ${id}, Authenticated User: ${userEmail}`);
+      logger.info(`Withdrawal request - Application ID: ${id}, Authenticated User ID: ${userId}`);
 
       if (!id) {
         res.status(400).json({
@@ -344,7 +343,7 @@ export class ApplicationController {
       }
 
       // User must be authenticated (verified by requireAuth middleware)
-      if (!userEmail) {
+      if (!userId) {
         res.status(401).json({
           success: false,
           error: 'Unauthorized',
@@ -363,12 +362,10 @@ export class ApplicationController {
         return;
       }
 
-      const success = await this.applicationService.withdrawApplication(applicationId, userEmail);
+      const success = await this.applicationService.withdrawApplication(applicationId);
 
       if (!success) {
-        logger.warn(
-          `Withdrawal failed - application ${applicationId} not found or unauthorized for ${userEmail}`
-        );
+        logger.warn(`Withdrawal failed - application ${applicationId} not found`);
         res.status(404).json({
           success: false,
           error: 'Not found',
@@ -377,7 +374,7 @@ export class ApplicationController {
         return;
       }
 
-      logger.info(`Application ${applicationId} successfully withdrawn by ${userEmail}`);
+      logger.info(`Application ${applicationId} successfully withdrawn by user ${userId}`);
       res.status(200).json({
         success: true,
         message: 'Application withdrawn successfully',
