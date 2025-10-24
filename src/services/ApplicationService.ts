@@ -6,7 +6,7 @@ import type {
 } from '../models/ApplicationModel.js';
 import type { ApplicationRepository } from '../repositories/ApplicationRepository.js';
 import type { JobRepository } from '../repositories/JobRepository.js';
-import { BadRequestError, NotFoundError } from '../utils/errors.js';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 export class ApplicationService {
