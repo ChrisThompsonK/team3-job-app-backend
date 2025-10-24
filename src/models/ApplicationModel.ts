@@ -24,6 +24,8 @@ export interface ApplicationCreate {
 export interface ApplicationWithJobRole extends Application {
   jobRoleName?: string | null;
   jobRoleLocation?: string | null;
+  capabilityName?: string | null;
+  bandName?: string | null;
 }
 
 // Response when creating an application

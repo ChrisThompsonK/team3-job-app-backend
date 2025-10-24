@@ -1,6 +1,6 @@
 import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
 import { db } from '../db/database.js';
-import { applications, jobRoles } from '../db/schema.js';
+import { applications, bands, capabilities, jobRoles } from '../db/schema.js';
 import type {
   Application,
   ApplicationCreate,
@@ -168,9 +168,13 @@ export class ApplicationRepository {
         updatedAt: applications.updatedAt,
         jobRoleName: jobRoles.roleName,
         jobRoleLocation: jobRoles.location,
+        capabilityName: capabilities.capabilityName,
+        bandName: bands.bandName,
       })
       .from(applications)
       .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
+      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
       .where(eq(applications.emailAddress, emailAddress));
 
     return result as ApplicationWithJobRole[];
