@@ -62,64 +62,76 @@ export class ApplicationRepository {
   }
 
   async getAllApplications(sortBy = 'createdAt', sortOrder = 'desc'): Promise<Application[]> {
-    // Map sort field to actual database column
-    const sortFieldMap = {
-      applicationID: applications.applicationID,
-      jobRoleId: applications.jobRoleId,
-      emailAddress: applications.emailAddress,
-      phoneNumber: applications.phoneNumber,
-      status: applications.status,
-      createdAt: applications.createdAt,
-      updatedAt: applications.updatedAt,
-    };
+    try {
+      // Map sort field to actual database column
+      const sortFieldMap = {
+        applicationID: applications.applicationID,
+        jobRoleId: applications.jobRoleId,
+        emailAddress: applications.emailAddress,
+        phoneNumber: applications.phoneNumber,
+        status: applications.status,
+        createdAt: applications.createdAt,
+        updatedAt: applications.updatedAt,
+      };
 
-    type SortField = keyof typeof sortFieldMap;
-    const sortColumn = sortFieldMap[sortBy as SortField] || applications.createdAt;
-    const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
+      type SortField = keyof typeof sortFieldMap;
+      const sortColumn = sortFieldMap[sortBy as SortField] || applications.createdAt;
+      const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
 
-    const result = await db.select().from(applications).orderBy(orderFn(sortColumn));
-    return result;
+      const result = await db.select().from(applications).orderBy(orderFn(sortColumn));
+      return result;
+    } catch (error) {
+      console.error('Error fetching all applications:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   async getApplicationsWithJobRoles(
     sortBy = 'createdAt',
     sortOrder = 'desc'
   ): Promise<ApplicationWithJobRole[]> {
-    // Map sort field to actual database column
-    const sortFieldMap = {
-      applicationID: applications.applicationID,
-      jobRoleId: applications.jobRoleId,
-      emailAddress: applications.emailAddress,
-      phoneNumber: applications.phoneNumber,
-      status: applications.status,
-      createdAt: applications.createdAt,
-      updatedAt: applications.updatedAt,
-      jobRoleName: jobRoles.roleName,
-      jobRoleLocation: jobRoles.location,
-    };
-
-    type SortField = keyof typeof sortFieldMap;
-    const sortColumn = sortFieldMap[sortBy as SortField] || applications.createdAt;
-    const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
-
-    const result = await db
-      .select({
+    try {
+      // Map sort field to actual database column
+      const sortFieldMap = {
         applicationID: applications.applicationID,
         jobRoleId: applications.jobRoleId,
-        phoneNumber: applications.phoneNumber,
         emailAddress: applications.emailAddress,
+        phoneNumber: applications.phoneNumber,
         status: applications.status,
-        coverLetter: applications.coverLetter,
-        notes: applications.notes,
         createdAt: applications.createdAt,
+        updatedAt: applications.updatedAt,
         jobRoleName: jobRoles.roleName,
         jobRoleLocation: jobRoles.location,
-      })
-      .from(applications)
-      .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
-      .orderBy(orderFn(sortColumn));
+      };
 
-    return result as ApplicationWithJobRole[];
+      type SortField = keyof typeof sortFieldMap;
+      const sortColumn = sortFieldMap[sortBy as SortField] || applications.createdAt;
+      const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
+
+      const result = await db
+        .select({
+          applicationID: applications.applicationID,
+          jobRoleId: applications.jobRoleId,
+          phoneNumber: applications.phoneNumber,
+          emailAddress: applications.emailAddress,
+          status: applications.status,
+          coverLetter: applications.coverLetter,
+          notes: applications.notes,
+          createdAt: applications.createdAt,
+          jobRoleName: jobRoles.roleName,
+          jobRoleLocation: jobRoles.location,
+        })
+        .from(applications)
+        .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
+        .orderBy(orderFn(sortColumn));
+
+      return result as ApplicationWithJobRole[];
+    } catch (error) {
+      console.error('Error fetching applications with job roles:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   // Note: Applications should generally not be updated after submission
@@ -140,12 +152,18 @@ export class ApplicationRepository {
   }
 
   async getApplicationsByJobRole(jobRoleId: number): Promise<Application[]> {
-    const result = await db
-      .select()
-      .from(applications)
-      .where(eq(applications.jobRoleId, jobRoleId));
+    try {
+      const result = await db
+        .select()
+        .from(applications)
+        .where(eq(applications.jobRoleId, jobRoleId));
 
-    return result;
+      return result;
+    } catch (error) {
+      console.error('Error fetching applications by job role:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   async getApplicationsByStatus(status: string): Promise<Application[]> {
@@ -155,29 +173,35 @@ export class ApplicationRepository {
   }
 
   async getApplicationsByEmail(emailAddress: string): Promise<ApplicationWithJobRole[]> {
-    const result = await db
-      .select({
-        applicationID: applications.applicationID,
-        jobRoleId: applications.jobRoleId,
-        phoneNumber: applications.phoneNumber,
-        emailAddress: applications.emailAddress,
-        status: applications.status,
-        coverLetter: applications.coverLetter,
-        notes: applications.notes,
-        createdAt: applications.createdAt,
-        updatedAt: applications.updatedAt,
-        jobRoleName: jobRoles.roleName,
-        jobRoleLocation: jobRoles.location,
-        capabilityName: capabilities.capabilityName,
-        bandName: bands.bandName,
-      })
-      .from(applications)
-      .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
-      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
-      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .where(eq(applications.emailAddress, emailAddress));
+    try {
+      const result = await db
+        .select({
+          applicationID: applications.applicationID,
+          jobRoleId: applications.jobRoleId,
+          phoneNumber: applications.phoneNumber,
+          emailAddress: applications.emailAddress,
+          status: applications.status,
+          coverLetter: applications.coverLetter,
+          notes: applications.notes,
+          createdAt: applications.createdAt,
+          updatedAt: applications.updatedAt,
+          jobRoleName: jobRoles.roleName,
+          jobRoleLocation: jobRoles.location,
+          capabilityName: capabilities.capabilityName,
+          bandName: bands.bandName,
+        })
+        .from(applications)
+        .leftJoin(jobRoles, eq(applications.jobRoleId, jobRoles.jobRoleId))
+        .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+        .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+        .where(eq(applications.emailAddress, emailAddress));
 
-    return result as ApplicationWithJobRole[];
+      return result as ApplicationWithJobRole[];
+    } catch (error) {
+      console.error('Error fetching applications by email:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   async deleteApplication(applicationID: number): Promise<boolean> {

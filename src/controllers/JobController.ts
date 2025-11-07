@@ -28,6 +28,7 @@ export class JobController {
 
       // Validate pagination parameters
       if (limit !== undefined && (Number.isNaN(limit) || limit < 0)) {
+        console.warn('Invalid limit parameter:', req.query['limit']);
         res.status(400).json({
           error: 'Bad request',
           message: 'Invalid limit parameter',
@@ -36,6 +37,7 @@ export class JobController {
       }
 
       if (offset !== undefined && (Number.isNaN(offset) || offset < 0)) {
+        console.warn('Invalid offset parameter:', req.query['offset']);
         res.status(400).json({
           error: 'Bad request',
           message: 'Invalid offset parameter',
@@ -43,15 +45,26 @@ export class JobController {
         return;
       }
 
+      console.log(
+        `JobController.getJobs: Query params - sortBy: ${sortBy}, sortOrder: ${sortOrder}, limit: ${limit}, offset: ${offset}`
+      );
+
       const jobs = await this.jobService.fetchJobs(sortBy, sortOrder, limit, offset);
       const endTime = Date.now();
-      console.log(`JobController.getJobs: Fetched ${jobs.length} jobs in ${endTime - startTime}ms`);
-      res.json(jobs);
+      console.log(
+        `JobController.getJobs: Successfully fetched ${jobs.length} jobs in ${endTime - startTime}ms`
+      );
+
+      // Always return 200 with the jobs array (even if empty)
+      res.status(200).json(jobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch jobs';
+      console.error('Error details:', errorMessage);
+
       res.status(500).json({
         error: 'Internal server error',
-        message: 'Failed to fetch jobs',
+        message: errorMessage,
       });
     }
   }
@@ -218,39 +231,78 @@ export class JobController {
 
   async getCapabilities(_req: Request, res: Response): Promise<void> {
     try {
+      console.log('JobController.getCapabilities: Starting to fetch capabilities...');
+      const startTime = Date.now();
+
       const capabilities = await this.jobService.getCapabilities();
-      res.status(200).json(capabilities);
+
+      const endTime = Date.now();
+      console.log(
+        `JobController.getCapabilities: Fetched ${capabilities.length} capabilities in ${endTime - startTime}ms`
+      );
+
+      // Return 200 regardless of whether capabilities is empty or has data
+      res.status(200).json(capabilities || []);
     } catch (error) {
       console.error('Error fetching capabilities:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch capabilities';
+      console.error('Error details:', errorMessage);
+
       res.status(500).json({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Failed to fetch capabilities',
+        message: errorMessage,
       });
     }
   }
 
   async getBands(_req: Request, res: Response): Promise<void> {
     try {
+      console.log('JobController.getBands: Starting to fetch bands...');
+      const startTime = Date.now();
+
       const bands = await this.jobService.getBands();
-      res.status(200).json(bands);
+
+      const endTime = Date.now();
+      console.log(
+        `JobController.getBands: Fetched ${bands.length} bands in ${endTime - startTime}ms`
+      );
+
+      // Return 200 regardless of whether bands is empty or has data
+      res.status(200).json(bands || []);
     } catch (error) {
       console.error('Error fetching bands:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch bands';
+      console.error('Error details:', errorMessage);
+
       res.status(500).json({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Failed to fetch bands',
+        message: errorMessage,
       });
     }
   }
 
   async getStatuses(_req: Request, res: Response): Promise<void> {
     try {
+      console.log('JobController.getStatuses: Starting to fetch statuses...');
+      const startTime = Date.now();
+
       const statuses = await this.jobService.getStatuses();
-      res.status(200).json(statuses);
+
+      const endTime = Date.now();
+      console.log(
+        `JobController.getStatuses: Fetched ${statuses.length} statuses in ${endTime - startTime}ms`
+      );
+
+      // Return 200 regardless of whether statuses is empty or has data
+      res.status(200).json(statuses || []);
     } catch (error) {
       console.error('Error fetching statuses:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch statuses';
+      console.error('Error details:', errorMessage);
+
       res.status(500).json({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Failed to fetch statuses',
+        message: errorMessage,
       });
     }
   }
