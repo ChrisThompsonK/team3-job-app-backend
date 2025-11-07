@@ -1,8 +1,23 @@
 import cors from 'cors';
-import type { Express } from 'express';
+import type { Express, NextFunction, Request, Response } from 'express';
 import express from 'express';
 import morgan from 'morgan';
 import { authMiddleware } from './adminAuth.js';
+
+/**
+ * Global error handling middleware
+ * Catches any unhandled errors and returns a proper 500 response
+ */
+const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
+  console.error('❌ Unhandled Error:', err);
+  console.error('Stack:', err.stack);
+
+  res.status(500).json({
+    error: 'Internal server error',
+    message: err.message || 'An unexpected error occurred',
+    timestamp: new Date().toISOString(),
+  });
+};
 
 export const setupApp = (app: Express): void => {
   // Middleware
@@ -23,4 +38,7 @@ export const setupApp = (app: Express): void => {
     }
     next();
   });
+
+  // Global error handler - MUST be last middleware
+  app.use(errorHandler);
 };

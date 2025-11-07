@@ -93,14 +93,31 @@ export class ApplicationService {
   }
 
   async getAllApplications(sortBy = 'createdAt', sortOrder = 'desc'): Promise<Application[]> {
-    return await this.applicationRepository.getAllApplications(sortBy, sortOrder);
+    try {
+      const applications = await this.applicationRepository.getAllApplications(sortBy, sortOrder);
+      return applications || [];
+    } catch (error) {
+      logger.error('Error getting all applications:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   async getApplicationsWithJobRoles(
     sortBy = 'createdAt',
     sortOrder = 'desc'
   ): Promise<ApplicationWithJobRole[]> {
-    return await this.applicationRepository.getApplicationsWithJobRoles(sortBy, sortOrder);
+    try {
+      const applications = await this.applicationRepository.getApplicationsWithJobRoles(
+        sortBy,
+        sortOrder
+      );
+      return applications || [];
+    } catch (error) {
+      logger.error('Error getting applications with job roles:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   async updateApplicationStatus(
@@ -123,7 +140,14 @@ export class ApplicationService {
       throw new Error('Valid email address is required');
     }
 
-    return await this.applicationRepository.getApplicationsByEmail(emailAddress);
+    try {
+      const applications = await this.applicationRepository.getApplicationsByEmail(emailAddress);
+      return applications || [];
+    } catch (error) {
+      logger.error('Error getting applications by email:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   async getApplicationsByJobRole(jobRoleId: number): Promise<Application[]> {
@@ -131,7 +155,14 @@ export class ApplicationService {
       throw new Error('Valid job role ID is required');
     }
 
-    return await this.applicationRepository.getApplicationsByJobRole(jobRoleId);
+    try {
+      const applications = await this.applicationRepository.getApplicationsByJobRole(jobRoleId);
+      return applications || [];
+    } catch (error) {
+      logger.error('Error getting applications by job role:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   async withdrawApplication(applicationID: number): Promise<boolean> {

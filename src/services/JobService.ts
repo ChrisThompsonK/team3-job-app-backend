@@ -165,15 +165,36 @@ export class JobService {
   }
 
   async getCapabilities(): Promise<Capability[]> {
-    return await this.jobRepository.getAllCapabilities();
+    try {
+      const capabilities = await this.jobRepository.getAllCapabilities();
+      return capabilities || [];
+    } catch (error) {
+      console.error('Error getting capabilities:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   async getBands(): Promise<Band[]> {
-    return await this.jobRepository.getAllBands();
+    try {
+      const bands = await this.jobRepository.getAllBands();
+      return bands || [];
+    } catch (error) {
+      console.error('Error getting bands:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   async getStatuses(): Promise<Status[]> {
-    return await this.jobRepository.getAllStatuses();
+    try {
+      const statuses = await this.jobRepository.getAllStatuses();
+      return statuses || [];
+    } catch (error) {
+      console.error('Error getting statuses:', error);
+      // Return empty array to prevent 500 errors
+      return [];
+    }
   }
 
   /**

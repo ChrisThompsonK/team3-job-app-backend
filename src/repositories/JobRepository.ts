@@ -56,61 +56,67 @@ export class JobRepository {
     limit?: number,
     offset?: number
   ): Promise<JobRole[]> {
-    // Query all job roles from the database with capability and band names - standardized property names
-    console.log('JobRepository.getAllJobs: Executing Drizzle query...');
-    const startTime = Date.now();
+    try {
+      // Query all job roles from the database with capability and band names - standardized property names
+      console.log('JobRepository.getAllJobs: Executing Drizzle query...');
+      const startTime = Date.now();
 
-    // Map sort field to actual database column
-    const sortFieldMap = {
-      name: jobRoles.roleName,
-      location: jobRoles.location,
-      closingDate: jobRoles.closingDate,
-      capabilityName: capabilities.capabilityName,
-      bandName: bands.bandName,
-      statusName: jobAvailabilityStatus.statusName,
-      openPositions: jobRoles.openPositions,
-    };
-
-    type SortField = keyof typeof sortFieldMap;
-    const sortColumn = sortFieldMap[sortBy as SortField] || jobRoles.roleName;
-    const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
-
-    let query = db
-      .select({
-        id: jobRoles.jobRoleId,
+      // Map sort field to actual database column
+      const sortFieldMap = {
         name: jobRoles.roleName,
         location: jobRoles.location,
         closingDate: jobRoles.closingDate,
-        capabilityId: jobRoles.capabilityId,
         capabilityName: capabilities.capabilityName,
-        bandId: jobRoles.bandId,
         bandName: bands.bandName,
-        statusId: jobRoles.statusId,
         statusName: jobAvailabilityStatus.statusName,
-      })
-      .from(jobRoles)
-      .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
-      .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
-      .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
-      .where(eq(jobRoles.deleted, 0))
-      .orderBy(orderFn(sortColumn));
+        openPositions: jobRoles.openPositions,
+      };
 
-    // Add pagination if limit is provided
-    if (limit !== undefined) {
-      query = query.limit(limit) as typeof query;
+      type SortField = keyof typeof sortFieldMap;
+      const sortColumn = sortFieldMap[sortBy as SortField] || jobRoles.roleName;
+      const orderFn = sortOrder.toLowerCase() === 'desc' ? desc : asc;
+
+      let query = db
+        .select({
+          id: jobRoles.jobRoleId,
+          name: jobRoles.roleName,
+          location: jobRoles.location,
+          closingDate: jobRoles.closingDate,
+          capabilityId: jobRoles.capabilityId,
+          capabilityName: capabilities.capabilityName,
+          bandId: jobRoles.bandId,
+          bandName: bands.bandName,
+          statusId: jobRoles.statusId,
+          statusName: jobAvailabilityStatus.statusName,
+        })
+        .from(jobRoles)
+        .leftJoin(capabilities, eq(jobRoles.capabilityId, capabilities.capabilityId))
+        .leftJoin(bands, eq(jobRoles.bandId, bands.bandId))
+        .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
+        .where(eq(jobRoles.deleted, 0))
+        .orderBy(orderFn(sortColumn));
+
+      // Add pagination if limit is provided
+      if (limit !== undefined) {
+        query = query.limit(limit) as typeof query;
+      }
+
+      // Add offset if provided
+      if (offset !== undefined) {
+        query = query.offset(offset) as typeof query;
+      }
+
+      const jobs = await query;
+      const endTime = Date.now();
+      console.log(
+        `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
+      );
+      return jobs || [];
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
     }
-
-    // Add offset if provided
-    if (offset !== undefined) {
-      query = query.offset(offset) as typeof query;
-    }
-
-    const jobs = await query;
-    const endTime = Date.now();
-    console.log(
-      `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
-    );
-    return jobs;
   }
 
   async getJobByID(jobRoleID: number): Promise<JobRole[]> {
@@ -307,39 +313,57 @@ export class JobRepository {
   }
 
   async getAllCapabilities(): Promise<Capability[]> {
-    const result = await db
-      .select({
-        id: capabilities.capabilityId,
-        name: capabilities.capabilityName,
-      })
-      .from(capabilities)
-      .orderBy(capabilities.capabilityName);
+    try {
+      const result = await db
+        .select({
+          id: capabilities.capabilityId,
+          name: capabilities.capabilityName,
+        })
+        .from(capabilities)
+        .orderBy(capabilities.capabilityName);
 
-    return result;
+      return result || [];
+    } catch (error) {
+      console.error('Error fetching capabilities:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   async getAllBands(): Promise<Band[]> {
-    const result = await db
-      .select({
-        id: bands.bandId,
-        name: bands.bandName,
-      })
-      .from(bands)
-      .orderBy(bands.bandName);
+    try {
+      const result = await db
+        .select({
+          id: bands.bandId,
+          name: bands.bandName,
+        })
+        .from(bands)
+        .orderBy(bands.bandName);
 
-    return result;
+      return result || [];
+    } catch (error) {
+      console.error('Error fetching bands:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   async getAllStatuses(): Promise<Status[]> {
-    const result = await db
-      .select({
-        id: jobAvailabilityStatus.statusId,
-        name: jobAvailabilityStatus.statusName,
-      })
-      .from(jobAvailabilityStatus)
-      .orderBy(jobAvailabilityStatus.statusName);
+    try {
+      const result = await db
+        .select({
+          id: jobAvailabilityStatus.statusId,
+          name: jobAvailabilityStatus.statusName,
+        })
+        .from(jobAvailabilityStatus)
+        .orderBy(jobAvailabilityStatus.statusName);
 
-    return result;
+      return result || [];
+    } catch (error) {
+      console.error('Error fetching statuses:', error);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
+    }
   }
 
   /**

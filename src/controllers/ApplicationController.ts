@@ -238,6 +238,7 @@ export class ApplicationController {
       const { email } = req.query;
 
       if (!email || typeof email !== 'string') {
+        logger.warn('Missing or invalid email parameter in getApplicationsByEmail');
         res.status(400).json({
           error: 'Bad request',
           message: 'Email address is required as a query parameter',
@@ -245,13 +246,20 @@ export class ApplicationController {
         return;
       }
 
+      logger.info(`Fetching applications for email: ${email}`);
       const applications = await this.applicationService.getApplicationsByEmail(email);
-      res.json(applications);
+
+      logger.info(`Successfully fetched ${applications.length} applications for email: ${email}`);
+      // Always return 200 with the applications array (even if empty)
+      res.status(200).json(applications);
     } catch (error) {
       logger.error('Error fetching applications by email:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch applications';
+      console.error('Error details:', errorMessage);
+
       res.status(500).json({
         error: 'Internal server error',
-        message: 'Failed to fetch applications',
+        message: errorMessage,
       });
     }
   }
