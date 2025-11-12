@@ -29,6 +29,14 @@ ENV NODE_ENV=production \
 # Build the TypeScript application
 RUN npm run build
 
+# Create a non-root user and change ownership
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
 # Expose the port the app runs on
 EXPOSE 3001
 
