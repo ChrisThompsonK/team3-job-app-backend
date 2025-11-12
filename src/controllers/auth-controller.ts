@@ -45,7 +45,7 @@ export class AuthController {
       // Generate JWT token
       const token = jwt.sign(
         {
-          id: user.id,
+          sub: user.id,
           email: user.email,
           role: user.role,
         },
