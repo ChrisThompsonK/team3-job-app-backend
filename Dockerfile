@@ -22,6 +22,10 @@ COPY --from=base /app/node_modules ./node_modules
 # Copy the rest of the application code
 COPY . .
 
+# Set environment variables for production
+ENV NODE_ENV=production \
+    PORT=3001
+
 # Build the TypeScript application
 RUN npm run build
 
