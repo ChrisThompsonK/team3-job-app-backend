@@ -6,6 +6,8 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Production builds
+dist/
+build/
 
 # Environment files (use Docker env vars instead)
 .env
