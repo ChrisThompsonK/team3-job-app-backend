@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 // JWT payload interface to match frontend token structure
 interface AccessTokenPayload {
   sub: string;
+  email: string;
   role: string;
   iat: number;
   exp: number;
@@ -16,6 +17,7 @@ declare global {
     interface Request {
       user?: {
         id: string;
+        email: string;
         role: string;
       };
     }
@@ -44,6 +46,7 @@ export const authMiddleware = (req: Request, _res: Response, next: NextFunction)
     // Attach user info to request
     req.user = {
       id: payload.sub,
+      email: payload.email,
       role: payload.role,
     };
 

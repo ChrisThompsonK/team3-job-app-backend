@@ -3,11 +3,15 @@ import { seedBands } from './seedBands.js';
 import { seedCapabilities } from './seedCapabilities.js';
 import { seedJobRoles } from './seedJobRoles.js';
 import { seedStatuses } from './seedStatuses.js';
+import { seedUsers } from './seedUsers.js';
 
 export async function runAllSeeds() {
   console.log('🌱 Starting database seeding...\n');
 
   try {
+    // Seed users first (for authentication)
+    await seedUsers();
+
     // Seed in order of dependencies
     await seedCapabilities();
     await seedBands();

@@ -25,7 +25,8 @@
     "seed": "tsx src/seeds/index.ts",
     "seed:capabilities": "tsx src/seeds/seedCapabilities.ts",
     "seed:bands": "tsx src/seeds/seedBands.ts",
-    "seed:jobroles": "tsx src/seeds/seedJobRoles.ts"
+    "seed:jobroles": "tsx src/seeds/seedJobRoles.ts",
+    "seed:users": "tsx src/seeds/seedUsers.ts"
   },
   "keywords": [
     "typescript",
@@ -37,6 +38,7 @@
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
@@ -53,7 +55,9 @@
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@types/jsonwebtoken": "^9.0.10",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",

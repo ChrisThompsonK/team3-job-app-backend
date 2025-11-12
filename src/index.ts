@@ -2,6 +2,7 @@
 import express from 'express';
 import { setupApp } from './middleware/appSetup.js';
 import { applicationRoutes } from './routes/ApplicationRoutes.js';
+import authRoutes from './routes/auth-routes.js';
 import { jobRoutes } from './routes/JobRoutes.js';
 
 // Initialize Express app
@@ -9,6 +10,7 @@ const app = express();
 setupApp(app);
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/', jobRoutes);
 app.use('/', applicationRoutes);
 
