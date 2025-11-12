@@ -73,9 +73,19 @@ export class AuthController {
     }
   };
 
-  // GET /api/auth/user/:id - Get user by ID
+  // GET /api/auth/user/:id - Get user by ID (requires authentication)
   getUserById = async (req: Request, res: Response): Promise<void> => {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'Unauthorized',
+          message: 'Authentication required. Please provide a valid JWT token.',
+        });
+        return;
+      }
+
       const { id } = req.params;
 
       if (!id) {
@@ -92,6 +102,16 @@ export class AuthController {
         res.status(404).json({
           success: false,
           error: 'User not found',
+        });
+        return;
+      }
+
+      // Check authorization: users can only view their own profile, admins can view any
+      if (req.user.id !== id && req.user.role !== 'admin') {
+        res.status(403).json({
+          success: false,
+          error: 'Forbidden',
+          message: 'You do not have permission to view this user profile.',
         });
         return;
       }
