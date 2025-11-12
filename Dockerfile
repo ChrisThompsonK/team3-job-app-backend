@@ -8,7 +8,25 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci && npm cache clean --force
+
+# Build stage
+FROM node:20-alpine AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install all dependencies (including devDependencies)
+RUN npm ci
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the TypeScript application
+RUN npm run build
 
 # Production stage
 FROM base AS production
@@ -16,18 +34,18 @@ FROM base AS production
 # Set working directory
 WORKDIR /app
 
-# Copy installed dependencies from base stage
+# Copy production dependencies from base stage
 COPY --from=base /app/node_modules ./node_modules
 
-# Copy the rest of the application code
-COPY . .
+# Copy built output from build stage
+COPY --from=build /app/dist ./dist
+
+# Copy package.json (if needed at runtime)
+COPY package*.json ./
 
 # Set environment variables for production
 ENV NODE_ENV=production \
     PORT=3001
-
-# Build the TypeScript application
-RUN npm run build
 
 # Create a non-root user and change ownership
 RUN addgroup -g 1001 -S nodejs && \
