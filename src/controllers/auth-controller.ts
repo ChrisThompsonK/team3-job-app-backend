@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { authService, type LoginCredentials, type RegisterData } from '../services/auth-service.js';
 
 export class AuthController {
@@ -41,9 +42,21 @@ export class AuthController {
         password,
       });
 
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        },
+        process.env['JWT_SECRET'] || 'your-secret-key',
+        { expiresIn: '24h' }
+      );
+
       res.json({
         success: true,
         message: 'Login successful',
+        token,
         user: {
           id: user.id,
           email: user.email,
