@@ -14,7 +14,6 @@ RUN npm ci && npm cache clean --force
 FROM base AS production
 
 # Set working directory
-WORKDIR /app
 
 # Copy installed dependencies from base stage
 COPY --from=base /app/node_modules ./node_modules
