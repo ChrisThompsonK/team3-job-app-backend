@@ -1,5 +1,5 @@
-# Use Node.js 18 Alpine as base image for smaller size
-FROM node:18-alpine
+# Use Node.js 20 Alpine as base image for smaller size
+FROM node:20-alpine AS base
 
 # Set working directory
 WORKDIR /app
@@ -8,7 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production && npm cache clean --force
+
+# Production stage
+FROM base AS production
+
+# Set working directory
+WORKDIR /app
+
+# Copy installed dependencies from base stage
+COPY --from=base /app/node_modules ./node_modules
 
 # Copy the rest of the application code
 COPY . .
