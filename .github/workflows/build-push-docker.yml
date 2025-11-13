@@ -30,14 +30,22 @@ jobs:
           SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)
           
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # PR: tag with PR number and SHA for testing
+            # PR: tag with PR number and SHA for testing (no registry needed)
             PR_NUMBER=${{ github.event.pull_request.number }}
-            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${PR_NUMBER}-${SHORT_SHA}"
+            if [[ -z "${{ env.REGISTRY }}" ]]; then
+              TAGS="${{ env.IMAGE_NAME }}:pr-${PR_NUMBER}-${SHORT_SHA}"
+            else
+              TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${PR_NUMBER}-${SHORT_SHA}"
+            fi
             echo "tags=${TAGS}" >> $GITHUB_OUTPUT
             echo "image_tag=pr-${PR_NUMBER}-${SHORT_SHA}" >> $GITHUB_OUTPUT
           else
-            # Main branch: tag with 'latest' and SHA
-            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${SHORT_SHA}"
+            # Main branch: tag with 'latest' and SHA (requires registry)
+            if [[ -z "${{ env.REGISTRY }}" ]]; then
+              TAGS="${{ env.IMAGE_NAME }}:latest,${{ env.IMAGE_NAME }}:${SHORT_SHA}"
+            else
+              TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${SHORT_SHA}"
+            fi
             echo "tags=${TAGS}" >> $GITHUB_OUTPUT
             echo "image_tag=latest" >> $GITHUB_OUTPUT
           fi
