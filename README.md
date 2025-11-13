@@ -287,7 +287,6 @@ The project includes GitHub Actions workflows for automated Terraform operations
 - Service Principal with Contributor role
 - GitHub Secrets: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`
 
-For detailed setup instructions, see [PIPELINE_README.md](./terraform-infrastructure/PIPELINE_README.md).
 
 ## 📄 License
 
