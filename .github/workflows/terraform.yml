@@ -1,0 +1,172 @@
+name: Terraform CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'terraform-infrastructure/**'
+      - '.github/workflows/terraform.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'terraform-infrastructure/**'
+  workflow_run:
+    workflows: ["Build & Push Docker Image"]
+    types: [completed]
+    branches: [main]
+
+env:
+  TERRAFORM_VERSION: 1.5.7
+  ARM_USE_CLI: 'true'
+
+jobs:
+  terraform-plan:
+    name: 🔍 Terraform Plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Format Check
+        working-directory: terraform-infrastructure
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init (Dev)
+        working-directory: terraform-infrastructure
+        run: terraform init -input=false
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Terraform Validate
+        working-directory: terraform-infrastructure
+        run: terraform validate
+
+      - name: Terraform Plan (Dev - Branches)
+        if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
+        working-directory: terraform-infrastructure
+        run: terraform plan -var-file=terraform.dev.tfvars -input=false -out=tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Comment Plan on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('terraform-infrastructure/tfplan', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Terraform Plan\n\n\`\`\`\n${plan.substring(0, 3000)}\n\`\`\``
+            });
+
+  terraform-apply:
+    name: � Deploy Infrastructure
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify Docker Build Success
+        run: |
+          if [[ "${{ github.event.workflow_run.conclusion }}" != "success" ]]; then
+            echo "❌ Docker build failed, skipping infrastructure deployment"
+            exit 1
+          fi
+          echo "✅ Docker build completed successfully, proceeding with infrastructure deployment"
+
+      - name: Install Terraform
+        run: |
+          echo "📦 Installing Terraform ${{ env.TERRAFORM_VERSION }}..."
+          wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com jammy main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update && sudo apt install terraform=${{ env.TERRAFORM_VERSION }}
+          terraform version
+
+      - name: Terraform Init
+        working-directory: terraform-infrastructure
+        run: |
+          echo "🔧 Initializing Terraform..."
+          terraform init -input=false -upgrade
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Terraform Validate
+        working-directory: terraform-infrastructure
+        run: |
+          echo "✅ Validating Terraform configuration..."
+          terraform validate
+
+      - name: Terraform Plan
+        working-directory: terraform-infrastructure
+        run: |
+          echo "📋 Planning infrastructure changes..."
+          terraform plan -var-file=terraform.dev.tfvars -input=false -out=tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Terraform Plan Summary
+        working-directory: terraform-infrastructure
+        run: |
+          echo "## 📋 Terraform Plan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          terraform show -no-color tfplan | head -50 >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Note**: Only first 50 lines shown. Full plan available in logs." >> $GITHUB_STEP_SUMMARY
+
+      - name: Terraform Apply
+        working-directory: terraform-infrastructure
+        run: |
+          echo "🚀 Applying infrastructure changes..."
+          terraform apply -input=false tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Infrastructure Deployment Summary
+        working-directory: terraform-infrastructure
+        run: |
+          echo "## ✅ Infrastructure Deployed Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Deployment Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: dev" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by**: Docker image push to ACR" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏗️ Resources Created/Updated" >> $GITHUB_STEP_SUMMARY
+          terraform output -json | jq -r 'to_entries[] | "- **\(.key)**: \(.value.value)"' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify resources in Azure Portal" >> $GITHUB_STEP_SUMMARY
+          echo "2. Update application configuration if needed" >> $GITHUB_STEP_SUMMARY
+          echo "3. Test application deployment" >> $GITHUB_STEP_SUMMARY
+

@@ -1,0 +1,166 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+  pull_request:
+
+env:
+  REGISTRY: ${{ secrets.ACR_REGISTRY }}
+  IMAGE_NAME: team3-job-app-backend
+
+jobs:
+  # Job 1: Test and Quality Checks
+  test:
+    name: 🧪 Test & Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run Biome CI checks
+        run: npm run ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Run tests (skip build)
+        run: npm run test:run
+
+  # Job 2: Build Docker Image (Depends on test job)
+  build-docker:
+    name: 🐳 Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tag }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-options: image=moby/buildkit:latest
+
+      - name: Generate image metadata
+        id: meta
+        run: |
+          # Use short SHA for tagging
+          SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          
+          # Create tags based on event and branch
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # PR: tag with PR number and short SHA
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${PR_NUMBER}-${SHORT_SHA}"
+            TAG="pr-${PR_NUMBER}-${SHORT_SHA}"
+          elif [[ "${{ github.ref_name }}" == "main" ]]; then
+            # Main branch: tag with latest and short SHA
+            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${SHORT_SHA}"
+            TAG="latest"
+          else
+            # Other branches: tag with branch name and short SHA
+            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${BRANCH_NAME}-${SHORT_SHA}"
+            TAG="${BRANCH_NAME}-${SHORT_SHA}"
+          fi
+          
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          
+          echo "📦 Image metadata:"
+          echo "  Branch: ${BRANCH_NAME}"
+          echo "  Short SHA: ${SHORT_SHA}"
+          echo "  Event: ${{ github.event_name }}"
+          echo "  Tags: ${TAGS}"
+
+      - name: Build Docker image (no push)
+        if: github.event_name == 'pull_request' || github.ref_name != 'main'
+        id: build-pr
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Login to Azure Container Registry
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Docker image to ACR
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build summary (PR)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "✅ Docker image built successfully (PR - no push)"
+          echo "📋 Build Details:"
+          echo "  Event: Pull Request #${{ github.event.pull_request.number }}"
+          echo "  Branch: ${{ steps.meta.outputs.branch_name }}"
+          echo "  Commit SHA: ${{ github.sha }}"
+          echo "  Short SHA: ${{ steps.meta.outputs.short_sha }}"
+          echo ""
+          echo "🏷️ Image Tag (for testing):"
+          echo "  ${{ steps.meta.outputs.tags }}"
+          echo ""
+          echo "⚠️ Note: Image built locally but NOT pushed to registry"
+          echo "   Push will happen when merged to main branch"
+
+      - name: Build summary (Main push)
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        run: |
+          echo "✅ Docker image built and pushed to ACR!"
+          echo "📋 Push Details:"
+          echo "  Registry: ${{ env.REGISTRY }}"
+          echo "  Image: ${{ env.IMAGE_NAME }}"
+          echo "  Commit SHA: ${{ github.sha }}"
+          echo "  Short SHA: ${{ steps.meta.outputs.short_sha }}"
+          echo ""
+          echo "🏷️ Tags pushed:"
+          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | sed 's/^/  - /'
+          echo ""
+          echo "📍 Pull image with:"
+          echo "  docker pull ${{ steps.meta.outputs.tags }}"
+
+      - name: Build summary (Other branch)
+        if: github.event_name == 'push' && github.ref_name != 'main'
+        run: |
+          echo "✅ Docker image built successfully (non-main branch)"
+          echo "📋 Build Details:"
+          echo "  Branch: ${{ steps.meta.outputs.branch_name }}"
+          echo "  Commit SHA: ${{ github.sha }}"
+          echo "  Short SHA: ${{ steps.meta.outputs.short_sha }}"
+          echo ""
+          echo "🏷️ Image Tag:"
+          echo "  ${{ steps.meta.outputs.tags }}"
+          echo ""
+          echo "⚠️ Note: Image built locally but NOT pushed to registry"
+          echo "   Push only happens on main branch"
