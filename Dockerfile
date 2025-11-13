@@ -43,10 +43,6 @@ COPY --from=build /app/dist ./dist
 # Copy package.json (if needed at runtime)
 COPY package*.json ./
 
-# Set environment variables for production
-ENV NODE_ENV=production \
-    PORT=3001
-
 # Create a non-root user and change ownership
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 && \
@@ -55,8 +51,12 @@ RUN addgroup -g 1001 -S nodejs && \
 # Switch to non-root user
 USER nodejs
 
-# Expose the port the app runs on
-EXPOSE 3001
+# Set environment variables for production
+ENV NODE_ENV=production \
+    PORT=3001
+
+# Expose the port the app runs on (uses PORT env var)
+EXPOSE $PORT
 
 # Define the start command
 CMD ["npm", "start"]
