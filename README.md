@@ -201,7 +201,7 @@ terraform-infrastructure/
 
 ### Getting Started
 
-1. Install Terraform CLI (v1.5.7+)
+1. Install Terraform CLI (>= 1.5.0)
 2. Navigate to `terraform-infrastructure/` directory
 3. Initialize: `terraform init`
 4. Plan: `terraform plan -var-file=terraform.dev.tfvars`
