@@ -1,0 +1,112 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ${{ secrets.ACR_REGISTRY }}
+  IMAGE_NAME: team3-job-app-backend
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate image metadata
+        id: meta
+        run: |
+          SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)
+          
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # PR: tag with PR number and SHA for testing
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${PR_NUMBER}-${SHORT_SHA}"
+            echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+            echo "image_tag=pr-${PR_NUMBER}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          else
+            # Main branch: tag with 'latest' and SHA
+            TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${SHORT_SHA}"
+            echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+            echo "image_tag=latest" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image (PR - no push)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Login to Azure Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push to ACR (main branch only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify push to ACR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "✅ Image pushed to ACR successfully!"
+          echo "Registry: ${{ env.REGISTRY }}"
+          echo "Image: ${{ env.IMAGE_NAME }}"
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo ""
+          echo "Pull with: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+
+      - name: PR Summary (build only)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Docker image built successfully (PR - no push to ACR)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image tag:** \`${{ steps.meta.outputs.image_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ Image built locally but **NOT pushed to registry**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "💡 This image will be pushed to ACR when merged to main" >> $GITHUB_STEP_SUMMARY
+
+      - name: Main Branch Summary (pushed to ACR)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "## 🚀 Docker Image Pushed to ACR" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Image successfully pushed to Azure Container Registry" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** \`${{ env.REGISTRY }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:** \`latest\`, \`${{ steps.meta.outputs.short_sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 Pull Command" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

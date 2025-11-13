@@ -1,4 +1,5 @@
 [![Code Quality](https://github.com/ChrisThompsonK/team3-job-app-backend/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ChrisThompsonK/team3-job-app-backend/actions/workflows/code-quality.yml)
+[![Build & Push Docker](https://github.com/ChrisThompsonK/team3-job-app-backend/actions/workflows/build-push-docker.yml/badge.svg)](https://github.com/ChrisThompsonK/team3-job-app-backend/actions/workflows/build-push-docker.yml)
 
 # Team 3 Job Application Backend
 
@@ -182,6 +183,72 @@ logger.error('Something went wrong', error);
 2. All linting rules should pass
 3. Add appropriate tests for new features
 4. Update documentation as needed
+
+## 🐳 Docker & Azure Container Registry
+
+This project uses Docker for containerization and Azure Container Registry (ACR) for image storage.
+
+### Local Development
+
+Build and run the Docker image locally:
+
+```bash
+# Build image
+docker build -t team3-job-app-backend:local .
+
+# Run container
+docker run -p 3000:3000 team3-job-app-backend:local
+```
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for automated Docker builds and deployments:
+
+#### On Pull Requests:
+- ✅ Docker image is **built** and verified
+- ❌ Image is **NOT pushed** to ACR
+- 🏷️ Tagged as `pr-{number}-{sha}` for testing
+
+#### On Main Branch:
+- ✅ Docker image is **built and pushed** to ACR
+- 🏷️ Tagged as `latest` and `{short-sha}`
+- 🚀 Ready for deployment
+
+### ACR Setup (For Maintainers)
+
+**Authentication Method: Service Principal (Recommended)**
+
+1. **Create Service Principal** with ACR push permissions:
+   ```bash
+   az ad sp create-for-rbac \
+     --name github-acr-push \
+     --role acrpush \
+     --scopes /subscriptions/{subscription-id}/resourceGroups/{rg}/providers/Microsoft.ContainerRegistry/registries/{acr-name}
+   ```
+
+2. **Add GitHub Secrets:**
+   - `ACR_REGISTRY`: Your ACR login server (e.g., `yourregistry.azurecr.io`)
+   - `ACR_USERNAME`: Service Principal `appId`
+   - `ACR_PASSWORD`: Service Principal `password`
+
+3. **Verify in Azure:**
+   ```bash
+   # List images
+   az acr repository list --name {registry-name}
+   
+   # View tags
+   az acr repository show-tags --name {registry-name} --repository team3-job-app-backend
+   
+   # Pull image
+   docker pull {registry}.azurecr.io/team3-job-app-backend:latest
+   ```
+
+### Image Tagging Strategy
+
+| Branch/Event | Tags | Pushed to ACR? |
+|-------------|------|----------------|
+| Pull Request | `pr-{number}-{sha}` | ❌ No (build only) |
+| Main branch | `latest`, `{short-sha}` | ✅ Yes |
 
 ## 🏗️ Infrastructure (Terraform)
 
