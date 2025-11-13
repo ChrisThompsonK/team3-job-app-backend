@@ -23,10 +23,10 @@ variable "environment" {
 variable "location" {
   description = "Azure region where resources will be deployed"
   type        = string
-  default     = "UK South"
+  default     = "uksouth"
 
   validation {
-    condition     = contains(["East US", "West US", "UK South", "Europe West", "Southeast Asia"], var.location)
+    condition     = contains(["eastus", "westus", "uksouth", "westeurope", "southeastasia"], var.location)
     error_message = "Location must be a valid Azure region."
   }
 }
