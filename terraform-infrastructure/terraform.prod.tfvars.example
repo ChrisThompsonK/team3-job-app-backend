@@ -4,7 +4,7 @@
 
 project_name = "team3-job-app"
 environment  = "prod"
-location     = "UK South"
+location     = "uksouth"
 
 tags = {
   environment = "production"
