@@ -250,44 +250,6 @@ The project uses GitHub Actions for automated Docker builds and deployments:
 | Pull Request | `pr-{number}-{sha}` | ❌ No (build only) |
 | Main branch | `latest`, `{short-sha}` | ✅ Yes |
 
-## 🏗️ Infrastructure (Terraform)
-
-This project uses Terraform for infrastructure as code to manage Azure resources.
-
-### Directory Structure
-
-```
-terraform-infrastructure/
-├── main.tf                          # Core infrastructure definition
-├── variables.tf                     # Variable definitions
-├── outputs.tf                       # Output values
-├── terraform.dev.tfvars             # Dev environment configuration
-├── terraform.prod.tfvars.example    # Prod template
-└── .terraform/                      # Provider plugins
-```
-
-### Getting Started
-
-1. Install Terraform CLI (>= 1.5.0)
-2. Navigate to `terraform-infrastructure/` directory
-3. Initialize: `terraform init`
-4. Plan: `terraform plan -var-file=terraform.dev.tfvars`
-5. Apply: `terraform apply -var-file=terraform.dev.tfvars`
-
-### CI/CD Pipeline
-
-The project includes GitHub Actions workflows for automated Terraform operations:
-- **Plan on pull requests**: Preview infrastructure changes
-- **Apply on main branch**: Deploy infrastructure changes
-- **Environment-based naming**: Resources named as `{project}-{environment}-{resource-type}` (e.g., `team3-job-app-dev-rg`)
-
-### Prerequisites for Pipeline
-
-- Azure Storage Account for remote state: `aistatemgmt` (container: `terraform-tfstate-ai`)
-- Service Principal with Contributor role
-- GitHub Secrets: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`
-
-
 ## 📄 License
 
 MIT

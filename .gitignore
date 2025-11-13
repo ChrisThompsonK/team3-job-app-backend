@@ -135,38 +135,3 @@ playwright-report/
 
 # Local development overrides
 .env.override
-
-# Terraform
-**/.terraform/*
-
-# .tfstate files
-*.tfstate
-*.tfstate.*
-
-# Crash log files
-crash.log
-crash.*.log
-
-# Exclude all .tfvars files, which might contain sensitive data
-*.tfvars
-*.tfvars.json
-
-# Ignore override files (allows personal overrides without affecting team)
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-
-# Include override files as an example of how to structure it
-!example_override.tf
-
-# Ignore CLI configuration files
-.terraformrc
-terraform.rc
-
-# Ignore plan files
-*.tfplan
-
-# Ignore lock file for local development
-# (but commit .terraform.lock.hcl for team consistency)
-# .terraform.lock.hcl
