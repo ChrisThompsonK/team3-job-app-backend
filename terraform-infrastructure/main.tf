@@ -35,6 +35,5 @@ resource "azurerm_resource_group" "main" {
     environment = var.environment
     managed_by  = "terraform"
     project     = var.project_name
-    created_at  = timestamp()
   }
 }
