@@ -25,9 +25,9 @@ export class JobService {
         yearNum = Number(year);
       const dateObj = new Date(yearNum, monthNum - 1, dayNum);
       if (
-        isNaN(dayNum) ||
-        isNaN(monthNum) ||
-        isNaN(yearNum) ||
+        Number.isNaN(dayNum) ||
+        Number.isNaN(monthNum) ||
+        Number.isNaN(yearNum) ||
         dateObj.getFullYear() !== yearNum ||
         dateObj.getMonth() !== monthNum - 1 ||
         dateObj.getDate() !== dayNum
@@ -44,9 +44,9 @@ export class JobService {
         dayNum = Number(day);
       const dateObj = new Date(yearNum, monthNum - 1, dayNum);
       if (
-        isNaN(dayNum) ||
-        isNaN(monthNum) ||
-        isNaN(yearNum) ||
+        Number.isNaN(dayNum) ||
+        Number.isNaN(monthNum) ||
+        Number.isNaN(yearNum) ||
         dateObj.getFullYear() !== yearNum ||
         dateObj.getMonth() !== monthNum - 1 ||
         dateObj.getDate() !== dayNum
