@@ -12,6 +12,13 @@ import type {
   JobRoleUpdate,
   Status,
 } from '../models/JobModel.js';
+
+// Simple date formatter: YYYY-MM-DD to DD/MM/YYYY
+const toUkDate = (isoDate: string): string => {
+  const [year, month, day] = isoDate.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
@@ -111,7 +118,14 @@ export class JobRepository {
       console.log(
         `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
       );
-      return jobs || [];
+
+      // Format dates to UK format for API response
+      const formattedJobs = jobs.map(job => ({
+        ...job,
+        closingDate: toUkDate(job.closingDate),
+      }));
+
+      return formattedJobs || [];
     } catch (error) {
       console.error('Error fetching jobs:', error);
       // Return empty array instead of throwing to prevent 500 errors
@@ -189,6 +203,14 @@ export class JobRepository {
         .where(eq(jobRoles.jobRoleId, Number(insertedId)))
         .limit(1);
 
+      if (completeJob) {
+        // Format date to UK format for API response
+        return {
+          ...completeJob,
+          closingDate: toUkDate(completeJob.closingDate),
+        };
+      }
+
       return completeJob || null;
     } catch (error) {
       console.error('Error adding job role:', error);
@@ -234,6 +256,14 @@ export class JobRepository {
       .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(and(eq(jobRoles.jobRoleId, id), eq(jobRoles.deleted, 0)))
       .limit(1);
+
+    if (result[0]) {
+      // Format date to UK format for API response
+      return {
+        ...result[0],
+        closingDate: toUkDate(result[0].closingDate),
+      };
+    }
 
     return result[0] ?? null;
   }
@@ -296,7 +326,7 @@ export class JobRepository {
         bandName: bands.bandName,
         statusId: jobRoles.statusId,
         statusName: jobAvailabilityStatus.statusName,
-        closingDate: jobRoles.closingDate,
+        closingDate: jobRoles.closingDate, // Keep as ISO in database, will format later
         description: jobRoles.description,
         responsibilities: jobRoles.responsibilities,
         jobSpecUrl: jobRoles.jobSpecUrl,
@@ -308,6 +338,14 @@ export class JobRepository {
       .leftJoin(jobAvailabilityStatus, eq(jobRoles.statusId, jobAvailabilityStatus.statusId))
       .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)))
       .limit(1);
+
+    if (updatedJob[0]) {
+      // Format date to UK format for API response
+      return {
+        ...updatedJob[0],
+        closingDate: toUkDate(updatedJob[0].closingDate),
+      };
+    }
 
     return updatedJob[0] || null;
   }

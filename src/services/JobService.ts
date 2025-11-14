@@ -54,11 +54,16 @@ export class JobService {
       throw new Error('No updates provided');
     }
 
-    // Business logic: Validate closing date format if provided
+        // Business logic: Validate closing date format if provided
     if (updates.closingDate) {
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      const dateRegex = /^(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})$/; // Accept both YYYY-MM-DD and DD/MM/YYYY
       if (!dateRegex.test(updates.closingDate)) {
-        throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+        throw new Error('Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD');
+      }
+      // Convert UK format to ISO if needed
+      if (updates.closingDate.includes('/')) {
+        const [day, month, year] = updates.closingDate.split('/');
+        updates.closingDate = `${year}-${month}-${day}`;
       }
     }
 
@@ -118,19 +123,29 @@ export class JobService {
     }
 
     // Business logic: Validate closing date format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const dateRegex = /^(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})$/; // Accept both YYYY-MM-DD and DD/MM/YYYY
     if (!dateRegex.test(jobData.closingDate)) {
-      throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+      throw new Error('Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD');
+    }
+
+    // Convert UK format to ISO if needed
+    let normalizedClosingDate = jobData.closingDate;
+    if (jobData.closingDate.includes('/')) {
+      const [day, month, year] = jobData.closingDate.split('/');
+      normalizedClosingDate = `${year}-${month}-${day}`;
     }
 
     // Business logic: Validate closing date is in the future
-    const closingDate = new Date(jobData.closingDate);
+    const closingDate = new Date(normalizedClosingDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (closingDate < today) {
       throw new Error('Closing date must be in the future');
     }
+
+    // Update jobData with normalized date for database
+    jobData.closingDate = normalizedClosingDate;
 
     // Business logic: Validate openPositions if provided
     if (jobData.openPositions !== undefined && jobData.openPositions <= 0) {
