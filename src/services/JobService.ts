@@ -16,6 +16,14 @@ export class JobService {
     this.jobRepository = jobRepository;
   }
 
+  private normalizeDateToIso(dateStr: string): string {
+    if (dateStr.includes('/')) {
+      const [day, month, year] = dateStr.split('/');
+      return `${year}-${month}-${day}`;
+    }
+    return dateStr;
+  }
+
   async updateJobRole(
     jobRoleId: number,
     requestBody: Record<string, unknown>
@@ -61,10 +69,7 @@ export class JobService {
         throw new Error('Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD');
       }
       // Convert UK format to ISO if needed
-      if (updates.closingDate.includes('/')) {
-        const [day, month, year] = updates.closingDate.split('/');
-        updates.closingDate = `${year}-${month}-${day}`;
-      }
+      updates.closingDate = this.normalizeDateToIso(updates.closingDate);
     }
 
     return await this.jobRepository.updateJobRole(jobRoleId, updates);
@@ -129,11 +134,7 @@ export class JobService {
     }
 
     // Convert UK format to ISO if needed
-    let normalizedClosingDate = jobData.closingDate;
-    if (jobData.closingDate.includes('/')) {
-      const [day, month, year] = jobData.closingDate.split('/');
-      normalizedClosingDate = `${year}-${month}-${day}`;
-    }
+    const normalizedClosingDate = this.normalizeDateToIso(jobData.closingDate);
 
     // Business logic: Validate closing date is in the future
     const closingDate = new Date(normalizedClosingDate);
