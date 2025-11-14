@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, lte, or } from 'drizzle-orm';
+import moment from 'moment';
 import { db } from '../db/database.js';
 import { bands, capabilities, jobAvailabilityStatus, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
@@ -12,6 +13,12 @@ import type {
   JobRoleUpdate,
   Status,
 } from '../models/JobModel.js';
+
+// Date formatter using moment.js: YYYY-MM-DD to DD/MM/YYYY
+const toUkDate = (isoDate: string): string => {
+  return moment(isoDate).format('DD/MM/YYYY');
+};
+
 export class JobRepository {
   private static readonly APP_NAME = 'Team 3 Job Application Backend';
 
@@ -111,7 +118,14 @@ export class JobRepository {
       console.log(
         `JobRepository.getAllJobs: Drizzle query completed in ${endTime - startTime}ms, returned ${jobs.length} jobs`
       );
-      return jobs || [];
+
+      // Format dates to UK format for API response
+      const formattedJobs = jobs.map((job) => ({
+        ...job,
+        closingDate: toUkDate(job.closingDate),
+      }));
+
+      return formattedJobs;
     } catch (error) {
       console.error('Error fetching jobs:', error);
       // Return empty array instead of throwing to prevent 500 errors
@@ -189,7 +203,9 @@ export class JobRepository {
         .where(eq(jobRoles.jobRoleId, Number(insertedId)))
         .limit(1);
 
-      return completeJob || null;
+      return completeJob
+        ? { ...completeJob, closingDate: toUkDate(completeJob.closingDate) }
+        : null;
     } catch (error) {
       console.error('Error adding job role:', error);
       // Re-throw the error so it can be handled by the service layer with proper error messages
@@ -235,7 +251,7 @@ export class JobRepository {
       .where(and(eq(jobRoles.jobRoleId, id), eq(jobRoles.deleted, 0)))
       .limit(1);
 
-    return result[0] ?? null;
+    return result[0] ? { ...result[0], closingDate: toUkDate(result[0].closingDate) } : null;
   }
 
   async updateJobRole(jobRoleId: number, updates: JobRoleUpdate): Promise<JobRoleDetails | null> {
@@ -296,7 +312,7 @@ export class JobRepository {
         bandName: bands.bandName,
         statusId: jobRoles.statusId,
         statusName: jobAvailabilityStatus.statusName,
-        closingDate: jobRoles.closingDate,
+        closingDate: jobRoles.closingDate, // Keep as ISO in database, will format later
         description: jobRoles.description,
         responsibilities: jobRoles.responsibilities,
         jobSpecUrl: jobRoles.jobSpecUrl,
@@ -309,7 +325,9 @@ export class JobRepository {
       .where(and(eq(jobRoles.jobRoleId, jobRoleId), eq(jobRoles.deleted, 0)))
       .limit(1);
 
-    return updatedJob[0] || null;
+    return updatedJob[0]
+      ? { ...updatedJob[0], closingDate: toUkDate(updatedJob[0].closingDate) }
+      : null;
   }
 
   async getAllCapabilities(): Promise<Capability[]> {

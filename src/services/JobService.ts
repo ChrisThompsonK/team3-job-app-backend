@@ -1,3 +1,4 @@
+import moment from 'moment';
 import type {
   Band,
   Capability,
@@ -14,6 +15,19 @@ export class JobService {
 
   constructor(jobRepository: JobRepository) {
     this.jobRepository = jobRepository;
+  }
+
+  private normalizeDateToIso(dateStr: string): string {
+    // Try to parse the date with moment.js
+    // Moment accepts both DD/MM/YYYY and YYYY-MM-DD formats
+    const date = moment(dateStr, ['DD/MM/YYYY', 'YYYY-MM-DD'], true);
+
+    if (!date.isValid()) {
+      throw new Error('Invalid closing date: not a valid calendar date');
+    }
+
+    // Return in ISO format (YYYY-MM-DD)
+    return date.format('YYYY-MM-DD');
   }
 
   async updateJobRole(
@@ -56,10 +70,12 @@ export class JobService {
 
     // Business logic: Validate closing date format if provided
     if (updates.closingDate) {
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      const dateRegex = /^(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})$/; // Accept both YYYY-MM-DD and DD/MM/YYYY
       if (!dateRegex.test(updates.closingDate)) {
-        throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+        throw new Error('Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD');
       }
+      // Convert UK format to ISO if needed
+      updates.closingDate = this.normalizeDateToIso(updates.closingDate);
     }
 
     return await this.jobRepository.updateJobRole(jobRoleId, updates);
@@ -118,19 +134,25 @@ export class JobService {
     }
 
     // Business logic: Validate closing date format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const dateRegex = /^(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})$/; // Accept both YYYY-MM-DD and DD/MM/YYYY
     if (!dateRegex.test(jobData.closingDate)) {
-      throw new Error('Invalid closing date format. Use YYYY-MM-DD');
+      throw new Error('Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD');
     }
 
+    // Convert UK format to ISO if needed
+    const normalizedClosingDate = this.normalizeDateToIso(jobData.closingDate);
+
     // Business logic: Validate closing date is in the future
-    const closingDate = new Date(jobData.closingDate);
+    const closingDate = new Date(normalizedClosingDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (closingDate < today) {
       throw new Error('Closing date must be in the future');
     }
+
+    // Update jobData with normalized date for database
+    jobData.closingDate = normalizedClosingDate;
 
     // Business logic: Validate openPositions if provided
     if (jobData.openPositions !== undefined && jobData.openPositions <= 0) {

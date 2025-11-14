@@ -173,17 +173,17 @@ describe('JobService.addJob', () => {
     );
   });
 
-  it('should throw error for invalid date format (DD/MM/YYYY)', async () => {
+  it('should throw error for invalid date format (DD-MM-YYYY)', async () => {
     const invalidJob: JobRoleCreate = {
       name: 'Software Engineer',
       location: 'Belfast',
       capabilityId: 1,
       bandId: 2,
-      closingDate: '31/12/2025',
+      closingDate: '31-12-2025',
     };
 
     await expect(jobService.addJob(invalidJob)).rejects.toThrow(
-      'Invalid closing date format. Use YYYY-MM-DD'
+      'Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD'
     );
   });
 
@@ -197,7 +197,7 @@ describe('JobService.addJob', () => {
     };
 
     await expect(jobService.addJob(invalidJob)).rejects.toThrow(
-      'Invalid closing date format. Use YYYY-MM-DD'
+      'Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD'
     );
   });
 
