@@ -54,7 +54,7 @@ export class JobService {
       throw new Error('No updates provided');
     }
 
-        // Business logic: Validate closing date format if provided
+    // Business logic: Validate closing date format if provided
     if (updates.closingDate) {
       const dateRegex = /^(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})$/; // Accept both YYYY-MM-DD and DD/MM/YYYY
       if (!dateRegex.test(updates.closingDate)) {

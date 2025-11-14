@@ -120,7 +120,7 @@ export class JobRepository {
       );
 
       // Format dates to UK format for API response
-      const formattedJobs = jobs.map(job => ({
+      const formattedJobs = jobs.map((job) => ({
         ...job,
         closingDate: toUkDate(job.closingDate),
       }));
