@@ -256,15 +256,7 @@ export class JobRepository {
       .where(and(eq(jobRoles.jobRoleId, id), eq(jobRoles.deleted, 0)))
       .limit(1);
 
-    if (result[0]) {
-      // Format date to UK format for API response
-      return {
-        ...result[0],
-        closingDate: toUkDate(result[0].closingDate),
-      };
-    }
-
-    return result[0] ?? null;
+    return result[0] ? { ...result[0], closingDate: toUkDate(result[0].closingDate) } : null;
   }
 
   async updateJobRole(jobRoleId: number, updates: JobRoleUpdate): Promise<JobRoleDetails | null> {
