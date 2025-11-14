@@ -60,10 +60,34 @@ export class JobService {
       if (!dateRegex.test(updates.closingDate)) {
         throw new Error('Invalid closing date format. Use DD/MM/YYYY or YYYY-MM-DD');
       }
-      // Convert UK format to ISO if needed
+      // Convert UK format to ISO if needed and validate date
       if (updates.closingDate.includes('/')) {
         const [day, month, year] = updates.closingDate.split('/');
+        // Validate that day, month, year are valid numbers and form a valid date
+        const dayNum = Number(day), monthNum = Number(month), yearNum = Number(year);
+        const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+        if (
+          isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum) ||
+          dateObj.getFullYear() !== yearNum ||
+          dateObj.getMonth() !== monthNum - 1 ||
+          dateObj.getDate() !== dayNum
+        ) {
+          throw new Error('Invalid closing date: not a valid calendar date');
+        }
         updates.closingDate = `${year}-${month}-${day}`;
+      }
+    // If closingDate is in ISO format, validate it as well
+    if (updates.closingDate && updates.closingDate.includes('-')) {
+      const [year, month, day] = updates.closingDate.split('-');
+      const yearNum = Number(year), monthNum = Number(month), dayNum = Number(day);
+      const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+      if (
+        isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum) ||
+        dateObj.getFullYear() !== yearNum ||
+        dateObj.getMonth() !== monthNum - 1 ||
+        dateObj.getDate() !== dayNum
+      ) {
+        throw new Error('Invalid closing date: not a valid calendar date');
       }
     }
 
