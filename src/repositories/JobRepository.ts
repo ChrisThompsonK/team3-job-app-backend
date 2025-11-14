@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, lte, or } from 'drizzle-orm';
+import moment from 'moment';
 import { db } from '../db/database.js';
 import { bands, capabilities, jobAvailabilityStatus, jobRoles } from '../db/schema.js';
 import type { AppInfo } from '../models/AppInfo.js';
@@ -13,15 +14,9 @@ import type {
   Status,
 } from '../models/JobModel.js';
 
-// Simple date formatter: YYYY-MM-DD to DD/MM/YYYY
+// Date formatter using moment.js: YYYY-MM-DD to DD/MM/YYYY
 const toUkDate = (isoDate: string): string => {
-  // Validate ISO date format (YYYY-MM-DD)
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
-    // Return original input or throw error if preferred
-    return isoDate;
-  }
-  const [year, month, day] = isoDate.split('-');
-  return `${day}/${month}/${year}`;
+  return moment(isoDate).format('DD/MM/YYYY');
 };
 
 export class JobRepository {
