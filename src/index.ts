@@ -13,6 +13,8 @@ setupApp(app);
 app.use('/api/auth', authRoutes);
 app.use('/api', jobRoutes);
 app.use('/api', applicationRoutes);
+app.use('/', jobRoutes);
+app.use('/', applicationRoutes);
 
 // Health check endpoint
 app.get('/', (_req, res) => {
