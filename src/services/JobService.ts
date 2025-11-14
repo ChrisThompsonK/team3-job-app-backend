@@ -34,7 +34,7 @@ export class JobService {
       ) {
         throw new Error('Invalid closing date: not a valid calendar date');
       }
-      return `${year}-${month}-${day}`;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
     // If already in ISO format, validate it as well
     if (dateStr.includes('-')) {
