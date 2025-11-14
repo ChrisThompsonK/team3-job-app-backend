@@ -19,7 +19,40 @@ export class JobService {
   private normalizeDateToIso(dateStr: string): string {
     if (dateStr.includes('/')) {
       const [day, month, year] = dateStr.split('/');
+      // Validate that day, month, year are valid numbers and form a valid date
+      const dayNum = Number(day),
+        monthNum = Number(month),
+        yearNum = Number(year);
+      const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+      if (
+        isNaN(dayNum) ||
+        isNaN(monthNum) ||
+        isNaN(yearNum) ||
+        dateObj.getFullYear() !== yearNum ||
+        dateObj.getMonth() !== monthNum - 1 ||
+        dateObj.getDate() !== dayNum
+      ) {
+        throw new Error('Invalid closing date: not a valid calendar date');
+      }
       return `${year}-${month}-${day}`;
+    }
+    // If already in ISO format, validate it as well
+    if (dateStr.includes('-')) {
+      const [year, month, day] = dateStr.split('-');
+      const yearNum = Number(year),
+        monthNum = Number(month),
+        dayNum = Number(day);
+      const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+      if (
+        isNaN(dayNum) ||
+        isNaN(monthNum) ||
+        isNaN(yearNum) ||
+        dateObj.getFullYear() !== yearNum ||
+        dateObj.getMonth() !== monthNum - 1 ||
+        dateObj.getDate() !== dayNum
+      ) {
+        throw new Error('Invalid closing date: not a valid calendar date');
+      }
     }
     return dateStr;
   }
