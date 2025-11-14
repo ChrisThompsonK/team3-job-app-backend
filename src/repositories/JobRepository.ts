@@ -208,15 +208,9 @@ export class JobRepository {
         .where(eq(jobRoles.jobRoleId, Number(insertedId)))
         .limit(1);
 
-      if (completeJob) {
-        // Format date to UK format for API response
-        return {
-          ...completeJob,
-          closingDate: toUkDate(completeJob.closingDate),
-        };
-      }
-
-      return completeJob || null;
+      return completeJob
+        ? { ...completeJob, closingDate: toUkDate(completeJob.closingDate) }
+        : null;
     } catch (error) {
       console.error('Error adding job role:', error);
       // Re-throw the error so it can be handled by the service layer with proper error messages
