@@ -130,7 +130,7 @@ export class JobRepository {
         closingDate: toUkDate(job.closingDate),
       }));
 
-      return formattedJobs || [];
+      return formattedJobs;
     } catch (error) {
       console.error('Error fetching jobs:', error);
       // Return empty array instead of throwing to prevent 500 errors
