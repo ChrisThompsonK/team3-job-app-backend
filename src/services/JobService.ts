@@ -1,3 +1,4 @@
+import moment from 'moment';
 import type {
   Band,
   Capability,
@@ -17,60 +18,16 @@ export class JobService {
   }
 
   private normalizeDateToIso(dateStr: string): string {
-    if (dateStr.includes('/')) {
-      const parts = dateStr.split('/');
-      const day = parts[0];
-      const month = parts[1];
-      const year = parts[2];
+    // Try to parse the date with moment.js
+    // Moment accepts both DD/MM/YYYY and YYYY-MM-DD formats
+    const date = moment(dateStr, ['DD/MM/YYYY', 'YYYY-MM-DD'], true);
 
-      if (!day || !month || !year) {
-        throw new Error('Invalid closing date: incomplete date format');
-      }
-
-      // Validate that day, month, year are valid numbers and form a valid date
-      const dayNum = Number(day),
-        monthNum = Number(month),
-        yearNum = Number(year);
-      const dateObj = new Date(yearNum, monthNum - 1, dayNum);
-      if (
-        Number.isNaN(dayNum) ||
-        Number.isNaN(monthNum) ||
-        Number.isNaN(yearNum) ||
-        dateObj.getFullYear() !== yearNum ||
-        dateObj.getMonth() !== monthNum - 1 ||
-        dateObj.getDate() !== dayNum
-      ) {
-        throw new Error('Invalid closing date: not a valid calendar date');
-      }
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    if (!date.isValid()) {
+      throw new Error('Invalid closing date: not a valid calendar date');
     }
-    // If already in ISO format, validate it as well
-    if (dateStr.includes('-')) {
-      const parts = dateStr.split('-');
-      const year = parts[0];
-      const month = parts[1];
-      const day = parts[2];
 
-      if (!year || !month || !day) {
-        throw new Error('Invalid closing date: incomplete date format');
-      }
-
-      const yearNum = Number(year),
-        monthNum = Number(month),
-        dayNum = Number(day);
-      const dateObj = new Date(yearNum, monthNum - 1, dayNum);
-      if (
-        Number.isNaN(dayNum) ||
-        Number.isNaN(monthNum) ||
-        Number.isNaN(yearNum) ||
-        dateObj.getFullYear() !== yearNum ||
-        dateObj.getMonth() !== monthNum - 1 ||
-        dateObj.getDate() !== dayNum
-      ) {
-        throw new Error('Invalid closing date: not a valid calendar date');
-      }
-    }
-    return dateStr;
+    // Return in ISO format (YYYY-MM-DD)
+    return date.format('YYYY-MM-DD');
   }
 
   async updateJobRole(
