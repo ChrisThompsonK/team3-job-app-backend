@@ -18,7 +18,15 @@ export class JobService {
 
   private normalizeDateToIso(dateStr: string): string {
     if (dateStr.includes('/')) {
-      const [day, month, year] = dateStr.split('/');
+      const parts = dateStr.split('/');
+      const day = parts[0];
+      const month = parts[1];
+      const year = parts[2];
+
+      if (!day || !month || !year) {
+        throw new Error('Invalid closing date: incomplete date format');
+      }
+
       // Validate that day, month, year are valid numbers and form a valid date
       const dayNum = Number(day),
         monthNum = Number(month),
@@ -38,7 +46,15 @@ export class JobService {
     }
     // If already in ISO format, validate it as well
     if (dateStr.includes('-')) {
-      const [year, month, day] = dateStr.split('-');
+      const parts = dateStr.split('-');
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+
+      if (!year || !month || !day) {
+        throw new Error('Invalid closing date: incomplete date format');
+      }
+
       const yearNum = Number(year),
         monthNum = Number(month),
         dayNum = Number(day);
