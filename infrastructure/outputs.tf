@@ -24,12 +24,12 @@ output "key_vault_name" {
 }
 
 output "container_app_environment_id" {
-  value       = azurerm_container_app_environment.main.id
+  value       = data.azurerm_container_app_environment.main.id
   description = "Container App Environment ID"
 }
 
 output "container_app_environment_name" {
-  value       = azurerm_container_app_environment.main.name
+  value       = data.azurerm_container_app_environment.main.name
   description = "Container App Environment name"
 }
 
