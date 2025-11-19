@@ -12,10 +12,12 @@ terraform {
     resource_group_name  = "terraform-state-mgmt"
     storage_account_name = "aistatemgmt"
     container_name       = "terraform-tfstate-ai"
-    key                  = "dev.team3-job-app-backend.tfstate"
+    key                  = "team3-job-app-infrastructure.tfstate"
   }
 }
 
 provider "azurerm" {
   features {}
 }
+
+data "azurerm_client_config" "current" {}
