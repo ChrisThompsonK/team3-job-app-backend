@@ -23,16 +23,6 @@ output "key_vault_name" {
   description = "Key Vault name"
 }
 
-output "backend_managed_identity_id" {
-  value       = azurerm_user_assigned_identity.backend.id
-  description = "Backend Managed Identity ID"
-}
-
-output "backend_managed_identity_principal_id" {
-  value       = azurerm_user_assigned_identity.backend.principal_id
-  description = "Backend Managed Identity Principal ID"
-}
-
 output "container_app_environment_id" {
   value       = azurerm_container_app_environment.main.id
   description = "Container App Environment ID"

@@ -67,5 +67,6 @@ variable "backend_memory" {
 variable "backend_managed_identity_id" {
   type        = string
   description = "Backend Managed Identity ID from team3-job-app-tf"
+  default     = ""
 }
 
