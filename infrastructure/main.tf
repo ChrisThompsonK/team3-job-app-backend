@@ -14,18 +14,6 @@ data "azurerm_key_vault" "main" {
 }
 
 resource "azurerm_container_app_environment" "main" {
-  name                = "cae-${var.app_name}-${var.environment}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-}
-
-resource "azurerm_user_assigned_identity" "backend" {
-  name                = "mi-${var.app_name}-backend-${var.environment}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-}
-
-resource "azurerm_container_app" "backend" {
   name                         = "ca-${var.app_name}-backend-${var.environment}"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
@@ -33,7 +21,7 @@ resource "azurerm_container_app" "backend" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.backend.id]
+    identity_ids = [var.backend_managed_identity_id]
   }
 
   template {
@@ -63,13 +51,13 @@ resource "azurerm_container_app" "backend" {
   secret {
     name                = "database-password-ref"
     key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/DatabasePassword"
-    identity            = azurerm_user_assigned_identity.backend.id
+    identity            = var.backend_managed_identity_id
   }
 
   secret {
     name                = "api-key-ref"
     key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/ApiKey"
-    identity            = azurerm_user_assigned_identity.backend.id
+    identity            = var.backend_managed_identity_id
   }
 
   ingress {
@@ -86,7 +74,7 @@ resource "azurerm_container_app" "backend" {
 
   registry {
     server   = "${var.acr_name}.azurecr.io"
-    identity = azurerm_user_assigned_identity.backend.id
+    identity = var.backend_managed_identity_id
   }
 }
 

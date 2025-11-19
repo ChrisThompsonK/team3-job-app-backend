@@ -64,3 +64,8 @@ variable "backend_memory" {
   default     = "0.5Gi"
 }
 
+variable "backend_managed_identity_id" {
+  type        = string
+  description = "Backend Managed Identity ID from team3-job-app-tf"
+}
+
