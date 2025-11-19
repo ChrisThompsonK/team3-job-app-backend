@@ -18,15 +18,14 @@ data "azurerm_user_assigned_identity" "backend" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
-resource "azurerm_container_app_environment" "main" {
+data "azurerm_container_app_environment" "main" {
   name                = "cae-${var.app_name}-${var.environment}"
-  location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 }
 
 resource "azurerm_container_app" "backend" {
   name                         = "ca-${var.app_name}-backend-${var.environment}"
-  container_app_environment_id = azurerm_container_app_environment.main.id
+  container_app_environment_id = data.azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
 

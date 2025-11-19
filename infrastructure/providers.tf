@@ -12,7 +12,7 @@ terraform {
     resource_group_name  = "terraform-state-mgmt"
     storage_account_name = "aistatemgmt"
     container_name       = "terraform-tfstate-ai"
-    key                  = "team3-job-app-infrastructure.tfstate"
+    key                  = "dev.team3-job-app-backend.tfstate"
   }
 }
 
