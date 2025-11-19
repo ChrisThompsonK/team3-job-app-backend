@@ -1,6 +1,5 @@
-resource "azurerm_resource_group" "main" {
-  name     = "${var.app_name}-${var.environment}-rg"
-  location = var.region
+data "azurerm_resource_group" "main" {
+  name = "team3-job-app-dev-rg"
 }
 
 data "azurerm_container_registry" "acr" {
