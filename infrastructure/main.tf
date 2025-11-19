@@ -43,13 +43,48 @@ resource "azurerm_container_app" "backend" {
 
       # Key Vault reference syntax for env vars
       env {
-        name        = "DATABASE_PASSWORD"
-        secret_name = "database-password-ref"
+        name        = "NODE_ENV"
+        value       = "production"
       }
 
       env {
-        name        = "API_KEY"
-        secret_name = "api-key-ref"
+        name        = "PORT"
+        value       = "3001"
+      }
+
+      env {
+        name        = "LOG_LEVEL"
+        value       = "info"
+      }
+
+      env {
+        name        = "DATABASE_URL"
+        secret_name = "database-url"
+      }
+
+      env {
+        name        = "APP_NAME"
+        value       = "Team 3 Job Application Backend"
+      }
+
+      env {
+        name        = "APP_VERSION"
+        value       = "1.0.0"
+      }
+
+      env {
+        name        = "FRONTEND_URL"
+        secret_name = "frontend-url"
+      }
+
+      env {
+        name        = "JWT_ACCESS_SECRET"
+        secret_name = "jwt-access-secret"
+      }
+
+      env {
+        name        = "AUTO_CLOSE_CRON_SCHEDULE"
+        value       = "0 1 * * *"
       }
     }
 
@@ -59,14 +94,20 @@ resource "azurerm_container_app" "backend" {
 
   # Define the Key Vault references as secrets
   secret {
-    name                = "database-password-ref"
-    key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/DatabasePassword"
+    name                = "database-url"
+    key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/database-url"
     identity            = data.azurerm_user_assigned_identity.backend.id
   }
 
   secret {
-    name                = "api-key-ref"
-    key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/ApiKey"
+    name                = "frontend-url"
+    key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/frontend-url"
+    identity            = data.azurerm_user_assigned_identity.backend.id
+  }
+
+  secret {
+    name                = "jwt-access-secret"
+    key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/jwt-access-secret"
     identity            = data.azurerm_user_assigned_identity.backend.id
   }
 
