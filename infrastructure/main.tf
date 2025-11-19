@@ -8,13 +8,9 @@ data "azurerm_container_registry" "acr" {
   resource_group_name = var.acr_resource_group_name
 }
 
-resource "azurerm_key_vault" "main" {
-  name                      = "kv-team3-jobapp-${var.environment}"
-  location                  = azurerm_resource_group.main.location
-  resource_group_name       = azurerm_resource_group.main.name
-  tenant_id                 = data.azurerm_client_config.current.tenant_id
-  sku_name                  = "standard"
-  enable_rbac_authorization = true
+data "azurerm_key_vault" "main" {
+  name                = "kv-${var.app_name}-${var.environment}"
+  resource_group_name = azurerm_resource_group.main.name
 }
 
 resource "azurerm_container_app_environment" "main" {
@@ -23,81 +19,10 @@ resource "azurerm_container_app_environment" "main" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
-resource "azurerm_user_assigned_identity" "frontend" {
-  name                = "mi-${var.app_name}-frontend-${var.environment}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-}
-
 resource "azurerm_user_assigned_identity" "backend" {
   name                = "mi-${var.app_name}-backend-${var.environment}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-}
-
-resource "azurerm_role_assignment" "frontend_kv" {
-  scope              = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id       = azurerm_user_assigned_identity.frontend.principal_id
-}
-
-resource "azurerm_role_assignment" "frontend_acr" {
-  scope              = data.azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id       = azurerm_user_assigned_identity.frontend.principal_id
-}
-
-resource "azurerm_role_assignment" "backend_kv" {
-  scope              = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Secrets User"
-  principal_id       = azurerm_user_assigned_identity.backend.principal_id
-}
-
-resource "azurerm_role_assignment" "backend_acr" {
-  scope              = data.azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id       = azurerm_user_assigned_identity.backend.principal_id
-}
-
-resource "azurerm_container_app" "frontend" {
-  name                         = "ca-${var.app_name}-frontend-${var.environment}"
-  container_app_environment_id = azurerm_container_app_environment.main.id
-  resource_group_name          = azurerm_resource_group.main.name
-  revision_mode                = "Single"
-
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.frontend.id]
-  }
-
-  template {
-    container {
-      name   = "frontend"
-      image  = var.frontend_image
-      cpu    = var.frontend_cpu
-      memory = var.frontend_memory
-    }
-
-    min_replicas = 1
-    max_replicas = 3
-  }
-
-  ingress {
-    allow_insecure_connections = false
-    external_enabled           = true
-    target_port                = 3000
-    transport                  = "http"
-
-    traffic_weight {
-      percentage      = 100
-      latest_revision = true
-    }
-  }
-
-  registry {
-    server   = "${var.acr_name}.azurecr.io"
-    identity = azurerm_user_assigned_identity.frontend.id
-  }
 }
 
 resource "azurerm_container_app" "backend" {
@@ -117,10 +42,34 @@ resource "azurerm_container_app" "backend" {
       image  = var.backend_image
       cpu    = var.backend_cpu
       memory = var.backend_memory
+
+      # Key Vault reference syntax for env vars
+      env {
+        name        = "DATABASE_PASSWORD"
+        secret_name = "database-password-ref"
+      }
+
+      env {
+        name        = "API_KEY"
+        secret_name = "api-key-ref"
+      }
     }
 
     min_replicas = 1
     max_replicas = 3
+
+    # Define the Key Vault references as secrets
+    secret {
+      name                = "database-password-ref"
+      key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/DatabasePassword"
+      identity            = azurerm_user_assigned_identity.backend.id
+    }
+
+    secret {
+      name                = "api-key-ref"
+      key_vault_secret_id = "${data.azurerm_key_vault.main.vault_uri}secrets/ApiKey"
+      identity            = azurerm_user_assigned_identity.backend.id
+    }
   }
 
   ingress {

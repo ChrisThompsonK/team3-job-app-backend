@@ -23,16 +23,6 @@ output "key_vault_name" {
   description = "Key Vault name"
 }
 
-output "frontend_managed_identity_id" {
-  value       = azurerm_user_assigned_identity.frontend.id
-  description = "Frontend Managed Identity ID"
-}
-
-output "frontend_managed_identity_principal_id" {
-  value       = azurerm_user_assigned_identity.frontend.principal_id
-  description = "Frontend Managed Identity Principal ID"
-}
-
 output "backend_managed_identity_id" {
   value       = azurerm_user_assigned_identity.backend.id
   description = "Backend Managed Identity ID"
@@ -51,21 +41,6 @@ output "container_app_environment_id" {
 output "container_app_environment_name" {
   value       = azurerm_container_app_environment.main.name
   description = "Container App Environment name"
-}
-
-output "frontend_container_app_id" {
-  value       = azurerm_container_app.frontend.id
-  description = "Frontend Container App ID"
-}
-
-output "frontend_container_app_name" {
-  value       = azurerm_container_app.frontend.name
-  description = "Frontend Container App name"
-}
-
-output "frontend_container_app_fqdn" {
-  value       = azurerm_container_app.frontend.ingress[0].fqdn
-  description = "Frontend Container App public FQDN"
 }
 
 output "backend_container_app_id" {
