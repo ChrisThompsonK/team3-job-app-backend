@@ -64,4 +64,3 @@ variable "backend_memory" {
   default     = "0.5Gi"
 }
 
-```
