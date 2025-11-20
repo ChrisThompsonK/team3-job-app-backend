@@ -7,6 +7,9 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+# Run migrations during build
+RUN npm run db:migrate
+
 FROM node:20-alpine
 WORKDIR /app
 
@@ -24,3 +27,4 @@ USER nodejs
 
 EXPOSE ${PORT}
 CMD ["node", "dist/server.js"]
+
