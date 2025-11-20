@@ -22,6 +22,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:setup": "tsx src/scripts/setupDatabase.ts",
     "seed": "tsx src/seeds/index.ts",
     "seed:capabilities": "tsx src/seeds/seedCapabilities.ts",
     "seed:bands": "tsx src/seeds/seedBands.ts",

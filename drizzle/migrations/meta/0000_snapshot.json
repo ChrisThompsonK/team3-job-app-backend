@@ -1,9 +1,97 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "08fa0b3b-a854-4827-b636-2f0fd4f7fcc8",
+  "id": "e2a34bed-7b05-47b2-b915-dfee4737c7d8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "Applications": {
+      "name": "Applications",
+      "columns": {
+        "applicationID": {
+          "name": "applicationID",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "jobRoleId": {
+          "name": "jobRoleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "phoneNumber": {
+          "name": "phoneNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emailAddress": {
+          "name": "emailAddress",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'Pending'"
+        },
+        "coverLetter": {
+          "name": "coverLetter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Applications_jobRoleId_job_roles_jobRoleId_fk": {
+          "name": "Applications_jobRoleId_job_roles_jobRoleId_fk",
+          "tableFrom": "Applications",
+          "tableTo": "job_roles",
+          "columnsFrom": [
+            "jobRoleId"
+          ],
+          "columnsTo": [
+            "jobRoleId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "bands": {
       "name": "bands",
       "columns": {
@@ -40,6 +128,30 @@
         },
         "capabilityName": {
           "name": "capabilityName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "job_availability_status": {
+      "name": "job_availability_status",
+      "columns": {
+        "statusId": {
+          "name": "statusId",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "statusName": {
+          "name": "statusName",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -90,12 +202,56 @@
           "notNull": false,
           "autoincrement": false
         },
+        "statusId": {
+          "name": "statusId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "closingDate": {
           "name": "closingDate",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "responsibilities": {
+          "name": "responsibilities",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "jobSpecUrl": {
+          "name": "jobSpecUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "openPositions": {
+          "name": "openPositions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "deleted": {
+          "name": "deleted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         }
       },
       "indexes": {},
@@ -104,8 +260,12 @@
           "name": "job_roles_capabilityId_capabilities_capabilityId_fk",
           "tableFrom": "job_roles",
           "tableTo": "capabilities",
-          "columnsFrom": ["capabilityId"],
-          "columnsTo": ["capabilityId"],
+          "columnsFrom": [
+            "capabilityId"
+          ],
+          "columnsTo": [
+            "capabilityId"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -113,12 +273,105 @@
           "name": "job_roles_bandId_bands_bandId_fk",
           "tableFrom": "job_roles",
           "tableTo": "bands",
-          "columnsFrom": ["bandId"],
-          "columnsTo": ["bandId"],
+          "columnsFrom": [
+            "bandId"
+          ],
+          "columnsTo": [
+            "bandId"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "job_roles_statusId_job_availability_status_statusId_fk": {
+          "name": "job_roles_statusId_job_availability_status_statusId_fk",
+          "tableFrom": "job_roles",
+          "tableTo": "job_availability_status",
+          "columnsFrom": [
+            "statusId"
+          ],
+          "columnsTo": [
+            "statusId"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'user'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_login_at": {
+          "name": "last_login_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
