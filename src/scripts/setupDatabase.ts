@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { createClient } from '@libsql/client';
-import { migrate } from 'drizzle-orm/libsql/migrator';
 import { drizzle } from 'drizzle-orm/libsql';
+import { migrate } from 'drizzle-orm/libsql/migrator';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
