@@ -123,7 +123,7 @@ resource "azurerm_container_app" "backend" {
   }
 
   registry {
-    server   = "aiacademy25-bbaue6bgenhkd0dj.azurecr.io"
+    server   = "${var.acr_name}.azurecr.io"
     identity = data.azurerm_user_assigned_identity.backend.id
   }
 }
