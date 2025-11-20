@@ -34,11 +34,6 @@ variable "frontend_image" {
   default     = "aiacademy25.azurecr.io/team3-job-app-frontend:latest"
 }
 
-variable "backend_image" {
-  type        = string
-  description = "Backend container image URL"
-  default     = "aiacademy25.azurecr.io/team3-job-app-backend:latest"
-}
 
 variable "frontend_cpu" {
   type        = string

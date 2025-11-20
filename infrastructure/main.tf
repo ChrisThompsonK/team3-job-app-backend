@@ -36,7 +36,7 @@ resource "azurerm_container_app" "backend" {
   template {
     container {
       name   = "backend"
-      image  = var.backend_image
+      image  = "${data.azurerm_container_registry.acr.login_server}/team3-job-app-backend:latest"
       cpu    = var.backend_cpu
       memory = var.backend_memory
 
@@ -123,7 +123,7 @@ resource "azurerm_container_app" "backend" {
   }
 
   registry {
-    server   = "${var.acr_name}.azurecr.io"
+    server   = data.azurerm_container_registry.acr.login_server
     identity = data.azurerm_user_assigned_identity.backend.id
   }
 }
