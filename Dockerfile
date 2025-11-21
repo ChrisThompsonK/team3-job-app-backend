@@ -19,11 +19,11 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
 COPY package*.json ./
 
+# Initialize database: push schema and seed data (as root before changing user)
+RUN npm run db:push && npm run seed
+
 RUN chown -R nodejs:nodejs /app
 USER nodejs
-
-# Initialize database: push schema and seed data
-RUN npm run db:push && npm run seed
 
 EXPOSE ${PORT}
 CMD ["node", "dist/server.js"]
