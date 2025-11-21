@@ -12,12 +12,25 @@ WORKDIR /app
 
 ENV NODE_ENV=production PORT=3001
 
+# Accept build arguments for secrets
+ARG JWT_ACCESS_SECRET
+ARG JWT_REFRESH_SECRET
+
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/src/db ./src/db
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY package*.json ./
+
+# Create .env file with secrets from build arguments
+RUN echo "NODE_ENV=production" > .env && \
+    echo "PORT=3001" >> .env && \
+    echo "DATABASE_URL=file:jobs.db" >> .env && \
+    echo "JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}" >> .env && \
+    echo "JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}" >> .env
 
 # Initialize database: push schema and seed data (as root before changing user)
 RUN npm run db:push && npm run seed
