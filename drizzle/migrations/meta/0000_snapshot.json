@@ -78,12 +78,8 @@
           "name": "Applications_jobRoleId_job_roles_jobRoleId_fk",
           "tableFrom": "Applications",
           "tableTo": "job_roles",
-          "columnsFrom": [
-            "jobRoleId"
-          ],
-          "columnsTo": [
-            "jobRoleId"
-          ],
+          "columnsFrom": ["jobRoleId"],
+          "columnsTo": ["jobRoleId"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -260,12 +256,8 @@
           "name": "job_roles_capabilityId_capabilities_capabilityId_fk",
           "tableFrom": "job_roles",
           "tableTo": "capabilities",
-          "columnsFrom": [
-            "capabilityId"
-          ],
-          "columnsTo": [
-            "capabilityId"
-          ],
+          "columnsFrom": ["capabilityId"],
+          "columnsTo": ["capabilityId"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -273,12 +265,8 @@
           "name": "job_roles_bandId_bands_bandId_fk",
           "tableFrom": "job_roles",
           "tableTo": "bands",
-          "columnsFrom": [
-            "bandId"
-          ],
-          "columnsTo": [
-            "bandId"
-          ],
+          "columnsFrom": ["bandId"],
+          "columnsTo": ["bandId"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -286,12 +274,8 @@
           "name": "job_roles_statusId_job_availability_status_statusId_fk",
           "tableFrom": "job_roles",
           "tableTo": "job_availability_status",
-          "columnsFrom": [
-            "statusId"
-          ],
-          "columnsTo": [
-            "statusId"
-          ],
+          "columnsFrom": ["statusId"],
+          "columnsTo": ["statusId"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -365,9 +349,7 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },
