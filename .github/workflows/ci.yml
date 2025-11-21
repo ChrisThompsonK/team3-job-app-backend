@@ -93,6 +93,9 @@ jobs:
             team3-job-app-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
 
       - name: Verify Docker image
         run: |
