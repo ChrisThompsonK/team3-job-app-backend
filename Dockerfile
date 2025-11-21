@@ -36,13 +36,6 @@ COPY drizzle/ ./drizzle/
 COPY src/ ./src/
 COPY --from=builder /app/dist ./dist
 
-# Create .env file with secrets from build arguments
-RUN echo "NODE_ENV=production" > .env && \
-    echo "PORT=3001" >> .env && \
-    echo "DATABASE_URL=file:jobs.db" >> .env && \
-    echo "JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}" >> .env && \
-    echo "JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}" >> .env
-
 # Create non-root user and set permissions
 RUN mkdir -p /app/data && \
     addgroup -g 1001 -S nodejs && \
