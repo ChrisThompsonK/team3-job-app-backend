@@ -40,11 +40,9 @@ RUN mkdir -p /app/data && \
     adduser -S nodejs -u 1001 && \
     chown -R nodejs:nodejs /app
 
-# Initialize database: push schema and seed data (must be before USER switch)
-RUN npm run db:push && npm run seed
-
 USER nodejs
 
 EXPOSE ${PORT}
 
-CMD ["node", "dist/server.js"]
+# Run migrations and seeds on startup, then start the server
+CMD sh -c "npm run db:push && npm run seed && node dist/server.js"
