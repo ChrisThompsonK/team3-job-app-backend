@@ -22,5 +22,8 @@ COPY package*.json ./
 RUN chown -R nodejs:nodejs /app
 USER nodejs
 
+# Initialize database: push schema and seed data
+RUN npm run db:push && npm run seed
+
 EXPOSE ${PORT}
 CMD ["node", "dist/server.js"]
