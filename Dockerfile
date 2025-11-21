@@ -21,8 +21,6 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Accept build arguments for secrets
-ARG JWT_ACCESS_SECRET
-ARG JWT_REFRESH_SECRET
 
 # Set environment variables
 ENV NODE_ENV=production PORT=3001
